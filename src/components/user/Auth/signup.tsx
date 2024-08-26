@@ -93,7 +93,7 @@ export default function SignUp() {
         toast.error("email already found");
       }
     } catch (error) {
-      console.error("Error during signup:", error);
+      console.error("Error duriing signup:", error);
       if (axios.isAxiosError(error)) {
         console.log("isAxiosError :", error);
       } else {
