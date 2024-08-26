@@ -5,24 +5,24 @@ import Otp from "../Pages/user/Otp/Otp";
 import UserProfile from "../Pages/user/UserProfile/UserProfile";
 // import Login from "../Pages/user/LoginPage/Login";
 import Login from "../Components/user/Auth/Login";
-import Sample from "../Pages/user/Sample";
+
 
 function UserRoute() {
   console.log("hi this is user router page");
   return (
     <>
 
-    <Login/>
-      {/* <Routes>
+    {/* <Login/> */}
+      <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/sample" element={<Sample />} />
+     
 
         <Route path="/signup" element={<Signup />} />
         <Route path="/otp" element={<Otp />} />
-        <Route path="/userprofile" element={<UserProfile />} /> */}
+        <Route path="/userprofile" element={<UserProfile />} />
 
         {/* <Route path="/userProfile" element={<UserProfile />} /> */}
-      {/* </Routes> */}
+      </Routes>
     </>
   );
 }
