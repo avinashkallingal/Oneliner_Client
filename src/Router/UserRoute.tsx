@@ -1,26 +1,30 @@
+import { Routes, Route } from "react-router-dom";
 
-import {Routes, Route } from "react-router-dom";
-import Login from '../pages/user/LoginPage/Login'
-import Signup from "../pages/user/Signup/Signup";
-import Otp from "../pages/user/Otp/Otp"
-import UserProfile from "../pages/user/UserProfile/UserProfile";
+import Signup from "../Pages/user/Signup/Signup";
+import Otp from "../Pages/user/Otp/Otp";
+import UserProfile from "../Pages/user/UserProfile/UserProfile";
+// import Login from "../Pages/user/LoginPage/Login";
+import Login from "../Components/user/Auth/Login";
+import Sample from "../Pages/user/Sample";
 
 function UserRoute() {
-  console.log("hi this is user router page")
+  console.log("hi this is user router page");
   return (
     <>
 
-      <Routes>
-        <Route path="/" element={<Login />}/>
-        <Route path="/signup" element={<Signup />}/>
-        <Route path="/otp" element={<Otp />}/>
-        <Route path="/userprofile" element={<UserProfile />}/>
+    <Login/>
+      {/* <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/sample" element={<Sample />} />
+
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/otp" element={<Otp />} />
+        <Route path="/userprofile" element={<UserProfile />} /> */}
 
         {/* <Route path="/userProfile" element={<UserProfile />} /> */}
-      </Routes>
-    
-  </>
-  )
+      {/* </Routes> */}
+    </>
+  );
 }
 
-export default UserRoute
+export default UserRoute;

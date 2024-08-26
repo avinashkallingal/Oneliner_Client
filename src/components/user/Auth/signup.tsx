@@ -1,4 +1,5 @@
 import * as React from "react";
+import axios from "axios";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,10 +12,19 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import image from '../../../assets/bg_onliner3.jpeg'
+import image from "../../../assets/bg_onliner3.jpeg";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 
 const defaultTheme = createTheme();
+
+interface formData {
+  username?: string;
+  email?: string;
+  password?: string;
+  gender?: string;
+  language?: string;
+}
 
 export default function SignUp() {
   const [username, setUsername] = React.useState("");
@@ -22,61 +32,74 @@ export default function SignUp() {
   const [password, setPassword] = React.useState("");
   const [gender, setGender] = React.useState("");
   const [language, setLanguage] = React.useState("");
-  const [errors, setErrors] = React.useState<{ username?: string; email?: string; password?: string; gender?: string; language?: string }>({});
-  const navigate = useNavigate();
-  const isSmallScreen = useMediaQuery(defaultTheme.breakpoints.down('sm'));
+  const [errors, setErrors] = React.useState<formData>({
+    username: "",
+    email: "",
+    password: "",
+    gender: "",
+    language: "",
+  });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery(defaultTheme.breakpoints.down("sm"));
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    let formErrors: { username?: string; email?: string; password?: string; gender?: string; language?: string } = {};
+    let formErrors: formData = {};
 
-    // Validate username
-    if (!username) {
-      formErrors.username = "Username is required";
-    }
-
-    // Validate email
+    // Validate form fields
+    if (!username) formErrors.username = "Username is required";
     if (!email) {
       formErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       formErrors.email = "Email is invalid";
     }
-
-    // Validate password
     if (!password) {
       formErrors.password = "Password is required";
     } else if (password.length < 6) {
       formErrors.password = "Password must be at least 6 characters long";
     }
+    if (!gender) formErrors.gender = "Gender is required";
+    if (!language) formErrors.language = "Preferred Language is required";
 
-    // Validate gender
-    if (!gender) {
-      formErrors.gender = "Gender is required";
-    }
-
-    // Validate language
-    if (!language) {
-      formErrors.language = "Preferred Language is required";
-    }
-
-    // Set errors state 
+    // Set errors state if any errors found
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
     }
 
-  
-    console.log({
+    // Clear errors if validation passes
+    setErrors({});
+
+    // Prepare data to send in API request
+    const data = {
       username,
       email,
       password,
       gender,
       language,
-    });
+    };
 
-    // Clear errors if validation passes
-    setErrors({});
+    try {
+      // Make POST request with Axios
+      const result = await axios.post("http://localhost:4000/register", data);
+      console.log(result.data);
+      if (result.data.data.success) {
+        toast.info("Verify your email");
+        localStorage.setItem("otp", result.data.data.otp);
+        navigate("/otp");
+      } else {
+        toast.error("email already found");
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+      if (axios.isAxiosError(error)) {
+        console.log("isAxiosError :", error);
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
   };
 
   const signin = () => {
@@ -91,36 +114,35 @@ export default function SignUp() {
         sx={{
           backgroundImage: `url(${image})`,
           backgroundSize: isSmallScreen ? "cover" : "cover",
-          backgroundPosition: 'center',
-          '&::before': {
+          backgroundPosition: "center",
+          "&::before": {
             content: '""',
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
-            width: '100%',
-            height: '100%',
-        
-            backgroundColor: 'rgba(0, 0, 0, 0.3)', // Adjust opacity here
-            zIndex: 1
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            zIndex: 1,
           },
-          '& > *': {
-            position: 'relative',
-            zIndex: 2
+          "& > *": {
+            position: "relative",
+            zIndex: 2,
           },
-          height: '100vh',
-          width: '100vw',
+          height: "100vh",
+          width: "100vw",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          overflow:"auto",
+          overflow: "auto",
         }}
       >
         <CssBaseline />
         <Box
           sx={{
             marginTop: 15,
-            width: isSmallScreen ? '90%' : '460px',
+            width: isSmallScreen ? "90%" : "460px",
             backgroundColor: "rgba(256, 256, 256, 0.8)",
             boxShadow: 10,
             p: 2,

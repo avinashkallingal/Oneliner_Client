@@ -1,12 +1,14 @@
 
-import Login1 from "../../../components/user/Auth/Login";
+import Login1 from "../../../Components/user/Auth/Login";
 
 function Login() {
-
+console.log('helo login page')
   return (
     <>
+    <h1>helo</h1>
       <Login1 />
     </>
   );
 }
+
 export default Login;
