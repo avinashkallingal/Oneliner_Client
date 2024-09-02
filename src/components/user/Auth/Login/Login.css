@@ -1,0 +1,21 @@
+/* Add this in App.css or inside a <style> tag */
+.swal2-popup .swal2-confirm.orange-theme-confirm-button {
+    background-color: #d3a221 !important; /* Orange color */
+    color: white !important; /* White text color */
+    border: none !important; /* No border */
+  }
+  
+  .swal2-popup .swal2-confirm.orange-theme-confirm-button:hover {
+    background-color: #1565C0!important; /* Darker orange on hover */
+  }
+  
+  .swal2-popup .swal2-cancel.orange-theme-cancel-button {
+    background-color: #d3a221 !important; /* Lighter orange color */
+    color: white !important; /* White text color */
+    border: none !important; /* No border */
+  }
+  
+  .swal2-popup .swal2-cancel.orange-theme-cancel-button:hover {
+    background-color: #1565C0 !important; /* Darker shade on hover */
+  }
+  

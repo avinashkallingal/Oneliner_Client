@@ -1,7 +1,12 @@
 
-import Login1 from "../../../Components/user/Auth/Login";
+
+import Login1 from "../../../Components/user/Auth/Login/Login";
+
 
 function Login() {
+  
+
+
 console.log('helo login page')
   return (
     <>

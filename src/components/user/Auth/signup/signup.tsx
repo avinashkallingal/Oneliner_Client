@@ -12,9 +12,10 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import image from "../../../assets/bg_onliner3.jpeg";
+import image from "../../../../Assets/bg_onliner3.jpeg";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+// import { ToastContainer, toast } from "react-toastify";
+import { toast } from 'sonner';
 
 const defaultTheme = createTheme();
 
@@ -87,7 +88,7 @@ export default function SignUp() {
       console.log(result.data);
       if (result.data.data.success) {
         toast.info("Verify your email");
-        localStorage.setItem("otp", result.data.data.otp);
+        // localStorage.setItem("otp", result.data.data.otp);
         navigate("/otp");
       } else {
         toast.error("email already found");

@@ -18,6 +18,8 @@ import PeopleIcon from "@mui/icons-material/People";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import StoreIcon from "@mui/icons-material/Store";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useNavigate } from "react-router-dom";
+
 
 const pages = [
   { name: "Home", icon: <HomeIcon /> },
@@ -30,6 +32,7 @@ const pages = [
 ];
 
 export default function Navbar() {
+  const navigate=useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -46,7 +49,9 @@ export default function Navbar() {
   };
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+    localStorage.removeItem("onelinejwttoken")
+    navigate("/")
+    // setAnchorElUser(null);
   };
 
   return (

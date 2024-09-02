@@ -4,7 +4,7 @@ import Signup from "../Pages/user/Signup/Signup";
 import Otp from "../Pages/user/Otp/Otp";
 import UserProfile from "../Pages/user/UserProfile/UserProfile";
 // import Login from "../Pages/user/LoginPage/Login";
-import Login from "../Components/user/Auth/Login";
+import Login from "../Components/user/Auth/Login/Login";
 
 
 function UserRoute() {
