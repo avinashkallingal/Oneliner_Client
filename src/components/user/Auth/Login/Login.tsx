@@ -162,9 +162,23 @@ export default function SignIn() {
             confirmButtonText: "Verify",
             cancelButtonText: "Cancel",
             showCancelButton: true,
-            inputValidator: (value) => {
+            inputValidator:async (value) => {
               if (!value) {
                 return "You need to enter the OTP!";
+              }else if(value){
+                //
+                console.log(value," value in client side swal")
+                const otp=value
+                  const operation = "change_password_otp";
+                  const response: any = await axios.post(
+                    "http://localhost:4000/verifyOtp",
+                    { otp, operation }
+                  );
+                  if (!response.data.success) {
+                    return "Invalid otp"
+                  }
+                
+                //
               }
               // if (value != verifyResponse.data.user_data.otp) {
               //     return "Invalid otp"
@@ -248,6 +262,7 @@ export default function SignIn() {
               toast.error(response.data.message);
             }
           }
+
         } else {
           toast.error(response.data.message);
         }
