@@ -1,11 +1,13 @@
-import React from 'react'
+import React from 'react';
+import LoginPage from '../../../Components/admin/AdminLogin/AdminLogin';
 
 function Login() {
   return (
-    <div>
-      <h1>hi this is login page</h1>
+
+    <div style={{ minHeight: '100vh',width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <LoginPage />
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

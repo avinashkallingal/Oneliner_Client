@@ -20,13 +20,18 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import Swalert from "sweetalert2";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 import "./Login.css";
+import {useDispatch} from "react-redux"
+import {RootState} from "../../../../redux/Store/Store"
+import { login, logout } from "../../../../redux/Slice/UserSlice";
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
   useEffect(() => {
-    const token = localStorage.getItem("onelinejwttoken");
+    const token = localStorage.getItem("userToken");
     console.log("token in login useeffect", token);
     if (token) {
       navigate("/userprofile");
@@ -39,6 +44,7 @@ export default function SignIn() {
     password?: string;
   }>({});
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isSmallScreen = useMediaQuery(defaultTheme.breakpoints.down("sm"));
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -77,7 +83,21 @@ export default function SignIn() {
       if (result.data.success) {
         toast.info("logged in successfully");
         // localStorage.setItem("otp", result.data.data.otp);
-        localStorage.setItem("onelinejwttoken", result.data.token);
+        //adding to redux store
+        const user = {
+          _id: result.data.user_data._id,
+          email: result.data.user_data.email,
+          name: result.data.user_data.name,
+          avatar:""
+      }
+      console.log('Dispatching userlogin action');
+      dispatch(login({ token: result.data.token, userData: user }));
+        //
+        localStorage.setItem("userToken", result.data.token);
+        localStorage.setItem("userRefreshToken", result.data.refreshToken);
+        console.log(result.data.user_data.email," email data")
+        localStorage.setItem("email", result.data.user_data.email);
+        localStorage.setItem("id", result.data.user_data._id);
         navigate("/userProfile");
       } else {
         toast.error(result.data.message);
@@ -162,22 +182,22 @@ export default function SignIn() {
             confirmButtonText: "Verify",
             cancelButtonText: "Cancel",
             showCancelButton: true,
-            inputValidator:async (value) => {
+            inputValidator: async (value) => {
               if (!value) {
                 return "You need to enter the OTP!";
-              }else if(value){
+              } else if (value) {
                 //
-                console.log(value," value in client side swal")
-                const otp=value
-                  const operation = "change_password_otp";
-                  const response: any = await axios.post(
-                    "http://localhost:4000/verifyOtp",
-                    { otp, operation }
-                  );
-                  if (!response.data.success) {
-                    return "Invalid otp"
-                  }
-                
+                console.log(value, " value in client side swal");
+                const otp = value;
+                const operation = "change_password_otp";
+                const response: any = await axios.post(
+                  "http://localhost:4000/verifyOtp",
+                  { otp, operation }
+                );
+                if (!response.data.success) {
+                  return "Invalid otp";
+                }
+
                 //
               }
               // if (value != verifyResponse.data.user_data.otp) {
@@ -262,7 +282,6 @@ export default function SignIn() {
               toast.error(response.data.message);
             }
           }
-
         } else {
           toast.error(response.data.message);
         }
@@ -367,6 +386,34 @@ export default function SignIn() {
             >
               Sign In
             </Button>
+            <div className="google-login-button">
+            <GoogleLogin
+              onSuccess={async(credentialResponse) => {
+                console.log(credentialResponse, "google login");
+
+                const decoded = jwtDecode(credentialResponse?.credential);
+                console.log(decoded);
+                const result=await axios.post("http://localhost:4000/googleLogin",{decoded})
+                console.log(result," google login response in front end")
+                if(result.data.success){
+                  localStorage.setItem("userToken", result.data.token);
+                  localStorage.setItem("userRefreshToken", result.data.refreshToken);
+                  localStorage.setItem("email", result.data.user_data.email);
+                  localStorage.setItem("id", result.data.user_data._id);
+
+
+                  navigate("/userProfile");
+                }else{
+                  toast.error("error in google login")
+                }
+               
+              }}
+              onError={() => {
+                console.log("google login failed")
+                toast.error("google login failed")
+              }}
+            />
+            </div>
             <Grid container>
               <Grid item xs>
                 <Link

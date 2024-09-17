@@ -1,4 +1,5 @@
-import UserProfile1 from "../../../Components/user/Home/UserProfile"
+import UserProfileEdit from "../../../components/user/Home/UserProfileEdit"
+
 import Navbar from "../../../components/user/Home/Navbar"
 import { Toaster } from "sonner"
 import { useEffect } from "react"
@@ -14,14 +15,17 @@ function UserProfile() {
     } 
    
   }, [])
- 
+  // const response = await axiosInstance.post('/admin/changeStatus', {
+  //   email: userEmail,
+  //   isBlocked: !isBlocked,
+  // });
   return (
-    <div style={{ minHeight: '100vh',width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <>
     <Toaster/>
       <Navbar/>
-      <UserProfile1/>
-      
-    </div>
+     
+      <UserProfileEdit/>
+    </>
   )
 }
 

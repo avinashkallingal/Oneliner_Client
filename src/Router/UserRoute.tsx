@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Signup from "../Pages/user/Signup/Signup";
 import Otp from "../Pages/user/Otp/Otp";
+import UserProfileEdit from "../Pages/user/UserProfile/UserProfileEdit";
 import UserProfile from "../Pages/user/UserProfile/UserProfile";
 // import Login from "../Pages/user/LoginPage/Login";
 import Login from "../Components/user/Auth/Login/Login";
@@ -15,13 +16,12 @@ function UserRoute() {
     {/* <Login/> */}
       <Routes>
         <Route path="/" element={<Login />} />
-     
-
         <Route path="/signup" element={<Signup />} />
         <Route path="/otp" element={<Otp />} />
-        <Route path="/userprofile" element={<UserProfile />} />
+        <Route path="/userProfileEdit" element={<UserProfileEdit />} />
+        <Route path="/userProfile" element={<UserProfile />} />
 
-        {/* <Route path="/userProfile" element={<UserProfile />} /> */}
+        {/* <Route path="/userProfile" element={<UserProfile />} /> */} 
       </Routes>
     </>
   );

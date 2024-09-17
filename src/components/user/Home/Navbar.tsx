@@ -49,7 +49,9 @@ export default function Navbar() {
   };
 
   const handleCloseUserMenu = () => {
-    localStorage.removeItem("onelinejwttoken")
+    localStorage.removeItem("userToken")
+    localStorage.removeItem("email")
+    localStorage.removeItem("userRefreshToken")
     navigate("/")
     // setAnchorElUser(null);
   };

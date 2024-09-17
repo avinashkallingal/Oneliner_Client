@@ -1,16 +1,32 @@
-import React, { useState } from 'react';
-import { AppBar, Tabs, Tab, Box, Toolbar, Container } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { AppBar,IconButton, Tabs, Tab, Box, Toolbar, Container } from '@mui/material';
 import Dashboard from '../../../Components/admin/Dashboard/Dashboard';
 import UserList from '../../../Components/admin/UserManagement/UserManagement';
+import { useNavigate } from 'react-router-dom';
 
 const App: React.FC = () => {
   const [tabIndex, setTabIndex] = useState<number>(0);
+  const navigate=useNavigate()
 
   const handleTabChange = (event: React.SyntheticEvent, newIndex: number) => {
     setTabIndex(newIndex);
   };
+  const handleLogout=()=>{
+    localStorage.removeItem("adminToken")
+    navigate("/admin/login")
+  }
+  useEffect(() => {
+  const token=localStorage.getItem("adminToken")
+  if(!token){
+    navigate("/admin/login")
+  }
+  
+   
+  }, [])
+  
 
   return (
+    
     <Box display="flex" flexDirection="column" height="100vh">
       <AppBar position="fixed" sx={{ width: '100%', backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
         <Toolbar>
@@ -25,7 +41,11 @@ const App: React.FC = () => {
             <Tab label="Dashboard" sx={{ fontSize: '1.1rem', color: 'white' }} />
             <Tab label="User List" sx={{ fontSize: '1.1rem', color: 'white' }} />
           </Tabs>
+          <IconButton color="inherit" onClick={handleLogout}>
+         logout
+        </IconButton>
         </Toolbar>
+        
       </AppBar>
 
       <Toolbar /> {/* Add an empty Toolbar to push the content below the fixed AppBar */}

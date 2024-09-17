@@ -18,4 +18,25 @@
   .swal2-popup .swal2-cancel.orange-theme-cancel-button:hover {
     background-color: #1565C0 !important; /* Darker shade on hover */
   }
+  .google-login-button {
+    display: flex;
+ 
+    color: #d3a221;
+    padding: 2px 2px;
+    border-radius: 0px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+  
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* .google-login-button:hover {
+    background-color: #357ae8;
+  } */
+  
+  .google-login-button:active {
+    background-color: #2c6bb2;
+  }
   
