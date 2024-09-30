@@ -1,5 +1,5 @@
 import UserProfile1 from "../../../Components/user/Home/UserProfile"
-import Navbar from "../../../components/user/Home/Navbar"
+import Navbar from "../../../Components/user/Home/Navbar"
 import { Toaster } from "sonner"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"

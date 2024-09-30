@@ -47,6 +47,10 @@ export default function Navbar() {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
+  const handleNavigate = (path: string) => {
+    navigate(path);  // Navigate to the path when a button is clicked
+    handleCloseNavMenu();  // Close the navigation menu (for small screens)
+  };
 
   const handleCloseUserMenu = () => {
     localStorage.removeItem("userToken")
@@ -108,8 +112,9 @@ export default function Navbar() {
           {pages.map((page) => (
             <Button
               key={page.name}
-              onClick={handleCloseNavMenu}
+              onClick={() => handleNavigate(`/${page.name.toLowerCase().replace(/\s/g, '-')}`)}
               sx={{ my: 2, color: "white", display: "flex", alignItems: "center" }}
+             
             >
               {page.icon}
               <Typography variant="body2" sx={{ ml: 1 }}>
@@ -120,7 +125,7 @@ export default function Navbar() {
         </Box>
         <Box sx={{ flexGrow: 0 }}>
           <Tooltip title="Profile">
-            <IconButton sx={{ p: 0 }}>
+            <IconButton onClick={() => navigate('/userProfile')} sx={{ p: 0 }}>
               <Avatar alt="Profile" src="" />
             </IconButton>
           </Tooltip>

@@ -1,6 +1,6 @@
-import UserProfileEdit from "../../../components/user/Home/UserProfileEdit"
+import UserProfileEdit from "../../../Components/user/Home/UserProfileEdit"
 
-import Navbar from "../../../components/user/Home/Navbar"
+import Navbar from "../../../Components/user/Home/Navbar"
 import { Toaster } from "sonner"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"

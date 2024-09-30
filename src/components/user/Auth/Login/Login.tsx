@@ -34,7 +34,7 @@ export default function SignIn() {
     const token = localStorage.getItem("userToken");
     console.log("token in login useeffect", token);
     if (token) {
-      navigate("/userprofile");
+      navigate("/home");
     }
   }, []);
   const [email, setEmail] = React.useState("");
@@ -98,7 +98,7 @@ export default function SignIn() {
         console.log(result.data.user_data.email," email data")
         localStorage.setItem("email", result.data.user_data.email);
         localStorage.setItem("id", result.data.user_data._id);
-        navigate("/userProfile");
+        navigate("/home");
       } else {
         toast.error(result.data.message);
       }
@@ -303,8 +303,9 @@ export default function SignIn() {
             position: "absolute",
             top: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
             backgroundColor: "rgba(0, 0, 0, 0.3)",
             zIndex: 1,
           },
@@ -402,7 +403,7 @@ export default function SignIn() {
                   localStorage.setItem("id", result.data.user_data._id);
 
 
-                  navigate("/userProfile");
+                  navigate("/home");
                 }else{
                   toast.error("error in google login")
                 }

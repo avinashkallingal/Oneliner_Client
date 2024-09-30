@@ -6,6 +6,8 @@ import UserProfileEdit from "../Pages/user/UserProfile/UserProfileEdit";
 import UserProfile from "../Pages/user/UserProfile/UserProfile";
 // import Login from "../Pages/user/LoginPage/Login";
 import Login from "../Components/user/Auth/Login/Login";
+import AddPost from "../Pages/posts/AddPost";
+import Home from "../Pages/user/Home/Home";
 
 
 function UserRoute() {
@@ -16,12 +18,14 @@ function UserRoute() {
     {/* <Login/> */}
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/otp" element={<Otp />} />
         <Route path="/userProfileEdit" element={<UserProfileEdit />} />
         <Route path="/userProfile" element={<UserProfile />} />
+        <Route path="/add-post" element={<AddPost />} />
 
-        {/* <Route path="/userProfile" element={<UserProfile />} /> */} 
+      
       </Routes>
     </>
   );
