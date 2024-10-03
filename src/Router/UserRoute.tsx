@@ -8,6 +8,8 @@ import UserProfile from "../Pages/user/UserProfile/UserProfile";
 import Login from "../Components/user/Auth/Login/Login";
 import AddPost from "../Pages/posts/AddPost";
 import Home from "../Pages/user/Home/Home";
+import EditPost from "../Components/user/Home/EditPost"
+
 
 
 function UserRoute() {
@@ -24,6 +26,8 @@ function UserRoute() {
         <Route path="/userProfileEdit" element={<UserProfileEdit />} />
         <Route path="/userProfile" element={<UserProfile />} />
         <Route path="/add-post" element={<AddPost />} />
+        <Route path="/editPost" element={<EditPost />} />
+
 
       
       </Routes>

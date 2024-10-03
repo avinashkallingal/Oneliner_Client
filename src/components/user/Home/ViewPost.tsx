@@ -26,10 +26,11 @@ import { toast } from "sonner";
 import PdfViewer from "../../../utilities/pdfViewer";
 import PostMenu from "./PostMenu";
 
-export default function InstagramPost() {
+export default function ViewPost() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [pdf, setPdf] = useState<any>(null);
+  const [selectedPost, setSelectedPost] = useState<any>(null); // State for the selected post
 
   // Fetch data using useEffect
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function InstagramPost() {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching posts:", error);
+        setLoading(false);
       }
     };
     fetchPosts();
@@ -135,6 +137,14 @@ export default function InstagramPost() {
     }
   };
 
+  const viewPost = (post) => {
+    setSelectedPost(post);
+  };
+
+  const goBackToPosts = () => {
+    setSelectedPost(null);
+  };
+
   return (
     <Box sx={{ marginTop: "10vh" }}>
       {loading ? (
@@ -190,201 +200,159 @@ export default function InstagramPost() {
             </Stack>
           ))}
         </>
+      ) : selectedPost ? (
+        <Card
+          variant="outlined"
+          sx={{
+            marginBottom: 3,
+            minWidth: 600,
+            minHeight: 300,
+            width: "100%",
+            position: "relative",
+          }}
+        >
+          <IconButton
+            variant="plain"
+            color="neutral"
+            size="sm"
+            sx={{ position: "absolute", top: 10, right: 10 }}
+            onClick={goBackToPosts}
+          >
+            Back
+          </IconButton>
+          <CardContent orientation="horizontal" sx={{ alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                position: "relative",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  m: "-2px",
+                  borderRadius: "50%",
+                  background:
+                    "linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)",
+                },
+              }}
+            >
+              <Avatar
+                size="sm"
+                src="/static/logo.png"
+                sx={{
+                  p: 0.5,
+                  border: "2px solid",
+                  borderColor: "background.body",
+                }}
+              />
+            </Box>
+            <Typography sx={{ fontWeight: "lg" }}>
+              {selectedPost.user.name}
+            </Typography>
+            <IconButton
+              variant="plain"
+              color="neutral"
+              size="sm"
+              sx={{ ml: "auto" }}
+            >
+              <PostMenu postId={selectedPost._id} />
+            </IconButton>
+          </CardContent>
+
+          <CardOverflow>
+            <AspectRatio>
+              <Box sx={{ position: "relative" }}>
+                <img src={selectedPost.imageUrl} alt={selectedPost.title} loading="lazy" />
+                {selectedPost.pdfUrl && (
+                  <Box sx={{ position: "absolute", top: 10, right: 10 }}>
+                    <IconButton onClick={() => viewPdf(selectedPost._id)}>
+                      <BookmarkBorderRoundedIcon />
+                    </IconButton>
+                  </Box>
+                )}
+              </Box>
+            </AspectRatio>
+          </CardOverflow>
+
+          <CardContent>
+            <Typography sx={{ fontSize: "sm" }}>
+              {selectedPost.description}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+              <IconButton
+                onClick={() =>
+                  handleLike(
+                    selectedPost._id,
+                    selectedPost.user._id,
+                    checkLiked(selectedPost.likes),
+                    0
+                  )
+                }
+              >
+                {checkLiked(selectedPost.likes) ? (
+                  <Favorite sx={{ color: "red" }} />
+                ) : (
+                  <FavoriteBorder />
+                )}
+              </IconButton>
+              <Typography sx={{ fontWeight: "lg" }}>
+                {selectedPost.likes.length} Likes
+              </Typography>
+              <IconButton>
+                <ModeCommentOutlined />
+              </IconButton>
+              <Typography>{selectedPost.comments.length} Comments</Typography>
+              <IconButton>
+                <SendOutlined />
+              </IconButton>
+            </Box>
+          </CardContent>
+        </Card>
       ) : (
         posts.map((post, index) => (
           <Card
-            key={index}
             variant="outlined"
-            sx={{
-              marginBottom: 3,
-              minWidth: 600,
-              minHeight: 300,
-              width: "32vw",
-              "--Card-radius": (theme) => theme.vars.radius.xs,
-            }}
+            sx={{ marginBottom: 3 }}
+            key={post._id}
+            onClick={() => viewPost(post)} // Set the selected post on click
           >
-            <CardContent
-              orientation="horizontal"
-              sx={{ alignItems: "center", gap: 1 }}
-            >
-              <Box
-                sx={{
-                  position: "relative",
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    m: "-2px",
-                    borderRadius: "50%",
-                    background:
-                      "linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)",
-                  },
-                }}
-              >
-                <Avatar
-                  size="sm"
-                  src="/static/logo.png"
-                  sx={{
-                    p: 0.5,
-                    border: "2px solid",
-                    borderColor: "background.body",
-                  }}
-                />
-              </Box>
-              <Typography sx={{ fontWeight: "lg" }}>
-                {post.user.name}
-              </Typography>
-              <IconButton
-                variant="plain"
-                color="neutral"
-                size="sm"
-                sx={{ ml: "auto" }}
-              >
-                <PostMenu postData={post} />
+            <CardContent orientation="horizontal" sx={{ alignItems: "center", gap: 1 }}>
+              <Avatar src={post.user.avatarUrl} size="sm" />
+              <Typography sx={{ fontWeight: "lg" }}>{post.user.name}</Typography>
+              <IconButton variant="plain" color="neutral" size="sm" sx={{ ml: "auto" }}>
+                <PostMenu postId={post._id} />
               </IconButton>
             </CardContent>
 
-            <CardOverflow>
-              <AspectRatio>
-                <Box sx={{ position: "relative" }}>
-                  <img src={post.imageUrl} alt={post.title} loading="lazy" />
-                  {post.pdfUrl && (
-                    <Box
-                      component="a"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: "rgba(0, 0, 0, 0.4)",
-                        opacity: 0,
-                        color: "white",
-                        textDecoration: "none",
-                        transition: "opacity 0.3s ease",
-                        "&:hover": {
-                          opacity: 1,
-                        },
-                      }}
-                    >
-                      <button onClick={() => viewPdf(post._id)}>
-                        Read More
-                      </button>
-                    </Box>
-                  )}
-                </Box>
-              </AspectRatio>
-            </CardOverflow>
+            <AspectRatio ratio="21/9">
+              <img src={post.imageUrl} alt={post.title} loading="lazy" />
+            </AspectRatio>
 
-            <CardContent
-              orientation="horizontal"
-              sx={{ alignItems: "center", mx: -1 }}
-            >
-              <Box sx={{ width: 0, display: "flex", gap: 0.5 }}>
-                {checkLiked(post.likes) ? (
-                  <IconButton
-                    onClick={() =>
-                      handleLike(post._id, post.userId, false, index)
-                    }
-                    variant="soft"
-                    color="danger"
-                    size="sm"
-                  >
+            <CardContent>
+              <Typography sx={{ fontSize: "sm" }}>{post.description}</Typography>
+              <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
+                <IconButton
+                  onClick={() =>
+                    handleLike(post._id, post.user._id, checkLiked(post.likes), index)
+                  }
+                >
+                  {checkLiked(post.likes) ? (
                     <Favorite sx={{ color: "red" }} />
-                  </IconButton>
-                ) : (
-                  <IconButton
-                    onClick={() =>
-                      handleLike(post._id, post.userId, true, index)
-                    }
-                    variant="soft"
-                    color="danger"
-                    size="sm"
-                  >
+                  ) : (
                     <FavoriteBorder />
-                  </IconButton>
-                )}
-
-                <IconButton variant="soft" color="neutral" size="sm">
+                  )}
+                </IconButton>
+                <Typography sx={{ fontWeight: "lg" }}>{post.likes.length} Likes</Typography>
+                <IconButton>
                   <ModeCommentOutlined />
                 </IconButton>
-                <IconButton variant="soft" color="neutral" size="sm">
+                <Typography>{post.comments.length} Comments</Typography>
+                <IconButton>
                   <SendOutlined />
                 </IconButton>
               </Box>
-              <IconButton
-                size="sm"
-                variant="soft"
-                color="neutral"
-                sx={{ ml: "auto" }}
-              >
-                <BookmarkBorderRoundedIcon />
-              </IconButton>
-            </CardContent>
-
-            <CardContent>
-              <Link
-                component="button"
-                underline="none"
-                textColor="text.primary"
-                sx={{ fontSize: "sm", fontWeight: "lg" }}
-              >
-                {post.likes.length} Likes
-              </Link>
-              <Typography sx={{ fontSize: "sm" }}>
-                <Link
-                  component="button"
-                  color="neutral"
-                  textColor="text.primary"
-                  sx={{ fontWeight: "lg" }}
-                >
-                  {post.title}
-                </Link>{" "}
-                {post.summary}
-              </Typography>
-              <Link
-                component="button"
-                underline="none"
-                startDecorator="…"
-                sx={{ fontSize: "sm", color: "text.tertiary" }}
-              >
-                more
-              </Link>
-              <Link
-                component="button"
-                underline="none"
-                sx={{ fontSize: "10px", color: "text.tertiary", my: 0.5 }}
-              >
-                2 DAYS AGO
-              </Link>
-            </CardContent>
-
-            <CardContent orientation="horizontal" sx={{ gap: 1 ,padding:1 }}>
-              <IconButton
-                size="sm"
-                variant="plain"
-                color="neutral"
-                sx={{ ml: -1 }}
-              >
-                <Face />
-              </IconButton>
-              <Input
-                variant="plain"
-                size="sm"
-                placeholder="Add a comment…"
-                sx={{ flex: 1, px: 0, "--Input-focusedThickness": "0px" }}
-              />
-              <Link disabled underline="none" role="button">
-                Post
-              </Link>
             </CardContent>
           </Card>
         ))
