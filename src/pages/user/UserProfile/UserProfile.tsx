@@ -16,7 +16,7 @@ function UserProfile() {
   }, [])
  
   return (
-    <div style={{ minHeight: '100vh',width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ minHeight: '100vh',width: '100vw',background:"#D3D3D3", display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
     <Toaster/>
       <Navbar/>
       <UserProfile1/>

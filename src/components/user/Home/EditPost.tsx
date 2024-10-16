@@ -13,6 +13,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { EmbedPDF } from "@simplepdf/react-embed-pdf";
 
 const steps = ["Add synopsis", "Add PDF", "Upload Photo", "Preview"];
 
@@ -34,6 +35,7 @@ export default function EditPost() {
   const [imageSrc, setImageSrc] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
   const [stepDisable, setStepDisable] = React.useState(false);
+  const [pdf, setPdf] = React.useState<any>(null);
 
   const genres = ["Fiction", "Non-Fiction", "Science", "Technology"];
 
@@ -70,6 +72,25 @@ export default function EditPost() {
 
   const stepperVlidation = () => {};
 
+  const viewPdf = async (postId: any) => {
+    try {
+      const result = await axiosInstance.post(
+        "http://localhost:4000/post/pdfUrlFetch",
+        { postId }
+      );
+
+      if (result.data.success) {
+        setPdf(result.data.pdfUrl);
+        console.log(result.data.pdfUrl, " pfd fetch result fhfhj");
+        // Return the PDF URL if successful
+      } else {
+        toast.error("Error while viewing PDF");
+      }
+    } catch (error) {
+      console.error("Error viewing PDF:", error);
+    }
+  };
+
   const handleAddTag = () => {
     if (tagInput && !tags.includes(tagInput)) {
       setTags([...tags, tagInput]);
@@ -97,6 +118,10 @@ export default function EditPost() {
   const handleCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
+  if (location.state && location.state.post && Array.isArray(location.state.post.imageUrlS3)) {
+    console.log(location.state?.post?.imageUrlS3?.[0], " image url in edit post++++++++++");
+  } 
+
 
   const handleCrop = async () => {
     if (imageSrc && croppedAreaPixels) {
@@ -161,6 +186,54 @@ export default function EditPost() {
       navigate("/home");
     }
   };
+
+  if (pdf) {
+    return (
+      <>
+        {pdf ? (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              marginTop: "10vh",
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setPdf(null)}
+              style={{
+                position: "absolute",
+                top: "20px",
+                right: "20px",
+                zIndex: 1000,
+                padding: "10px 20px",
+                fontSize: "16px",
+                backgroundColor: "red",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+                borderRadius: "5px",
+              }}
+            >
+              Close
+            </button>
+
+            {/* PDF Embed */}
+            <EmbedPDF
+              mode="inline"
+              style={{ width: "100%", height: "100%" }}
+              documentURL={pdf}
+            />
+          </div>
+        ) : (
+          <p>No PDF selected.</p>
+        )}
+      </>
+    );
+  }
 
   const renderStepContent = (stepIndex: number) => {
     switch (stepIndex) {
@@ -238,6 +311,9 @@ export default function EditPost() {
       case 1:
         return (
           <div>
+             <button style={{flexFlow:"column"}} onClick={() => viewPdf(location.state?.post?._id)}>
+                        Preview PDF
+                      </button>
             <input
               type="file"
               name="pdf"
@@ -284,8 +360,8 @@ export default function EditPost() {
                 backgroundColor: "#f9f9f9", // Optional background color
               }}
             >
-              <img
-                src={location.state.post.imageUrl[0]} // Replace with your image URL or path
+              <img  
+                src={location.state?.post?.imageUrlS3?.[0]} // Replace with your image URL or path
                 alt="Thumbnail"
                 style={{
                   width: "100%",
@@ -404,7 +480,7 @@ export default function EditPost() {
 
   return (
     <div>
-      <Stepper sx={{alignItems:"center" ,width: "80%", marginTop: "10vh",marginLeft:32 }}>
+      <Stepper sx={{alignItems:"center" ,width: "80%", marginTop: "10vh",marginLeft:29 }}>
         {steps.map((step, index) => (
           <Step
             key={step}
@@ -438,13 +514,12 @@ export default function EditPost() {
 
       <div
         style={{
-          marginLeft:"36vw",
-          marginTop: 55,
+          marginLeft:"15vw",
+          marginTop: 5,
           backgroundColor: "white",
           padding: "20px",
           borderRadius: "8px",
-          width: "70vw",
-          margin: "auto",
+          width: "70vw",          
           color: "black",
           height: "500px",
           minHeight: "300px",
@@ -453,6 +528,7 @@ export default function EditPost() {
           justifyContent: "center", // Center horizontally
           alignItems: "center", // Center vertically
           flexDirection: "column", // Align items inside the card properly
+         
         }}
       >
         {renderStepContent(activeStep)}

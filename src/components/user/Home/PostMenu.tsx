@@ -17,11 +17,13 @@ import { useState, useEffect } from "react";
 import EditPost from "./EditPost";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../Constarints/axios/userAxios";
+import Swal from "sweetalert2";
 
 export default function PostMenu({ postData }: any) {
   const [selectedPost, setSelectedPost] = useState(null);
   const [editPost, setEditPost] = useState(null);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
+  const id=localStorage.getItem("id")
 
   const handleViewPostClick = (postData: any) => {
     setSelectedPost(postData); // Set the selected post
@@ -34,31 +36,59 @@ export default function PostMenu({ postData }: any) {
   //   setEditPost(postData)
 
   // }
-  const handlePostEdit=(post:any)=>{
+  const handlePostEdit = (post: any) => {
     toast.info("edit post clicked");
     // navigate('/componentB',{state:{id:1,name:'sabaoon'}})
-    navigate('/editPost',{state:{post}})
-    
+    navigate("/editPost", { state: { post } });
+  };
+  const userCheck=(post:any)=>{
+    return id==post.userId
   }
+
+  const handlePostDelete = async (post: any) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this POST!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axiosInstance.post(
+            "http://localhost:4000/post/deletePost",
+            { postId: post._id, imageKey: post.imageUrl, pdfKey: post.pdfUrl }
+          );
+
+          // Check if the response is successful
+          if (response.data.success === true) {
+            await Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success",
+            });
+            navigate("/");
+          } else {
+            Swal.fire({
+              title: "Error!",
+              text: "The post could not be deleted.",
+              icon: "error",
+            });
+          }
+        } catch (error) {
+          Swal.fire({
+            title: "Error!",
+            text: "There was an issue deleting the post.",
+            icon: "error",
+          });
+        }
+      }
+    });
+
   
-  const handlePostDelete=async(post:any)=>{
-    
-    console.log(post," posts in front end")
-    
-    // const result:any=await axiosInstance.post("http://localhost:4000/post/deletePost",{post._id})
-    const result = await axiosInstance.post("http://localhost:4000/post/deletePost", { postId: post._id });
-    if(result.data.success){
-
-      toast.info("post deleted ");
-      navigate('/')
-      
-    }
-
-    
-
-    // navigate('/editPost',{state:{post}})
-    
-  }
+  };
 
   return (
     <Dropdown>
@@ -69,32 +99,39 @@ export default function PostMenu({ postData }: any) {
         <MoreVert />
       </MenuButton>
       <Menu placement="bottom-end">
-        {/* <MenuItem onClick={() => handleViewPostClick(postData)}>
+        <MenuItem onClick={() => handleViewPostClick(postData)}>
           <ListItemDecorator>
             <VisibilityIcon />
           </ListItemDecorator>
           View Post
-        </MenuItem> */}
-        <MenuItem onClick={() => handlePostEdit(postData)}>
+        </MenuItem>
+
+        {userCheck(postData)&&<MenuItem onClick={() => handlePostEdit(postData)}>
           <ListItemDecorator>
             <Edit />
           </ListItemDecorator>{" "}
           Edit post
         </MenuItem>
-        {/* <MenuItem>
+}
+        <MenuItem>
           <ListItemDecorator>
             <ReportIcon style={{ color: "red", cursor: "pointer" }} />
           </ListItemDecorator>{" "}
           Report post
-        </MenuItem> */}
+        </MenuItem>
 
         <ListDivider />
-        <MenuItem variant="soft" color="danger" onClick={() => handlePostDelete(postData)}>
+        {userCheck(postData)&& <MenuItem
+          variant="soft"
+          color="danger"
+          onClick={() => handlePostDelete(postData)}
+        >
           <ListItemDecorator sx={{ color: "inherit" }}>
             <DeleteForever />
           </ListItemDecorator>{" "}
           Delete
-        </MenuItem>
+        </MenuItem>}
+       
       </Menu>
     </Dropdown>
   );

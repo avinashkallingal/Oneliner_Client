@@ -32,7 +32,8 @@ export default function ButtonStepper() {
   const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
   const [stepDisable,setStepDisable]=React.useState(false);
 
-  const genres = ['Fiction', 'Non-Fiction', 'Science', 'Technology'];
+  const genres = ['Crime', 'Drama', 'Science', 'Action', 'Adventure', 'Non-Fiction', 'Comedy', 'Horror', 'Romance', 'Sci-Fi', 'Fantasy', 'Thriller', 'Mystery', 'Western', 'Documentary', 'Animation', 'Musical'];
+
 
  
  

@@ -12,6 +12,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import Cropper from 'react-easy-crop';
+import getCroppedImg from '../../../utilities/CropImage'; // A utility function to crop the image
 
 const defaultTheme = createTheme();
 
@@ -25,6 +27,12 @@ export default function UserProfile() {
     gender: "",
     language: "",
   });
+  const [photoFile, setPhotoFile] = React.useState<File | Blob | null>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<any>(null);
+  const [crop, setCrop] = React.useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = React.useState(1);
+  const [imageSrc, setImageSrc] = React.useState<string | null>(null);
+  const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
 
   interface User {
     id?: number;
@@ -75,6 +83,31 @@ export default function UserProfile() {
       setPreviewUrl(URL.createObjectURL(file));
     }
   };
+//crop
+const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageSrc(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    setPhotoFile(file);
+  }
+};
+
+const handleCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
+  setCroppedAreaPixels(croppedAreaPixels);
+};
+
+const handleCrop = async () => {
+  if (imageSrc && croppedAreaPixels) {
+    const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
+    setPhotoFile(croppedImage);
+    setImageSrc(''); // Reset the imageSrc after cropping
+  }
+};
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -92,6 +125,9 @@ export default function UserProfile() {
     // If a file is selected, append it as 'avatar'
     if (selectedFile) {
       formData.append("avatar", selectedFile);
+    }
+    if(photoFile){
+      formData.append("avatar", photoFile);
     }
     // Console log FormData for debugging
     for (let [key, value] of formData.entries()) {
@@ -168,15 +204,21 @@ export default function UserProfile() {
           </Typography>
 
           <Grid item>
-            <Avatar
-              src={
-                previewUrl ||
-                user?.profilePicture ||
-                "https://media.istockphoto.com/id/843408508/photo/photography-camera-lens-concept.jpg?s=612x612&w=0&k=20&c=-tm5TKrPDMakrT1vcOE-4Rlyj-iBVdzKuX4viFkd7Vo="
+            
+             {photoFile ? (
+              <Avatar
+              src={              
+                URL.createObjectURL(photoFile)               
               }
               style={{ width: 96, height: 96, borderRadius: "50%" }}
-            />
-            <Button
+            /> ):<Avatar
+              src={
+                previewUrl ||
+                user?.profilePicture               
+              }
+              style={{ width: 96, height: 96, borderRadius: "50%" }}
+            />}
+            {/* <Button
               variant="contained"
               color="secondary"
               component="label"
@@ -189,7 +231,27 @@ export default function UserProfile() {
                 hidden
                 onChange={handleFileChange}
               />
-            </Button>
+            </Button> */}
+
+
+            <input type="file" name='image' accept="image/*" onChange={handlePhotoChange} />
+            {imageSrc && (
+              <div style={{ position: 'relative', height: 400, width: '100%' }}>
+                <Cropper
+                  image={imageSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={16 / 9}
+                  onCropChange={setCrop}
+                  onCropComplete={handleCropComplete}
+                  onZoomChange={setZoom}
+                />
+                <Button variant="contained" onClick={handleCrop}>
+                  Crop
+                </Button>
+              </div>
+            )}
+            
           </Grid>
 
           <Box
