@@ -194,17 +194,15 @@ export default function UserCard() {
             </Box>
           </CardContent>
         </Card>
-        <Box sx={{ flexGrow: 1 ,marginTop:"2vh"}}>
-          <Grid container spacing={2}>
-            {[1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15].map((val) => (
-              <Grid item xs={12} sm={6} md={4} key={val}>
-                <Item>
-                  <ProfilePostCard posts={post} />
-                </Item>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+    
+        <Grid container spacing={2}>
+      {post.map((post, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index}>
+          <ProfilePostCard posts={[post]} /> {/* Pass individual post to ProfilePostCard */}
+        </Grid>
+      ))}
+    </Grid>
+       
       </Box>
     </>
   );

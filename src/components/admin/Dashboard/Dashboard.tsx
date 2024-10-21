@@ -1,7 +1,14 @@
 import React from 'react';
 import { Box, Typography, Grid, Button } from '@mui/material';
+import axiosInstance from '../../../Constarints/axios/userAxios';
 
 const Dashboard: React.FC = () => {
+  React.useEffect(()=>{
+    async function  fetchData(){
+      const result=await axiosInstance.get("http://localhost:4000/post/getDashboardData")
+    }
+
+  },[])
   return (
     <Box
       display="flex"
@@ -25,7 +32,7 @@ const Dashboard: React.FC = () => {
             justifyContent="center"
           >
             <Typography variant="h5">User Count</Typography>
-            <Typography variant="h4">120</Typography>
+            <Typography variant="h4">5</Typography>
           </Box>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
@@ -40,15 +47,15 @@ const Dashboard: React.FC = () => {
             justifyContent="center"
           >
             <Typography variant="h5">Post Count</Typography>
-            <Typography variant="h4">340</Typography>
+            <Typography variant="h4">6</Typography>
           </Box>
         </Grid>
       </Grid>
-      <Box mt={3} textAlign="center" display="flex" alignItems="center" justifyContent="center">
+      {/* <Box mt={3} textAlign="center" display="flex" alignItems="center" justifyContent="center">
         <Button variant="contained" style={{ backgroundColor: 'orange', padding: '10px 20px' }}>
           Action Button
         </Button>
-      </Box>
+      </Box> */}
     </Box>
   );
 };

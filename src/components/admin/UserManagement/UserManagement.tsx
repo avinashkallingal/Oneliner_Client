@@ -124,7 +124,7 @@ const UserList: React.FC = () => {
   //
 
   return (
-    <Box p={3} sx={{ width: "100vh" }}>
+    <Box p={3} sx={{ width: "100%" }}>
       <Typography variant="h5" mb={2}>
         User List
       </Typography>

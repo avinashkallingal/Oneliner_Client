@@ -27,6 +27,7 @@ function UserRoute() {
         <Route path="/userProfile" element={<UserProfile />} />
         <Route path="/add-post" element={<AddPost />} />
         <Route path="/editPost" element={<EditPost />} />
+        <Route path="/viewPost" element={<EditPost />} />
 
 
       

@@ -1,32 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { AppBar,IconButton, Tabs, Tab, Box, Toolbar, Container } from '@mui/material';
+import { AppBar, IconButton, Tabs, Tab, Box, Toolbar, Container } from '@mui/material';
 import Dashboard from '../../../Components/admin/Dashboard/Dashboard';
 import UserList from '../../../Components/admin/UserManagement/UserManagement';
 import { useNavigate } from 'react-router-dom';
+import Posts from '../../../Components/admin/Posts/Posts';
 
 const App: React.FC = () => {
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const handleTabChange = (event: React.SyntheticEvent, newIndex: number) => {
     setTabIndex(newIndex);
   };
-  const handleLogout=()=>{
-    localStorage.removeItem("adminToken")
-    navigate("/admin/login")
-  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    navigate("/admin/login");
+  };
+
   useEffect(() => {
-  const token=localStorage.getItem("adminToken")
-  if(!token){
-    navigate("/admin/login")
-  }
-  
-   
-  }, [])
-  
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      navigate("/admin/login");
+    }
+  }, [navigate]);
 
   return (
-    
     <Box display="flex" flexDirection="column" height="100vh">
       <AppBar position="fixed" sx={{ width: '100%', backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
         <Toolbar>
@@ -40,26 +39,49 @@ const App: React.FC = () => {
           >
             <Tab label="Dashboard" sx={{ fontSize: '1.1rem', color: 'white' }} />
             <Tab label="User List" sx={{ fontSize: '1.1rem', color: 'white' }} />
+            <Tab label="Reported Posts" sx={{ fontSize: '1.1rem', color: 'white' }} />
           </Tabs>
           <IconButton color="inherit" onClick={handleLogout}>
-         logout
-        </IconButton>
+            logout
+          </IconButton>
         </Toolbar>
-        
       </AppBar>
 
-      <Toolbar /> {/* Add an empty Toolbar to push the content below the fixed AppBar */}
+      <Toolbar /> {/* Empty Toolbar to push content below AppBar */}
       
       <Box
         component="main"
         flexGrow={1}
         p={3}
         mt={2}
-        sx={{ width: '100%', maxWidth: '100vw', color: '#333' }}
+        sx={{ width: '100vw', maxWidth: '100vw', color: '#333' }}
       >
-        <Container sx={{ maxWidth: '100%', padding: 0 }}>
-          {tabIndex === 0 && <Dashboard />}
-          {tabIndex === 1 && <UserList />}
+        <Container
+          sx={{
+            minHeight: '100vh',
+            width: '100vw',
+            background: "#D3D3D3",
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          {/* Center the Dashboard and UserList */}
+          {tabIndex === 0 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100vw' }}>
+              <Dashboard />
+            </Box>
+          )}
+          {tabIndex === 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100vw' }}>
+              <UserList />
+            </Box>
+          )}
+          {tabIndex === 2 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100vw' }}>
+              <Posts/>
+            </Box>
+          )}
         </Container>
       </Box>
     </Box>

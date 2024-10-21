@@ -109,87 +109,7 @@ let genre="All"
       console.error("Error viewing PDF:", error);
     }
   };
-  // if(error){
-  //   return(
-  //     <Box sx={{ marginTop: "9vh", boxShadow: 30 }}>
-  //       <>
-      
-  //       {[1, 2, 3].map((value) => (
-  //         <Stack
-  //           sx={{ paddingTop: "2vh" }}
-  //           spacing={2}
-  //           key={value}
-  //           useFlexGap
-  //         >
-  //           <Card variant="outlined" sx={{ width: 595 }}>
-  //             <CardContent orientation="horizontal">
-  //               <Skeleton
-  //                 animation="wave"
-  //                 variant="circular"
-  //                 width={48}
-  //                 height={48}
-  //               />
-  //               <div>
-  //                 <Skeleton
-  //                   animation="wave"
-  //                   variant="text"
-  //                   sx={{ width: 120 }}
-  //                 />
-  //                 <h1>{error}</h1>
-  //                 <Skeleton
-  //                   animation="wave"
-  //                   variant="text"
-  //                   level="body-sm"
-  //                   sx={{ width: 200 }}
-  //                 />
-  //               </div>
-  //             </CardContent>
-  //             <AspectRatio ratio="21/9">
-  //               <Skeleton animation="wave" variant="overlay">
-  //                 <img
-  //                   alt=""
-  //                   src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-  //                 />
-  //               </Skeleton>
-  //             </AspectRatio>
-  //             <Typography sx={{ overflow: "hidden" }}>
-  //               <Skeleton animation="wave">
-  //                 Lorem ipsum is placeholder text commonly used in the
-  //                 graphic, print, and publishing industries.
-  //               </Skeleton>
-  //             </Typography>
-  //             <Button>
-  //               Read more
-  //               <Skeleton animation="wave" />
-  //             </Button>
-  //           </Card>
-  //         </Stack>
-  //       ))}
-  //     </>
-  //     </Box>)
-  // }
-
-  // if (pdf) {
-  //   return (
-  //     <>
-  //       <div
-  //         style={{ position: "absolute", top: "10vh", right: "2vw", zIndex: 2 }}
-  //       >
-  //         <button onClick={() => setPdf(null)}>Back</button>
-  //       </div>
-  //       <div
-  //         style={{
-  //           position: "absolute",
-  //           zIndex: 1,
-  //           width: "100%",
-  //           height: "100%",
-  //         }}
-  //       >
-  //         <PdfViewer initialDoc={pdf} />
-  //       </div>
-  //     </>
-  //   );
-  // }
+  
 
   const checkLiked = (postLikes: any) => {
     const userId = localStorage.getItem("id");
@@ -241,12 +161,7 @@ let genre="All"
   };
   const linkRef = React.useRef(null);
 
-  // useEffect(() => {
-  //   // Check if pdf exists and the ref is attached
-  //   if (pdf && linkRef.current) {
-  //     linkRef.current.click(); // Programmatically trigger the click event
-  //   }
-  // }, [pdf]);
+
 
   if (pdf) {
     return (
