@@ -30,44 +30,49 @@ import { EmbedPDF } from "@simplepdf/react-embed-pdf";
 import CardContents from "@mui/joy/CardContent";
 import IconButtons from "@mui/joy/IconButton";
 import CircularProgress from "@mui/joy/CircularProgress";
-import { styled } from '@mui/material/styles';
-import { IconButtonProps } from '@mui/material/IconButton';
+import { styled } from "@mui/material/styles";
+import { IconButtonProps } from "@mui/material/IconButton";
 
-export default function InstagramPost({fetchGenre}) {
+import { useSelector, useDispatch } from "react-redux";
+import Chatbox from "../../../Pages/user/ChatBox/ChatBox";
+import { useNavigate } from "react-router-dom";
+
+export default function InstagramPost({ fetchGenre }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [pdf, setPdf] = useState<any>(null);
   const [comment, setComment] = useState<any>(null);
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [fetchGenres,setFetchGenres]=useState<any>("all");
-  const [error,setError]=useState<any>('')
+  const [fetchGenres, setFetchGenres] = useState<any>("all");
+  const [error, setError] = useState<any>("");
+  const [chatDisplay, setChatDisplay] = useState<boolean>(false);
 
+  const navigate=useNavigate()
 
   interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
-}
+  }
 
-const ExpandMore = styled((props: ExpandMoreProps) => {
+  const ExpandMore = styled((props: ExpandMoreProps) => {
     const { expand, ...other } = props;
     return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-    transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-        duration: theme.transitions.duration.shortest,
+  })(({ theme, expand }) => ({
+    transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
+    marginLeft: "auto",
+    transition: theme.transitions.create("transform", {
+      duration: theme.transitions.duration.shortest,
     }),
-}));
-let genre="All"
+  }));
+  let genre = "All";
 
- 
-// Fetch data using useEffect
+  // Fetch data using useEffect
   useEffect(() => {
     setLoading(true);
-    console.log(fetchGenre,"  hirr+++++++++++")
-    if(fetchGenre){
-     genre=fetchGenre
+    console.log(fetchGenre, "  hirr+++++++++++");
+    if (fetchGenre) {
+      genre = fetchGenre;
     }
-    setFetchGenres(fetchGenre)
+    setFetchGenres(fetchGenre);
     const fetchPosts = async () => {
       try {
         const result = await axiosInstance.get(
@@ -89,7 +94,15 @@ let genre="All"
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
-};
+  };
+
+  // useEffect(()=>{
+  //   function chat(){
+  //   const chatShow = useSelector((state:any) => state.ChatDisplay.chatBoxDisplay); // Accessing counter state
+  //   setChatDisplay(chatShow)
+  //   }
+  //   chat();
+  // })
 
   const viewPdf = async (postId: any) => {
     try {
@@ -109,7 +122,6 @@ let genre="All"
       console.error("Error viewing PDF:", error);
     }
   };
-  
 
   const checkLiked = (postLikes: any) => {
     const userId = localStorage.getItem("id");
@@ -160,8 +172,11 @@ let genre="All"
     }
   };
   const linkRef = React.useRef(null);
-
-
+  // if(useSelector((state:any) => state.ChatDisplay.chatBoxDisplay)){
+  //   return(
+  //     <Chatbox/>
+  //   )
+  // }
 
   if (pdf) {
     return (
@@ -297,7 +312,17 @@ let genre="All"
     }
   };
   //
+  
+  const handleUserClick = async (id: any) => {
+    try {
+      navigate('/userProfile',{ state: { id } })
+     
 
+    }
+    catch (error) {
+      toast.error("Something went wrong");
+    }
+  }
   return (
     <Box sx={{ marginTop: "9vh", boxShadow: 30 }}>
       {loading ? (
@@ -399,10 +424,13 @@ let genre="All"
                 />
               </Box>
 
-              <Typography sx={{ fontWeight: "lg" }}>
+              <Typography
+                sx={{ fontWeight: "lg", cursor: "pointer" }}
+                onClick={() => handleUserClick(post.user.id)} // Replace with your function
+              >
                 {post.user.name}
               </Typography>
-              <Typography sx={{ fontSize: "lg" ,ml: "auto"  }}>
+              <Typography sx={{ fontSize: "lg", ml: "auto" }}>
                 <b>{post.genre}</b>
               </Typography>
               <IconButton
@@ -490,8 +518,8 @@ let genre="All"
                   >
                     <ModeCommentOutlined />
                   </ExpandMore>
-                </IconButtons>             
-                
+                </IconButtons>
+
                 <IconButton variant="soft" color="neutral" size="sm">
                   <SendOutlined />
                 </IconButton>
@@ -505,7 +533,6 @@ let genre="All"
                 <BookmarkBorderRoundedIcon />
               </IconButton>
             </CardContent>
-           
 
             <CardContent>
               <Link

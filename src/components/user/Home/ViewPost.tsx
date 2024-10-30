@@ -25,30 +25,85 @@ import Button from "@mui/joy/Button";
 import { toast } from "sonner";
 import PdfViewer from "../../../utilities/pdfViewer";
 import PostMenu from "./PostMenu";
+import { EmbedPDF } from "@simplepdf/react-embed-pdf";
+
+import CardContents from "@mui/joy/CardContent";
+import IconButtons from "@mui/joy/IconButton";
+import CircularProgress from "@mui/joy/CircularProgress";
+import { styled } from '@mui/material/styles';
+import { IconButtonProps } from '@mui/material/IconButton';
+
+import { useSelector, useDispatch } from 'react-redux';
+import Chatbox from "../../../Pages/user/ChatBox/ChatBox";
+import { useLocation } from "react-router-dom";
+import Navbar from "./Navbar";
 
 export default function ViewPost() {
+  
+  const location=useLocation()
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [pdf, setPdf] = useState<any>(null);
-  const [selectedPost, setSelectedPost] = useState<any>(null); // State for the selected post
+  const [comment, setComment] = useState<any>(null);
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const [fetchGenres,setFetchGenres]=useState<any>("all");
+  const [error,setError]=useState<any>('')
+  const [chatDisplay,setChatDisplay]=useState<boolean>(false);
 
-  // Fetch data using useEffect
+
+
+  interface ExpandMoreProps extends IconButtonProps {
+    expand: boolean;
+}
+
+const ExpandMore = styled((props: ExpandMoreProps) => {
+    const { expand, ...other } = props;
+    return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+    transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+        duration: theme.transitions.duration.shortest,
+    }),
+}));
+
+
+ 
+// Fetch data using useEffect
   useEffect(() => {
+  
     setLoading(true);
-    const fetchPosts = async () => {
+     const fetchPosts = async () => {
       try {
         const result = await axiosInstance.get(
-          "http://localhost:4000/post/getAllPosts"
+          `http://localhost:4000/post/getPost?id=${location.state.post._id}`
         );
+        // if(result.status!==200){
+        //   console.log(result.status,"hiiiiiiiiiiii")
+        //   setError("No posts found for this Genre.........")
+        //   setLoading(false);
+        // }
+        console.log(result.data.data," fhhfixiehuihcuhleuhxuh")
         setPosts(result.data.data); // Assuming result.data.data is the posts array
         setLoading(false);
       } catch (error) {
         console.error("Error fetching posts:", error);
-        setLoading(false);
       }
     };
     fetchPosts();
   }, []);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+};
+
+// useEffect(()=>{
+//   function chat(){
+//   const chatShow = useSelector((state:any) => state.ChatDisplay.chatBoxDisplay); // Accessing counter state
+//   setChatDisplay(chatShow)
+//   }
+//   chat();
+// })
 
   const viewPdf = async (postId: any) => {
     try {
@@ -56,8 +111,11 @@ export default function ViewPost() {
         "http://localhost:4000/post/pdfUrlFetch",
         { postId }
       );
+
       if (result.data.success) {
         setPdf(result.data.pdfUrl);
+        console.log(result.data.pdfUrl, " pfd fetch result fhfhj");
+        // Return the PDF URL if successful
       } else {
         toast.error("Error while viewing PDF");
       }
@@ -65,28 +123,7 @@ export default function ViewPost() {
       console.error("Error viewing PDF:", error);
     }
   };
-
-  if (pdf) {
-    return (
-      <>
-        <div
-          style={{ position: "absolute", top: "10vh", right: "2vw", zIndex: 2 }}
-        >
-          <button onClick={() => setPdf(null)}>Back</button>
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            zIndex: 1,
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <PdfViewer initialDoc={pdf} />
-        </div>
-      </>
-    );
-  }
+  
 
   const checkLiked = (postLikes: any) => {
     const userId = localStorage.getItem("id");
@@ -136,17 +173,152 @@ export default function ViewPost() {
       toast.error("Error while liking/unliking post.");
     }
   };
+  const linkRef = React.useRef(null);
+// if(useSelector((state:any) => state.ChatDisplay.chatBoxDisplay)){
+//   return(
+//     <Chatbox/>
+//   )
+// }
 
-  const viewPost = (post) => {
-    setSelectedPost(post);
-  };
 
-  const goBackToPosts = () => {
-    setSelectedPost(null);
+  if (pdf) {
+    return (
+      <>
+        {pdf ? (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              marginTop: "10vh",
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setPdf(null)}
+              style={{
+                position: "absolute",
+                top: "20px",
+                right: "20px",
+                zIndex: 1000,
+                padding: "10px 20px",
+                fontSize: "16px",
+                backgroundColor: "red",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+                borderRadius: "5px",
+              }}
+            >
+              Close
+            </button>
+
+            {/* PDF Embed */}
+            <EmbedPDF
+              mode="inline"
+              style={{ width: "100%", height: "100%" }}
+              documentURL={pdf}
+            />
+          </div>
+        ) : (
+          <p>No PDF selected.</p>
+        )}
+      </>
+    );
+  }
+  // const handleComment=async(id:any)=>{
+  //   const postId=id;
+  //   const userId=localStorage.getItem("id")
+
+  //   const response = await axiosInstance.post(
+  //     "http://localhost:4000/post/addComment",
+  //     { postId, userId, comment}
+  //   );
+
+  // toast.info(id)
+  // }
+  //
+  const handleComment = async (postId: string, parentCommentId?: any) => {
+    try {
+      const payload = {
+        postId,
+        content: comment, // use replyText for replies, comment for normal comment
+        userId: loggeduser?._id,
+        avatar: loggeduser?.avatar,
+        userName: loggeduser?.name,
+        replayText: "",
+        parentCommentId: "", // null if it's a normal comment
+      };
+
+      if (replyTo) {
+        payload.parentCommentId = replyTo;
+        payload.replayText = replyText;
+      }
+
+      const result = await axiosInstance.post("/post/comment", payload);
+
+      if (result.data.success) {
+        const newComment = {
+          _id: result.data.commentId,
+          UserId: loggeduser?._id,
+          content: comment,
+          createdAt: new Date().toISOString(),
+          avatar: loggeduser?.avatar,
+          userName: loggeduser?.name,
+          replies: parentCommentId ? [] : [], // Empty replies array for a new comment
+        };
+
+        // Update state based on whether it's a reply or a new comment
+        setPostData((prevPost) => {
+          if (parentCommentId) {
+            // Handle reply
+            return {
+              ...prevPost!,
+              comments: prevPost!.comments.map((comment) => {
+                if (comment._id === parentCommentId) {
+                  return {
+                    ...comment,
+                    replies: [
+                      ...comment.replies,
+                      {
+                        _id: result.data.commentId,
+                        UserId: loggeduser?._id,
+                        content: replyText,
+                        createdAt: new Date().toISOString(),
+                        avatar: loggeduser?.avatar,
+                        userName: loggeduser?.name,
+                      },
+                    ],
+                  };
+                }
+                return comment;
+              }),
+            };
+          } else {
+            // Handle new comment
+            return {
+              ...prevPost!,
+              comments: [...prevPost!.comments, newComment],
+            };
+          }
+        });
+
+        setComment(""); // Clear the comment input field
+        toast.success("Comment added successfully");
+      } else {
+        toast.error("Failed to add comment/reply");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
   };
+  //
 
   return (
-    <Box sx={{ marginTop: "10vh" }}>
+    <Box sx={{ marginTop: "9vh", boxShadow: 30 ,alignContent:"center"}}>
+      <Navbar/>
       {loading ? (
         <>
           {[1, 2, 3].map((value) => (
@@ -200,159 +372,227 @@ export default function ViewPost() {
             </Stack>
           ))}
         </>
-      ) : selectedPost ? (
-        <Card
-          variant="outlined"
-          sx={{
-            marginBottom: 3,
-            minWidth: 600,
-            minHeight: 300,
-            width: "100%",
-            position: "relative",
-          }}
-        >
-          <IconButton
-            variant="plain"
-            color="neutral"
-            size="sm"
-            sx={{ position: "absolute", top: 10, right: 10 }}
-            onClick={goBackToPosts}
-          >
-            Back
-          </IconButton>
-          <CardContent orientation="horizontal" sx={{ alignItems: "center", gap: 1 }}>
-            <Box
-              sx={{
-                position: "relative",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  right: 0,
-                  m: "-2px",
-                  borderRadius: "50%",
-                  background:
-                    "linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)",
-                },
-              }}
-            >
-              <Avatar
-                size="sm"
-                src="/static/logo.png"
-                sx={{
-                  p: 0.5,
-                  border: "2px solid",
-                  borderColor: "background.body",
-                }}
-              />
-            </Box>
-            <Typography sx={{ fontWeight: "lg" }}>
-              {selectedPost.user.name}
-            </Typography>
-            <IconButton
-              variant="plain"
-              color="neutral"
-              size="sm"
-              sx={{ ml: "auto" }}
-            >
-              <PostMenu postId={selectedPost._id} />
-            </IconButton>
-          </CardContent>
-
-          <CardOverflow>
-            <AspectRatio>
-              <Box sx={{ position: "relative" }}>
-                <img src={selectedPost.imageUrl} alt={selectedPost.title} loading="lazy" />
-                {selectedPost.pdfUrl && (
-                  <Box sx={{ position: "absolute", top: 10, right: 10 }}>
-                    <IconButton onClick={() => viewPdf(selectedPost._id)}>
-                      <BookmarkBorderRoundedIcon />
-                    </IconButton>
-                  </Box>
-                )}
-              </Box>
-            </AspectRatio>
-          </CardOverflow>
-
-          <CardContent>
-            <Typography sx={{ fontSize: "sm" }}>
-              {selectedPost.description}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
-              <IconButton
-                onClick={() =>
-                  handleLike(
-                    selectedPost._id,
-                    selectedPost.user._id,
-                    checkLiked(selectedPost.likes),
-                    0
-                  )
-                }
-              >
-                {checkLiked(selectedPost.likes) ? (
-                  <Favorite sx={{ color: "red" }} />
-                ) : (
-                  <FavoriteBorder />
-                )}
-              </IconButton>
-              <Typography sx={{ fontWeight: "lg" }}>
-                {selectedPost.likes.length} Likes
-              </Typography>
-              <IconButton>
-                <ModeCommentOutlined />
-              </IconButton>
-              <Typography>{selectedPost.comments.length} Comments</Typography>
-              <IconButton>
-                <SendOutlined />
-              </IconButton>
-            </Box>
-          </CardContent>
-        </Card>
       ) : (
         posts.map((post, index) => (
+          
+          
           <Card
+            key={index}
             variant="outlined"
-            sx={{ marginBottom: 3 }}
-            key={post._id}
-            onClick={() => viewPost(post)} // Set the selected post on click
+            sx={{
+              flexDirection:"",
+              marginBottom: 3,
+              minWidth: 600,
+              minHeight: 300,
+              width: "80vw",
+              borderRadius: 5,
+              "--Card-radius": (theme) => theme.vars.radius.xs,
+            }}
           >
-            <CardContent orientation="horizontal" sx={{ alignItems: "center", gap: 1 }}>
-              <Avatar src={post.user.avatarUrl} size="sm" />
-              <Typography sx={{ fontWeight: "lg" }}>{post.user.name}</Typography>
-              <IconButton variant="plain" color="neutral" size="sm" sx={{ ml: "auto" }}>
-                <PostMenu postId={post._id} />
+            <CardContent
+              orientation="horizontal"
+              sx={{ alignItems: "center", gap: 1 }}
+            >
+              <Box
+                sx={{
+                  position: "relative",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    m: "-2px",
+                    borderRadius: "50%",
+                    background:
+                      "linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)",
+                  },
+                }}
+              >
+                <Avatar
+                  size="sm"
+                  src="/static/logo.png"
+                  sx={{
+                    p: 0.5,
+                    border: "2px solid",
+                    borderColor: "background.body",
+                  }}
+                />
+              </Box>
+
+              <Typography sx={{ fontWeight: "lg" }}>
+                
+              </Typography>
+              <Typography sx={{ fontSize: "lg" ,ml: "auto"  }}>
+                <b>{post.genre}</b>
+              </Typography>
+              <IconButton
+                variant="plain"
+                color="neutral"
+                size="sm"
+                sx={{ ml: "auto" }}
+              >
+                <PostMenu postData={post} />
               </IconButton>
             </CardContent>
 
-            <AspectRatio ratio="21/9">
-              <img src={post.imageUrl} alt={post.title} loading="lazy" />
-            </AspectRatio>
-
-            <CardContent>
-              <Typography sx={{ fontSize: "sm" }}>{post.description}</Typography>
-              <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
-                <IconButton
-                  onClick={() =>
-                    handleLike(post._id, post.user._id, checkLiked(post.likes), index)
-                  }
-                >
-                  {checkLiked(post.likes) ? (
-                    <Favorite sx={{ color: "red" }} />
-                  ) : (
-                    <FavoriteBorder />
+            <CardOverflow>
+              <AspectRatio>
+                <Box sx={{ position: "relative" }}>
+                  <img src={post.imageUrlS3} alt={post.title} loading="lazy" />
+                  {post.pdfUrl && (
+                    <Box
+                      component="a"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "rgba(0, 0, 0, 0.4)",
+                        opacity: 0,
+                        color: "white",
+                        textDecoration: "none",
+                        transition: "opacity 0.3s ease",
+                        "&:hover": {
+                          opacity: 1,
+                        },
+                      }}
+                    >
+                      <button onClick={() => viewPdf(post._id)}>
+                        Read More
+                      </button>
+                    </Box>
                   )}
-                </IconButton>
-                <Typography sx={{ fontWeight: "lg" }}>{post.likes.length} Likes</Typography>
-                <IconButton>
-                  <ModeCommentOutlined />
-                </IconButton>
-                <Typography>{post.comments.length} Comments</Typography>
-                <IconButton>
+                </Box>
+              </AspectRatio>
+            </CardOverflow>
+
+            <CardContent
+              orientation="horizontal"
+              sx={{ alignItems: "center", mx: -1 }}
+            >
+              <Box sx={{ width: 0, display: "flex", gap: 0.5 }}>
+                {checkLiked(post.likes) ? (
+                  <IconButton
+                    onClick={() =>
+                      handleLike(post._id, post.userId, false, index)
+                    }
+                    variant="soft"
+                    color="danger"
+                    size="sm"
+                  >
+                    <Favorite sx={{ color: "red" }} />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    onClick={() =>
+                      handleLike(post._id, post.userId, true, index)
+                    }
+                    variant="soft"
+                    color="danger"
+                    size="sm"
+                  >
+                    <FavoriteBorder />
+                  </IconButton>
+                )}
+
+                <IconButtons variant="plain" color="neutral" size="sm">
+                  <ExpandMore
+                    expand={expanded}
+                    onClick={handleExpandClick}
+                    aria-expanded={expanded}
+                    aria-label="show more"
+                  >
+                    <ModeCommentOutlined />
+                  </ExpandMore>
+                </IconButtons>             
+                
+                <IconButton variant="soft" color="neutral" size="sm">
                   <SendOutlined />
                 </IconButton>
               </Box>
+              <IconButton
+                size="sm"
+                variant="soft"
+                color="neutral"
+                sx={{ ml: "auto" }}
+              >
+                <BookmarkBorderRoundedIcon />
+              </IconButton>
+            </CardContent>
+           
+
+            <CardContent>
+              <Link
+                component="button"
+                underline="none"
+                textColor="text.primary"
+                sx={{ fontSize: "sm", fontWeight: "lg" }}
+              >
+                {post.likes.length} Likes
+              </Link>
+              {/* <Typography sx={{ fontSize: "lg" }}>
+                Genre:{post.genre}
+              </Typography> */}
+              <Typography sx={{ fontSize: "sm" }}>
+                <Link
+                  component="button"
+                  color="neutral"
+                  textColor="text.primary"
+                  sx={{ fontWeight: "lg" }}
+                >
+                  {post.title}
+                </Link>{" "}
+                {post.summary}
+              </Typography>
+              <Link
+                component="button"
+                underline="none"
+                startDecorator="…"
+                sx={{ fontSize: "sm", color: "text.tertiary" }}
+              >
+                more
+              </Link>
+              <Link
+                component="button"
+                underline="none"
+                sx={{ fontSize: "10px", color: "text.tertiary", my: 0.5 }}
+              >
+                2 DAYS AGO
+              </Link>
+            </CardContent>
+
+            <CardContent orientation="horizontal" sx={{ gap: 1, padding: 1 }}>
+              <IconButton
+                size="sm"
+                variant="plain"
+                color="neutral"
+                sx={{ ml: -1 }}
+              >
+                <Face />
+              </IconButton>
+              <Input
+                variant="plain"
+                size="sm"
+                placeholder="Add a comment…"
+                sx={{ flex: 1, px: 0, "--Input-focusedThickness": "0px" }}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <Link
+                underline="none"
+                role="button"
+                onClick={() => handleComment(post._id)}
+              >
+                Post
+              </Link>
+              {/* <button onClick={()=>toast.error("post button clicked")}></button> */}
             </CardContent>
           </Card>
         ))

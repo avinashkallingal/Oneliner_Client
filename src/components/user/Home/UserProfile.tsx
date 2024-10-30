@@ -12,11 +12,12 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/Store/Store";
 import ProfilePostCard from "./ProfilePostCard";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid";
 import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { toast } from "sonner";
 
-export default function UserCard() {
+export default function UserCard({ id }) {
   interface User {
     id?: number;
     username?: string;
@@ -36,21 +37,34 @@ export default function UserCard() {
   // const email:string="avinashkallingal@gmail.com"
   const [user, setUser] = React.useState<User[]>([]);
   const [post, setPost] = React.useState<any>([]);
+  const [followHide,setFollowHide]=React.useState<boolean>()
+  const userId = localStorage.getItem("id");
 
   React.useEffect(() => {
     const fetchData = async () => {
       const result = await axiosInstance.post(
         "http://localhost:4000/fetchUserData",
-        { email: email }
+        { id: id ,loginUserId:userId}
       );
-      console.log(result.data.result.user_data, "data from user fetch");
+      console.log(result.data.result.user_data._doc, "data from user fetch");
       if (result.data.success) {
-        setUser(result.data.result.user_data);
+        setUser(result.data.result.user_data._doc);
+        console.log(result.data.result.user_data.loginUserFollowings,"$%%$%$%$%$%$%$%$%$%$%$%$$$$$$$$$$$$$$$$")
+        if (result.data.result.user_data.loginUserFollowings) {
+          const found = result.data.result.user_data.loginUserFollowings.filter((val:any)=>val==userId)
+          console.log(found," filter )()()()()()(")
+          if (found) {
+            setFollowHide(true)
+          } else {
+            setFollowHide(false)
+          }
+        }else{
+        setFollowHide(false)
+        }
       }
 
-      const userId = localStorage.getItem("id");
       const resultPost = await axiosInstance.get(
-        `http://localhost:4000/post/getUserPosts?id=${userId}`
+        `http://localhost:4000/post/getUserPosts?id=${id}`
       );
       console.log(resultPost.data.data, " data of user posts");
       if (resultPost.data.success) {
@@ -66,13 +80,58 @@ export default function UserCard() {
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: "#fff",
     ...theme.typography.body2,
-    padding: theme.spacing(.5),
+    padding: theme.spacing(0.5),
     textAlign: "center",
     color: theme.palette.text.secondary,
     ...theme.applyStyles("dark", {
       backgroundColor: "#1A2027",
     }),
   }));
+ 
+  const userCheck = () => {
+    return id == userId;
+  };
+  const followCheck = () => {
+    if (user.followings) {
+      const found = user.followings.filter((val: any) => val == id);
+      if (found) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
+
+  const handleFollow=async()=>{
+    const result=await axiosInstance.put(
+      "http://localhost:4000/follow",
+      { followId: id,userId:userId }
+    );
+    if(result.data.success){
+      
+      setFollowHide(true)
+      console.log(result.data,"  data of follow from back end ********************")
+      
+      toast.info(followHide)
+    
+    }else{
+      toast.info("follow error")
+    }
+  }
+
+  const handleUnfollow=async()=>{
+    const result=await axiosInstance.put(
+      "http://localhost:4000/unFollow",
+      { followId: id,userId:userId }
+    );
+    if(result.data.success){
+      setFollowHide(false)
+      console.log(result.data,"  data of follow from back end ********************")
+     
+    }else{
+      toast.info("unfollow error")
+    }
+  }
 
   return (
     <>
@@ -80,7 +139,7 @@ export default function UserCard() {
         sx={{
           width: "80%",
           position: "relative",
-        
+
           marginTop: "12vh",
         }}
       >
@@ -166,7 +225,7 @@ export default function UserCard() {
               </div>
               <div>
                 <Typography level="body-xs" sx={{ fontWeight: "lg" }}>
-                  Followers
+                  Follower
                 </Typography>
                 <Typography sx={{ fontWeight: "lg" }}>
                   {user.followers?.length ?? 0}
@@ -181,28 +240,35 @@ export default function UserCard() {
                 </Typography>
               </div>
             </Sheet>
-            <Box sx={{ display: "flex", gap: 1.5, "& > button": { flex: 1 } }}>
-              <Button variant="outlined" color="neutral">
-                Followers
-              </Button>
-              <Button variant="outlined" color="neutral">
-                Following
-              </Button>
+            {!userCheck() ? (
+              <Box
+                sx={{ display: "flex", gap: 1.5, "& > button": { flex: 1 } }}
+              >
+                {followHide&&<Button variant="outlined" color="neutral" onClick={handleFollow}>
+                    Follow
+                  </Button>}
+              {!followHide&&
+                  <Button variant="outlined" color="danger" onClick={handleUnfollow}>
+                    Unfollow
+                  </Button>
+                }
+              </Box>
+            ) : (
               <Button variant="solid" color="primary" onClick={editAction}>
                 Edit
               </Button>
-            </Box>
+            )}
           </CardContent>
         </Card>
-    
+
         <Grid container spacing={2}>
-      {post.map((post, index) => (
-        <Grid item xs={12} sm={6} md={4} key={index}>
-          <ProfilePostCard posts={[post]} /> {/* Pass individual post to ProfilePostCard */}
+          {post.map((post, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <ProfilePostCard posts={[post]} />{" "}
+              {/* Pass individual post to ProfilePostCard */}
+            </Grid>
+          ))}
         </Grid>
-      ))}
-    </Grid>
-       
       </Box>
     </>
   );

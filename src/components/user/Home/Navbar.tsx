@@ -19,6 +19,9 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import StoreIcon from "@mui/icons-material/Store";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import {show as showCahatBox} from "../../../redux/Slice/ChatSlice";
+import {hide as hideCahatBox} from "../../../redux/Slice/ChatSlice";
 
 
 const pages = [
@@ -32,6 +35,7 @@ const pages = [
 ];
 
 export default function Navbar() {
+  const dispatch=useDispatch()
   const navigate=useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -47,9 +51,21 @@ export default function Navbar() {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
+  const data1=useSelector((state:any)=>state.ChatDisplay.chatBoxDisplay)
   const handleNavigate = (path: string) => {
-    navigate(path);  // Navigate to the path when a button is clicked
-    handleCloseNavMenu();  // Close the navigation menu (for small screens)
+    if(path=="/chats"){
+      console.log(path," navbar paths")
+     
+      
+      dispatch(showCahatBox({token:null,userData:null}))
+      console.log(data1," selected data from redux")
+     
+    }else{
+      console.log(path," navbar paths")
+      navigate(path);  // Navigate to the path when a button is clicked
+      handleCloseNavMenu();  // Close the navigation menu (for small screens)
+    }
+   
   };
 
   const handleCloseUserMenu = () => {

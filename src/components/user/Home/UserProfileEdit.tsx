@@ -56,7 +56,7 @@ export default function UserProfile() {
       console.log(email, "email from localstorage");
       const result = await axiosInstance.post(
         "http://localhost:4000/fetchUserData",
-        { email: email }
+        { id: id }
       );
       console.log(result.data.result.user_data, "data from user fetch");
       if (result.data.success) {

@@ -25,11 +25,11 @@ export default function PostMenu({ postData }: any) {
   const navigate = useNavigate();
   const id = localStorage.getItem("id");
 
-  const handleViewPostClick = (postData: any) => {
-    setSelectedPost(postData); // Set the selected post
-  };
-  if (selectedPost) {
+  const handleViewPostClick = (post: any) => {
+    
+    navigate("/viewPost", { state: { post } });
   }
+ 
   // const handleEditPost=(postData:any)=>{
 
   //   console.log(postData," handle edit function")

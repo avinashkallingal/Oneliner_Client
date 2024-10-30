@@ -13,7 +13,7 @@ import {
 import HomeIcon from "@mui/icons-material/Home";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 
-//icon import
+// icon import
 import CrimeIcon from "@mui/icons-material/Gavel"; // Suitable for Crime
 import DramaIcon from "@mui/icons-material/TheaterComedy"; // Suitable for Drama
 import ScienceIcon from "@mui/icons-material/Science"; // Suitable for Science
@@ -36,7 +36,13 @@ import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects"; // Science icon
 import TechnologyIcon from "@mui/icons-material/Memory"; // Example: Memory/Chip icon for Technology
 import AllInclusiveIcon from '@mui/icons-material/AllInclusive'; // Example: All icon
 import { toast } from "sonner";
-import ChatBox from "../../../Components/user/Home/chatBox";
+import ChatBox from "../../../Components/user/Home/ChatBox";
+import { useDispatch, useSelector } from 'react-redux';
+import Chatbox from "../ChatBox/ChatBox";
+import Contacts from "../../../Components/user/Home/Contacts";
+import Inbox from "../../../Components/user/Home/Inbox";
+
+import { Tabs, Tab } from '@mui/material';
 
 function Home1() {
   const genres = [
@@ -64,9 +70,18 @@ function Home1() {
   ];
   const [fetchGenre, setFetchGenre] = useState<any>("All");
 
+  const [activeTab, setActiveTab] = useState<Number>(0);
+
+  const handleChange = (event:React.ChangeEvent<HTMLInputElement>, newValue:Number) => {
+    setActiveTab(newValue);
+  };
+
+  const data1 = useSelector((state: any) => state.ChatDisplay.chatBoxDisplay);
+
   const handleGenre = (genre: string) => {
     setFetchGenre(genre);
   };
+
   return (
     <div
       style={{
@@ -79,39 +94,36 @@ function Home1() {
       }}
     >
       <Navbar />
-      {/* <TopBar/> */}
+      {data1 && <Chatbox />}
       <Box
-        sx={{ display: "flex", alignItems: "flex-start", gap: 2 }} // Use flexbox for layout
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 2,
+          justifyContent: "space-between", // Space between left, main, and right components
+          width: "100%",
+        }}
       >
         {/* Left Box */}
         <Paper
           sx={{
-            position: "fixed", // Set position to fixed
-            top: "10%", // Adjust as needed
-            left: 20, // Adjust for desired horizontal spacing
+            position: "fixed",
+            top: "10%",
+            left: 20,
             boxShadow: 15,
-            background: "white", // Shadow for the left box
+            background: "white",
             padding: 2,
             borderRadius: 2,
-            width: 200, // Set width for the left box
-            height: "85vh", // Adjust height as needed (changed to 80vh for a better view)
-            overflowY: "scroll", // Enable vertical scrolling
-            scrollbarWidth: "none", // For Firefox
+            width: 290,
+            height: "85vh",
+            overflowY: "scroll",
+            scrollbarWidth: "none",
             "&::-webkit-scrollbar": {
-              display: "none", // For Chrome, Safari, and Edge
+              display: "none",
             },
           }}
         >
           <List>
-            {/* <ListItem>
-              <ListItemButton>
-                <ListItemDecorator>
-                  <HomeIcon />
-                </ListItemDecorator>
-                <ListItemContent>Home</ListItemContent>
-                <KeyboardArrowRight />
-              </ListItemButton>
-            </ListItem> */}
             {genres.map(({ name, icon }) => (
               <ListItem key={name}>
                 <ListItemButton onClick={() => handleGenre(name)}>
@@ -127,28 +139,43 @@ function Home1() {
         {/* Main Box */}
         <Box
           sx={{
-            boxShadow: 15, // Shadow for the main box
+            boxShadow: 15,
             padding: 2,
+            zIndex:500,
             borderRadius: 2,
+            flexGrow: 50, // To center the main box between left and right components
+            marginLeft: "25%", // Offset to center between left and right
+            marginRight: "80%",
           }}
         >
           <Home fetchGenre={fetchGenre} />
         </Box>
 
         {/* Right Box */}
-        {/* <Paper 
-          sx={{ 
-            marginTop:10,
-            boxShadow: 3, // Shadow for the right box
-            padding: 2,
-            borderRadius: 2,
-            width: "fit-content", // Set width for the right box
-            height: 'fit-content' // Adjust height as needed
-          }}
-        >
-          
-          <ChatBox/>
-        </Paper> */}
+        <Paper
+      sx={{
+        position: "fixed",
+        top: "10%",
+        right: 20,
+        boxShadow: 3,
+        padding: 2,
+        borderRadius: 2,
+        width: 370,
+        height: "fit-content",
+      }}
+    >
+      {/* Tab headers for Contacts and Inbox */}
+      <Tabs value={activeTab} onChange={handleChange} variant="fullWidth">
+        <Tab label="Inbox" />
+        <Tab label="Contacts" />
+      </Tabs>
+
+      {/* Tab content */}
+      <Box sx={{ paddingTop: 2 }}>
+        {activeTab === 0 && <Inbox />}
+        {activeTab === 1 && <Contacts />}
+      </Box>
+    </Paper>
       </Box>
     </div>
   );

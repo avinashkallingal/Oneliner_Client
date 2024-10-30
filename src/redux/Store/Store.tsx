@@ -3,6 +3,7 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 import userAuthSlice from '../Slice/UserSlice';
 import adminAuthSlice from '../Slice/AdminSlice';
+import chatDisplaySlice from '../Slice/ChatSlice'
 
 
 const persistConfiguration = {
@@ -14,6 +15,7 @@ const persistConfiguration = {
 const rootReducer = combineReducers({
     UserAuth: userAuthSlice.reducer,
     AdminAuth: adminAuthSlice.reducer,
+    ChatDisplay: chatDisplaySlice.reducer,
    
 })
 
