@@ -6,7 +6,9 @@ import { Box } from '@mui/material';
 import { styled } from '@mui/system';
 import { toast } from 'sonner';
 import socketService from '../../../socket/SocketService';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addMessage } from '../../../redux/Slice/MessageSlice';
+import { RootState } from '../../../redux/Store/Store';
 
 // Use styled components for form and text wrapping
 const WrapForm = styled(Box)({
@@ -22,27 +24,50 @@ const WrapText = styled(TextField)({
 
 // TextInput component
 export const TextInput = () => {
+  const dispatch = useDispatch();
+  const messages = useSelector((state: RootState) => state.messageStore.messages);
   const [message, setMessage] = useState<string>("");
-  const [messages, setMessages] = useState<any[]>([]); // To store received messages
+  // const [messages, setMessages] = useState<any[]>([]); // To store received messages
 
   const chat = useSelector((state: any) => state.ChatDisplay.chatRoomData);
   const userId = localStorage.getItem("id");
   const receiverId = useSelector((state: any) => state.ChatDisplay.userData);
+  const currentDate = new Date();
+// Custom formatted output
+const options: Intl.DateTimeFormatOptions = {
+  // year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+ 
+  hour12: true // Set to true for 12-hour format
+};
+
+const formattedDate = currentDate.toLocaleString('en-US', options);
+console.log(formattedDate); // Outputs: "10/31/2024, 21:16:14"
 
   useEffect(() => {
     // Register the listener for receiving messages
     socketService.joinConversation(chat._id);
     socketService.onNewMessage((newMessage) => {
       console.log("New message received:", newMessage);
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      toast.success("New message received");
+      dispatch(addMessage({message:newMessage}));
+      if(newMessage.receiverId==receiverId){toast.success("New message received");}
+      
     });
 
     // Clean up the listener when the component unmounts
     return () => {
-      socketService.onNewMessage(() => {}); // Remove the listener
+      socketService.offNewMessage((newMessage) => {}); // Remove the listener
     };
   }, []);
+
+  function generateRandomId() {
+    return Math.random().toString(36).substr(2, 9); // Generates a random alphanumeric string
+}
+const randomId = generateRandomId();
+console.log(randomId); // Example output: "g2t5h4jkl"
 
   const handleSendMessage = async () => {
     try {
@@ -52,6 +77,8 @@ export const TextInput = () => {
           senderId: userId,
           receiverId: receiverId._id,
           content: message,
+          updatedAt:formattedDate,
+          _id:randomId,
         });
         setMessage(''); // Clear the input field after sending
       } else {
@@ -80,9 +107,10 @@ export const TextInput = () => {
       </WrapForm>
       {/* Display received messages */}
       <Box mt={2}>
-        {messages.map((msg, index) => (
+        {/* {messages.map((msg, index) => (
           <p key={index}><strong>{msg.senderId}:</strong> {msg.content}</p>
-        ))}
+        ))} */}
+       
       </Box>
     </>
   );

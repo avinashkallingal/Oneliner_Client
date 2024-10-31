@@ -60,7 +60,8 @@ export default function UserProfile() {
       );
       console.log(result.data.result.user_data, "data from user fetch");
       if (result.data.success) {
-        setUser(result.data.result.user_data);
+        setUser(result.data.result.user_data._doc);
+        console.log(user,"state in user state")
       }
     };
     fetchData();
@@ -151,7 +152,7 @@ const handleCrop = async () => {
         if (response.data.success) {
           console.log("Profile updated successfully:", response.data);
           // Redirect or show success message
-          navigate("/userProfile");
+          navigate("/userProfile",{state:{id}});
         } else {
           console.log("Error updating profile:", response.data.message);
        

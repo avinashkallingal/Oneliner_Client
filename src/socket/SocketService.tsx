@@ -46,7 +46,7 @@ class SocketService {
     this.socket.emit('userTyping', id)
   }
 
-  sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string }) {
+  sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string,updatedAt:string,_id:string }) {
     console.log(message," this is message^^^^^^^^^^^^^^^^^^^^^^^")
     this.socket.emit('sendMessage', message);
   }
@@ -76,6 +76,10 @@ class SocketService {
 
   onNewMessage(callback: (message: any) => void) {
     this.socket.on('newMessage', callback);
+  }
+
+  offNewMessage(callback: (message: any) => void) {
+    this.socket.off('newMessage', callback); // Unsubscribe the specific listener
   }
 
   // video call

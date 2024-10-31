@@ -51,6 +51,7 @@ const chatDisplaySlice = createSlice({
             state.token = null;
             state.userData = null;
         }
+        
     }
 })
 

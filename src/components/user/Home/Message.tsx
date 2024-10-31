@@ -125,7 +125,7 @@ export const MessageLeft = (props:leftMsg) => {
           <div>
             <p>{message}</p>
           </div>
-          <MessageTimeStampRight>{timestamp}</MessageTimeStampRight>
+          {/* <MessageTimeStampRight>{timestamp}</MessageTimeStampRight> */}
         </MessageBlue>
       </div>
     </MessageRow>
@@ -148,7 +148,7 @@ export const MessageRight = (props:rightMsg) => {
     <MessageRowRight>
       <MessageOrange>
         <p>{message}</p>
-        <MessageTimeStampRight>{timestamp}</MessageTimeStampRight>
+        {/* <MessageTimeStampRight>{timestamp}</MessageTimeStampRight> */}
       </MessageOrange>
     </MessageRowRight>
   );

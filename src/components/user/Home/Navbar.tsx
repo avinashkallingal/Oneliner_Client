@@ -27,11 +27,11 @@ import {hide as hideCahatBox} from "../../../redux/Slice/ChatSlice";
 const pages = [
   { name: "Home", icon: <HomeIcon /> },
   { name: "Search", icon: <SearchIcon /> },
-  { name: "Chats", icon: <ChatIcon /> },
+  // { name: "Chats", icon: <ChatIcon /> },
   { name: "Add Post", icon: <AddBoxIcon /> },
-  { name: "Find Writers", icon: <PeopleIcon /> },
+  // { name: "Find Writers", icon: <PeopleIcon /> },
   { name: "Notifications", icon: <NotificationsIcon /> },
-  { name: "Store", icon: <StoreIcon /> },
+  // { name: "Store", icon: <StoreIcon /> },
 ];
 
 export default function Navbar() {
@@ -39,6 +39,7 @@ export default function Navbar() {
   const navigate=useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const id=localStorage.getItem("id")
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -75,6 +76,10 @@ export default function Navbar() {
     navigate("/")
     // setAnchorElUser(null);
   };
+
+  const handleUserProfileClick=()=>{
+    navigate('/userProfile',{ state: { id } })
+  }
 
   return (
     <AppBar  position="fixed" sx={{ bgcolor: "#D3A221" }}>
@@ -141,7 +146,7 @@ export default function Navbar() {
         </Box>
         <Box sx={{ flexGrow: 0 }}>
           <Tooltip title="Profile">
-            <IconButton onClick={() => navigate('/userProfile')} sx={{ p: 0 }}>
+            <IconButton onClick={handleUserProfileClick} sx={{ p: 0 }}>
               <Avatar alt="Profile" src="" />
             </IconButton>
           </Tooltip>
