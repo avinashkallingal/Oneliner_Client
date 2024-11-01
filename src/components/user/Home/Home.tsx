@@ -46,8 +46,13 @@ export default function InstagramPost({ fetchGenre }) {
   const [fetchGenres, setFetchGenres] = useState<any>("all");
   const [error, setError] = useState<any>("");
   const [chatDisplay, setChatDisplay] = useState<boolean>(false);
+  const [replyTo, setReplyTo] = useState(null);
+  const [replyText, setReplyText] = useState("");
+  const [replyCommentId, setReplyCommentId] = React.useState(null); // Track which comment is being replied to
+  const [postRefresh,setPostRefresh]=useState<boolean>();
 
-  const navigate=useNavigate()
+  const userId = localStorage.getItem("id");
+  const navigate = useNavigate();
 
   interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -90,7 +95,23 @@ export default function InstagramPost({ fetchGenre }) {
       }
     };
     fetchPosts();
-  }, [fetchGenre]);
+  }, [fetchGenre,postRefresh]);
+
+  //fetching user data
+  const [loggeduser, setLoggedUser] = useState();
+  useEffect(() => {
+    async function fetchUser() {
+      const result = await axiosInstance.post(
+        "http://localhost:4000/fetchUserData",
+        { id: userId, loginUserId: "" }
+      );
+      console.log(result.data.result.user_data._doc, "data from user fetch");
+      if (result.data.success) {
+        setLoggedUser(result.data.result.user_data._doc);
+      }
+    }
+    fetchUser();
+  }, []);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -124,15 +145,13 @@ export default function InstagramPost({ fetchGenre }) {
   };
 
   const checkLiked = (postLikes: any) => {
-    const userId = localStorage.getItem("id");
+    // const userId = localStorage.getItem("id");
     return postLikes.some(
       (value: any) => value.userId.toString() === userId?.toString()
     );
   };
 
   const handleLike = async (postId, postUserId, likeFlag, index) => {
-    const userId = localStorage.getItem("id");
-
     // Optimistically update the UI
     const updatedPosts = [...posts];
     const targetPost = updatedPosts[index];
@@ -225,85 +244,70 @@ export default function InstagramPost({ fetchGenre }) {
       </>
     );
   }
-  // const handleComment=async(id:any)=>{
-  //   const postId=id;
-  //   const userId=localStorage.getItem("id")
-
-  //   const response = await axiosInstance.post(
-  //     "http://localhost:4000/post/addComment",
-  //     { postId, userId, comment}
-  //   );
-
-  // toast.info(id)
-  // }
-  //
-  const handleComment = async (postId: string, parentCommentId?: any) => {
+ 
+  //handling comments
+  const handleComment = async (
+    postId: string,
+    parentCommentId?: any,
+    text?: any
+  ) => {
     try {
       const payload = {
         postId,
-        content: comment, // use replyText for replies, comment for normal comment
+        content: comment, 
         userId: loggeduser?._id,
-        avatar: loggeduser?.avatar,
-        userName: loggeduser?.name,
+        avatar: loggeduser?.profilePicture,
+        userName: loggeduser?.username,
+        parentCommentId: null,
         replayText: "",
-        parentCommentId: "", // null if it's a normal comment
       };
 
-      if (replyTo) {
-        payload.parentCommentId = replyTo;
-        payload.replayText = replyText;
+      if (parentCommentId) {
+        // If replying to a comment, add parentCommentId
+        payload.parentCommentId = parentCommentId;
+        payload.replayText = text;
       }
 
-      const result = await axiosInstance.post("/post/comment", payload);
+      const result = await axiosInstance.post(
+        "http://localhost:4000/post/addComment",
+        payload
+      );
 
       if (result.data.success) {
-        const newComment = {
-          _id: result.data.commentId,
-          UserId: loggeduser?._id,
-          content: comment,
-          createdAt: new Date().toISOString(),
-          avatar: loggeduser?.avatar,
-          userName: loggeduser?.name,
-          replies: parentCommentId ? [] : [], // Empty replies array for a new comment
-        };
-
-        // Update state based on whether it's a reply or a new comment
-        setPostData((prevPost) => {
-          if (parentCommentId) {
-            // Handle reply
-            return {
-              ...prevPost!,
-              comments: prevPost!.comments.map((comment) => {
-                if (comment._id === parentCommentId) {
-                  return {
-                    ...comment,
-                    replies: [
-                      ...comment.replies,
-                      {
-                        _id: result.data.commentId,
-                        UserId: loggeduser?._id,
-                        content: replyText,
-                        createdAt: new Date().toISOString(),
-                        avatar: loggeduser?.avatar,
-                        userName: loggeduser?.name,
-                      },
-                    ],
-                  };
+        setPosts((prevPosts: any) =>
+          prevPosts.map((p: any) =>
+            p._id === postId
+              ? {
+                  ...p,
+                  comments: p.comments.map((comment1: any) => {
+                    if (comment1._id === parentCommentId) {
+                      // If it is a reply, update the specific comment's replies array
+                      return {
+                        ...comment1,
+                        replies: [
+                          ...comment1.replies,
+                          {
+                            _id: result.data.commentId,
+                            UserId: loggeduser._id,
+                            content: comment,
+                            createdAt: new Date().toISOString(),
+                            avatar: loggeduser?.profilePicture,
+                            userName: loggeduser?.name,
+                          },
+                        ],
+                      };
+                    }
+                    return comment1;
+                  }),
                 }
-                return comment;
-              }),
-            };
-          } else {
-            // Handle new comment
-            return {
-              ...prevPost!,
-              comments: [...prevPost!.comments, newComment],
-            };
-          }
-        });
-
-        setComment(""); // Clear the comment input field
-        toast.success("Comment added successfully");
+              : p
+          )
+        );
+        setPostRefresh(!postRefresh)
+        setExpanded(true)
+        
+        // setSelectedEmoji(''); // Clear the input after posting
+        toast.success("Reply added successfully");
       } else {
         toast.error("Failed to add comment/reply");
       }
@@ -311,18 +315,22 @@ export default function InstagramPost({ fetchGenre }) {
       toast.error("Something went wrong");
     }
   };
-  //
-  
+
+
+
+  const handleReplyPost = (postId: any, commentId: any) => {
+    handleComment(postId, commentId, replyText);
+    setReplyText("");
+    setReplyTo(null);
+  };
+
   const handleUserClick = async (id: any) => {
     try {
-      navigate('/userProfile',{ state: { id } })
-     
-
-    }
-    catch (error) {
+      navigate("/userProfile", { state: { id } });
+    } catch (error) {
       toast.error("Something went wrong");
     }
-  }
+  };
   return (
     <Box sx={{ marginTop: "9vh", boxShadow: 30 }}>
       {loading ? (
@@ -442,7 +450,6 @@ export default function InstagramPost({ fetchGenre }) {
                 <PostMenu postData={post} />
               </IconButton>
             </CardContent>
-
             <CardOverflow>
               <AspectRatio>
                 <Box sx={{ position: "relative" }}>
@@ -479,7 +486,6 @@ export default function InstagramPost({ fetchGenre }) {
                 </Box>
               </AspectRatio>
             </CardOverflow>
-
             <CardContent
               orientation="horizontal"
               sx={{ alignItems: "center", mx: -1 }}
@@ -533,7 +539,6 @@ export default function InstagramPost({ fetchGenre }) {
                 <BookmarkBorderRoundedIcon />
               </IconButton>
             </CardContent>
-
             <CardContent>
               <Link
                 component="button"
@@ -565,15 +570,112 @@ export default function InstagramPost({ fetchGenre }) {
               >
                 more
               </Link>
-              <Link
+              {/* <Link
                 component="button"
                 underline="none"
                 sx={{ fontSize: "10px", color: "text.tertiary", my: 0.5 }}
               >
                 2 DAYS AGO
-              </Link>
+              </Link> */}
             </CardContent>
 
+
+        
+            {/* Showing Comments */}
+            {expanded&&(
+            <CardContent>
+              {post.comments.map((comment1: any) => (
+                <Box
+                  key={comment1._id}
+                  sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
+                      <Link
+                        component="button"
+                        color="neutral"
+                        sx={{ textDecoration: "none" }}
+                      >
+                        {comment1.userName}
+                      </Link>
+                    </Typography>
+                    <Typography
+                      sx={{ fontSize: "sm", color: "text.secondary" }}
+                    >
+                      {comment1.content}
+                    </Typography>
+                  </Box>
+                  <Link
+                    component="button"
+                    underline="none"
+                    sx={{ fontSize: "xs", color: "text.tertiary" }}
+                    onClick={() => setReplyCommentId(comment1._id)}
+                  >
+                    Reply
+                  </Link>
+                  {replyCommentId === comment1._id && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mt: 1,
+                      }}
+                    >
+                      {/* showing replies */}
+                      {comment1.replies?.map((reply: any) => (
+                        <Box
+                          key={reply._id}
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            pl: 3,
+                            my: 0.5,
+                          }}
+                        >
+                          <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
+                            <Link
+                              component="button"
+                              color="neutral"
+                              textColor="text.primary"
+                              sx={{ fontWeight: "lg", textDecoration: "none" }}
+                            >
+                              {reply.userName}
+                            </Link>
+                          </Typography>
+                          <Typography
+                            sx={{ fontSize: "sm", color: "text.secondary" }}
+                          >
+                            {reply.content}
+                          </Typography>
+                        </Box>
+                      ))}
+
+                      <Input
+                        variant="plain"
+                        size="sm"
+                        placeholder="Reply..."
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        sx={{ flex: 1 }}
+                      />
+                      <Link
+                        component="button"
+                        underline="none"
+                        sx={{ fontSize: "sm", color: "primary.main" }}
+                        onClick={() => handleReplyPost(post._id, comment1._id)}
+                      >
+                        Post
+                      </Link>
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </CardContent>
+            )}
+
+          
             <CardContent orientation="horizontal" sx={{ gap: 1, padding: 1 }}>
               <IconButton
                 size="sm"
