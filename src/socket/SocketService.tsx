@@ -46,14 +46,15 @@ class SocketService {
     this.socket.emit('userTyping', id)
   }
 
-  sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string,updatedAt:string,_id:string }) {
+  sendMessage(message: { chatId: string, senderId: string, receiverId: string, content: string,updatedAt:string,_id:string,fileType:string }) {
     console.log(message," this is message^^^^^^^^^^^^^^^^^^^^^^^")
     this.socket.emit('sendMessage', message);
   }
 
-  sendMedia(message: { chatId: string, senderId: string, receiverId: string, image: string[], video: string[] }) {
-   
-    this.socket.emit('newImages', message)
+  sendMedia(message: { chatId: string, senderId: string, receiverId: string, content: string,updatedAt:string,_id:string }) {
+   console.log("hiii$$$$$$$$$$$$$$$$$$$$$")
+   console.log(message)
+    this.socket.emit('sendMessage', message)
   }
 
   emitUserOnline(userId: string) {
@@ -71,6 +72,10 @@ class SocketService {
 
   onUserTyping(callback: () => void) {
     this.socket.on('onUserTyping', callback)
+  }
+
+  onUserTypingOff(callback: () => void) {
+    this.socket.off('onUserTyping', callback)
   }
 
 

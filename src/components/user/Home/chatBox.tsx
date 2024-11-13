@@ -1,4 +1,4 @@
-import React, { useEffect,useRef } from "react";
+import React, { useEffect,useLayoutEffect,useRef, useState } from "react";
 import { Paper, IconButton, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import { TextInput } from "./TextInput";
@@ -44,9 +44,15 @@ export default function ChatBox() {
   const dispatch = useDispatch();
   const userData = useSelector((state: any) => state.ChatDisplay.userData);
   const chatData = useSelector((state: any) => state.ChatDisplay.chatRoomData);
+  const [typingIndicator,setTypingIndicator]=useState<boolean>(false)
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-
+// useLayoutEffect(()=>{
+//   async function readUpdate(){
+//     const response=await axiosInstance.put('http://localhost:4000/message/readUpdate',{userId: userId, receiverId: userData._id,read:true})
+//   }
+//   readUpdate()
+// })
   useEffect(() => {
     SocketService.connect();
     console.log(chatData, " chatData");
@@ -63,8 +69,19 @@ export default function ChatBox() {
      } 
   }
          fetchMessages()
+         
+    return(
+          SocketService.disconnect()
+         )
     
   }, [chatData]);
+
+  // useLayoutEffect(()=>{
+  //   async function fetchReadStatus(){
+  //     const response=await axiosInstance.get()
+  //   }
+  //   fetchReadStatus()
+  // })
 
 
   useEffect(() => {
@@ -73,6 +90,20 @@ export default function ChatBox() {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    // Setting up the listener once when the component mounts
+    SocketService.onUserTyping(() => {
+      setTypingIndicator(true);
+      console.log("user is typing++++++++++++")
+      setTimeout(() => setTypingIndicator(false), 3000); // Hide indicator after 3 seconds
+    });
+  
+    // Cleanup function to remove listener when the component unmounts
+    return () => {
+      SocketService.onUserTypingOff(()=>{}); // Detach the listener on unmount
+    };
+  }, []); 
 
   const handleClose = () => {
     dispatch(hide());
@@ -98,7 +129,10 @@ export default function ChatBox() {
         >
           <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
             {userData.username}
+            
           </span>
+          {typingIndicator&&<p>typing.......</p>}
+
           <IconButton size="small" onClick={handleClose}>
             <CloseIcon style={{ color: 'white' }} />
           </IconButton>
@@ -115,6 +149,7 @@ export default function ChatBox() {
                 photoURL="https://lh3.googleusercontent.com/a-/AOh14Gi4vkKYlfrbJ0QLJTg_DLjcYyyK7fYoWRpz2r4s=s96-c"
                 displayName="me"
                 avatarDisp={true}
+                read={messageGot.read}
               />
             ) : (
               <MessageLeft
@@ -124,6 +159,7 @@ export default function ChatBox() {
                 photoURL={userData.profilePicture||""}
                 displayName={userData.username}
                 avatarDisp={true}
+                read={messageGot.read}
               />
             )
           )}

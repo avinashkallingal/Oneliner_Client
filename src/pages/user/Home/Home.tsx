@@ -72,7 +72,7 @@ function Home1() {
 
   const [activeTab, setActiveTab] = useState<Number>(0);
 
-  const handleChange = (event:React.ChangeEvent<HTMLInputElement>, newValue:Number) => {
+  const handleChange= (event:React.ChangeEvent<HTMLInputElement>, newValue:Number) => {
     setActiveTab(newValue);
   };
 
@@ -124,8 +124,8 @@ function Home1() {
           }}
         >
           <List>
-            {genres.map(({ name, icon }) => (
-              <ListItem key={name}>
+            {genres.map(({ name, icon},index) => (
+              <ListItem key={index}>
                 <ListItemButton onClick={() => handleGenre(name)}>
                   <ListItemDecorator>{icon}</ListItemDecorator>
                   <ListItemContent>{name}</ListItemContent>

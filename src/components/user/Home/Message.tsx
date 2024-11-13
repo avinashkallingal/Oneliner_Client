@@ -3,8 +3,11 @@ import Avatar from "@mui/material/Avatar";
 import { deepOrange } from '@mui/material/colors';
 import { Box } from "@mui/material";
 import { styled } from "@mui/system";
+import moment from 'moment';
+import CheckIcon from '@mui/icons-material/Check';
+import DoneAllIcon from '@mui/icons-material/DoneAll'; // Importing double tick icon
 
-// Use styled components for message box and container
+// Styled components for message box and container
 const MessageRow = styled('div')({
   display: "flex",
 });
@@ -15,12 +18,15 @@ const MessageRowRight = styled('div')({
 });
 
 const MessageBlue = styled('div')({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-end",
   position: "relative",
   marginLeft: "20px",
   marginBottom: "10px",
   padding: "10px",
   backgroundColor: "#A8DDFD",
-  minwidth: "60%",
+  maxWidth: "60%",
   textAlign: "right",
   fontFamily: "'Open Sans', sans-serif",
   border: "1px solid #97C6E3",
@@ -50,12 +56,15 @@ const MessageBlue = styled('div')({
 });
 
 const MessageOrange = styled('div')({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-start",
   position: "relative",
   marginRight: "20px",
   marginBottom: "10px",
   padding: "10px",
   backgroundColor: "#f8e896",
-  minWidth: "10%",
+  maxWidth: "60%",
   textAlign: "left",
   fontFamily: "'Open Sans', sans-serif",
   border: "1px solid #dfd087",
@@ -85,32 +94,44 @@ const MessageOrange = styled('div')({
 });
 
 const MessageTimeStampRight = styled('div')({
-  position: "absolute",
-  fontSize: ".85em",
+  fontSize: ".75em",
   fontWeight: "300",
-  marginTop: "10px",
-  bottom: "-3px",
-  right: "5px"
+  color: "#999",
+  marginTop: "5px",
+  display: "flex",
+  alignItems: "center",
+  gap: "2px",  // Space between timestamp and ticks
 });
 
 const DisplayName = styled('div')({
   marginLeft: "20px"
 });
 
-interface leftMsg{
-    message?:string,
-    timestamp?:string,
-    photoURL?:string,
-    displayName?:string,
-    avatarDisp?:boolean
+interface leftMsg {
+  message?: string,
+  timestamp?: string,
+  photoURL?: string,
+  displayName?: string,
+  avatarDisp?: boolean,
+  read?:boolean,
 }
 
-// avatarが左にあるメッセージ（他人）
-export const MessageLeft = (props:leftMsg) => {
-  const message = props.message || "no message";
-  const timestamp = props.timestamp || "";
-  const photoURL = props.photoURL || "dummy.js";
-  const displayName = props.displayName || "名無しさん";
+// Message component for others' messages (left-aligned)
+export const MessageLeft = (props: leftMsg) => {
+  const { message = "no message", timestamp, photoURL = "dummy.js", displayName = "名無しさん" } = props;
+
+  const formatChatTimestamp = (timestamp1: any) => {
+    const now = moment();
+    const messageTime = moment(timestamp1);
+
+    if (messageTime.isSame(now, 'day')) {
+      return messageTime.fromNow();
+    } else if (messageTime.isSame(now, 'year')) {
+      return messageTime.format('MMM Do, h:mm A');
+    } else {
+      return messageTime.format('MMM Do YYYY, h:mm A');
+    }
+  };
 
   return (
     <MessageRow>
@@ -125,30 +146,51 @@ export const MessageLeft = (props:leftMsg) => {
           <div>
             <p>{message}</p>
           </div>
-          {/* <MessageTimeStampRight>{timestamp}</MessageTimeStampRight> */}
+          <MessageTimeStampRight>
+            {formatChatTimestamp(timestamp)}
+         
+          </MessageTimeStampRight>
         </MessageBlue>
       </div>
     </MessageRow>
   );
 };
 
-interface rightMsg{
-    message?:string,
-    timestamp?:string,
-    photoURL?:string
-    displayName?:string,
-    avatarDisp?:boolean
+interface rightMsg {
+  message?: string,
+  timestamp?: string,
+  photoURL?: string,
+  displayName?: string,
+  avatarDisp?: boolean,
+  read?:boolean,
 }
-// avatarが右にあるメッセージ（自分）
-export const MessageRight = (props:rightMsg) => {
-  const message = props.message || "no message";
-  const timestamp = props.timestamp || "";
+
+// Message component for user's own messages (right-aligned)
+export const MessageRight = (props: rightMsg) => {
+  const { message = "no message", timestamp,read } = props;
+
+  const formatChatTimestamp = (timestamp1: any) => {
+    const now = moment();
+    const messageTime = moment(timestamp1);
+
+    if (messageTime.isSame(now, 'day')) {
+      return messageTime.fromNow();
+    } else if (messageTime.isSame(now, 'year')) {
+      return messageTime.format('MMM Do, h:mm A');
+    } else {
+      return messageTime.format('MMM Do YYYY, h:mm A');
+    }
+  };
 
   return (
     <MessageRowRight>
       <MessageOrange>
         <p>{message}</p>
-        {/* <MessageTimeStampRight>{timestamp}</MessageTimeStampRight> */}
+        <MessageTimeStampRight>
+          {formatChatTimestamp(timestamp)}
+          {!read?<CheckIcon sx={{ fontSize: '0.8rem', color: '#4fc3f7' }} />:
+          <DoneAllIcon sx={{ fontSize: '0.8rem', color: '#4fc3f7', marginLeft: '2px' }} />}
+        </MessageTimeStampRight>
       </MessageOrange>
     </MessageRowRight>
   );
