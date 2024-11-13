@@ -57,7 +57,7 @@ export const TextInput = () => {
   const formattedDate = currentDate.toLocaleString("en-US", options);
 
   useEffect(() => {
-    socketService.joinConversation(chat._id);
+    // socketService.joinConversation(chat._id);
     socketService.onNewMessage((newMessage) => {
       console.log(message," message recieved on front after s3 upload")
       dispatch(addMessage({ message: newMessage }));
@@ -65,11 +65,12 @@ export const TextInput = () => {
         toast.success("New message received");
       }
     });
-
     return () => {
       socketService.offNewMessage((newMessage:any) => {});
     };
   }, []);
+
+
   function generateRandomId() {
     return Math.random().toString(36).substr(2, 9); // Generates a random alphanumeric string
   }
@@ -82,7 +83,7 @@ export const TextInput = () => {
         senderId: userId,
         receiverId: receiverId._id,
         content: message,
-        fileType:"text",
+        fileType:"",
         updatedAt: formattedDate,
         _id: randomId,
       });
@@ -248,7 +249,7 @@ export const TextInput = () => {
           label="Type here"
           variant="standard"
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => {setMessage(e.target.value);socketService.onTyping(`${userId}`)}}
         />
 
         <Button

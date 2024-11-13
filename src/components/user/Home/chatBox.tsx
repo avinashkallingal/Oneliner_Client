@@ -45,6 +45,8 @@ export default function ChatBox() {
   const userData = useSelector((state: any) => state.ChatDisplay.userData);
   const chatData = useSelector((state: any) => state.ChatDisplay.chatRoomData);
   const [typingIndicator,setTypingIndicator]=useState<boolean>(false)
+  
+  const [online,setOnline]=useState<boolean>(false)
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 // useLayoutEffect(()=>{
@@ -55,7 +57,10 @@ export default function ChatBox() {
 // })
   useEffect(() => {
     SocketService.connect();
+    SocketService.joinConversation(chatData._id);
+    SocketService.emitOnline(`${userId}`)
     console.log(chatData, " chatData");
+    
    async function fetchMessages(){
     const response = await axiosInstance.get('http://localhost:4000/message/getmessages', {params: {userId: userId, receiverId: userData._id}})
     console.log(response.data.data," message db response in front end") 
@@ -70,8 +75,10 @@ export default function ChatBox() {
   }
          fetchMessages()
          
+         
     return(
-          SocketService.disconnect()
+          SocketService.disconnect(),
+          setOnline(false)
          )
     
   }, [chatData]);
@@ -90,6 +97,22 @@ export default function ChatBox() {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+
+
+
+   useEffect(() => {
+    // Setting up the listener once when the component mounts
+    SocketService.onUserOnline(()=>{
+      console.log("hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
+      setOnline(true)
+     })
+  
+    // Cleanup function to remove listener when the component unmounts
+    return () => {
+      SocketService.onUserOnlineOff(()=>{}); // Detach the listener on unmount
+    };
+  }, []); 
 
   useEffect(() => {
     // Setting up the listener once when the component mounts
@@ -131,7 +154,15 @@ export default function ChatBox() {
             {userData.username}
             
           </span>
+          <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
+          {online?<p>Online</p>:<p>Offline</p>}
+            
+          </span>
+          <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
           {typingIndicator&&<p>typing.......</p>}
+            
+          </span>
+          
 
           <IconButton size="small" onClick={handleClose}>
             <CloseIcon style={{ color: 'white' }} />
@@ -150,6 +181,7 @@ export default function ChatBox() {
                 displayName="me"
                 avatarDisp={true}
                 read={messageGot.read}
+                fileType={messageGot.fileType}
               />
             ) : (
               <MessageLeft
@@ -160,6 +192,7 @@ export default function ChatBox() {
                 displayName={userData.username}
                 avatarDisp={true}
                 read={messageGot.read}
+                fileType={messageGot.fileType}
               />
             )
           )}
