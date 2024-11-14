@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../../Components/user/Home/Navbar";
 import Home from "../../../Components/user/Home/Home";
 import { Box, Paper } from "@mui/material"; // Import Paper for a card-like effect
@@ -44,6 +44,7 @@ import Inbox from "../../../Components/user/Home/Inbox";
 
 import { Tabs, Tab } from '@mui/material';
 
+
 function Home1() {
   const genres = [
     { name: "All", icon: <AllInclusiveIcon /> }, // "All" option
@@ -81,6 +82,7 @@ function Home1() {
   const handleGenre = (genre: string) => {
     setFetchGenre(genre);
   };
+  
 
   return (
     <div

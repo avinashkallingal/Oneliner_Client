@@ -22,6 +22,20 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import {show as showCahatBox} from "../../../redux/Slice/ChatSlice";
 import {hide as hideCahatBox} from "../../../redux/Slice/ChatSlice";
+import SocketService from "../../../socket/SocketService";
+import { toast } from "sonner";
+import AnchorTemporaryDrawer from "./NotificationDrawer";
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
+import axiosInstance from "../../../Constarints/axios/userAxios";
+
 
 
 const pages = [
@@ -39,7 +53,36 @@ export default function Navbar() {
   const navigate=useNavigate()
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [notificationData,setNotificationData]=React.useState<any>([]);
+  const [notificationFlag, setNotificationFlag] = React.useState<boolean>(false);
   const id=localStorage.getItem("id")
+
+
+
+  React.useEffect(()=>{
+    SocketService.connect()
+    SocketService.onNewNotification((notification)=>{
+      console.log(notification," notification in useeffect socket fuction")
+      if(notification.senderId==id){
+      toast.info(notification.message)}
+    
+    })
+  },[])
+  
+
+const fetchNotificationData=async()=>{
+  const result=await axiosInstance.get("http://localhost:4000/message/getNotification",{params:{id}})
+  console.log(result.data," result of notification data")
+  if(result.data.data){
+    setNotificationData(result.data.data)
+  }else{
+    console.log("error fetching notification data")
+    // toast.error("error fetching notification data")
+    setNotificationData([{message:"NO notification"}])
+  }
+}
+
+
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -54,11 +97,12 @@ export default function Navbar() {
   };
   const data1=useSelector((state:any)=>state.ChatDisplay.chatBoxDisplay)
   const handleNavigate = (path: string) => {
-    if(path=="/chats"){
+    if(path=="/notifications"){
       console.log(path," navbar paths")
-     
+      fetchNotificationData()
+     setNotificationFlag(true)
       
-      dispatch(showCahatBox({token:null,userData:null}))
+      // dispatch(showCahatBox({token:null,userData:null}))
       console.log(data1," selected data from redux")
      
     }else{
@@ -80,8 +124,50 @@ export default function Navbar() {
   const handleUserProfileClick=()=>{
     navigate('/userProfile',{ state: { id } })
   }
+//
+const list = (anchor:"top") => (
+  <Box
+    sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+    role="presentation"
+    // onClick={toggleDrawer(anchor, false)}
+    // onKeyDown={toggleDrawer(anchor, false)}
+  >
+    {/* <List>
+      {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+        <ListItem key={text} disablePadding>
+          <ListItemButton>
+            <ListItemIcon>
+              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+            </ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
+    <Divider /> */}
+    <List>   
+{notificationData.map((text:any, index:any) => (
+        <ListItem key={text._id} disablePadding>
+          <ListItemButton>
+            {/* <ListItemIcon>
+              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+            </ListItemIcon> */}
+            <ListItemText primary={text.message} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
+  </Box>
+);
+
+const toggleDrawer = () => {
+  setNotificationFlag(false);
+};
+
+//
 
   return (
+    <>
     <AppBar  position="fixed" sx={{ bgcolor: "#D3A221" }}>
       <Toolbar>
         <Typography
@@ -177,5 +263,24 @@ export default function Navbar() {
         </Box>
       </Toolbar>
     </AppBar>
+    {notificationFlag&&<>
+      <div>
+      { (
+        <React.Fragment key="top">
+          {/* <Button onClick={toggleDrawer("top", true)}></Button> */}
+          <Drawer
+            anchor="top"
+            open={true}
+            onClose={()=>toggleDrawer()}
+            
+          >
+            {list("top")}
+          </Drawer>
+        </React.Fragment>
+      )}
+    </div>
+
+    </>}
+    </>
   );
 }

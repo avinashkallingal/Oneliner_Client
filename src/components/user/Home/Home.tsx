@@ -36,6 +36,7 @@ import { IconButtonProps } from "@mui/material/IconButton";
 import { useSelector, useDispatch } from "react-redux";
 import Chatbox from "../../../Pages/user/ChatBox/ChatBox";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 export default function InstagramPost({ fetchGenre }) {
   const [posts, setPosts] = useState([]);
@@ -49,7 +50,7 @@ export default function InstagramPost({ fetchGenre }) {
   const [replyTo, setReplyTo] = useState(null);
   const [replyText, setReplyText] = useState("");
   const [replyCommentId, setReplyCommentId] = React.useState(null); // Track which comment is being replied to
-  const [postRefresh,setPostRefresh]=useState<boolean>();
+  const [postRefresh, setPostRefresh] = useState<boolean>();
 
   const userId = localStorage.getItem("id");
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ export default function InstagramPost({ fetchGenre }) {
       }
     };
     fetchPosts();
-  }, [fetchGenre,postRefresh]);
+  }, [fetchGenre, postRefresh]);
 
   //fetching user data
   const [loggeduser, setLoggedUser] = useState();
@@ -124,6 +125,19 @@ export default function InstagramPost({ fetchGenre }) {
   //   }
   //   chat();
   // })
+
+  const formatChatTimestamp = (timestamp1: any) => {
+    const now = moment();
+    const messageTime = moment(timestamp1);
+
+    if (messageTime.isSame(now, "day")) {
+      return messageTime.fromNow();
+    } else if (messageTime.isSame(now, "year")) {
+      return messageTime.format("MMM Do, h:mm A");
+    } else {
+      return messageTime.format("MMM Do YYYY, h:mm A");
+    }
+  };
 
   const viewPdf = async (postId: any) => {
     try {
@@ -183,7 +197,7 @@ export default function InstagramPost({ fetchGenre }) {
         setPosts(updatedPosts);
         toast.error("Something went wrong!");
       } else {
-        toast.info(likeFlag ? "Liked" : "Unliked");
+        // toast.info(likeFlag ? "Liked" : "Unliked");
       }
     } catch (error) {
       console.error("Error liking/unliking post:", error);
@@ -244,7 +258,7 @@ export default function InstagramPost({ fetchGenre }) {
       </>
     );
   }
- 
+
   //handling comments
   const handleComment = async (
     postId: string,
@@ -254,7 +268,7 @@ export default function InstagramPost({ fetchGenre }) {
     try {
       const payload = {
         postId,
-        content: comment, 
+        content: comment,
         userId: loggeduser?._id,
         avatar: loggeduser?.profilePicture,
         userName: loggeduser?.username,
@@ -303,9 +317,9 @@ export default function InstagramPost({ fetchGenre }) {
               : p
           )
         );
-        setPostRefresh(!postRefresh)
-        setExpanded(true)
-        
+        setPostRefresh(!postRefresh);
+        setExpanded(true);
+
         // setSelectedEmoji(''); // Clear the input after posting
         toast.success("Reply added successfully");
       } else {
@@ -315,8 +329,6 @@ export default function InstagramPost({ fetchGenre }) {
       toast.error("Something went wrong");
     }
   };
-
-
 
   const handleReplyPost = (postId: any, commentId: any) => {
     handleComment(postId, commentId, replyText);
@@ -579,103 +591,114 @@ export default function InstagramPost({ fetchGenre }) {
               </Link> */}
             </CardContent>
 
-
-        
             {/* Showing Comments */}
-            {expanded&&(
-            <CardContent>
-              {post.comments.map((comment1: any) => (
-                <Box
-                  key={comment1._id}
-                  sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
-                      <Link
-                        component="button"
-                        color="neutral"
-                        sx={{ textDecoration: "none" }}
-                      >
-                        {comment1.userName}
-                      </Link>
-                    </Typography>
-                    <Typography
-                      sx={{ fontSize: "sm", color: "text.secondary" }}
-                    >
-                      {comment1.content}
-                    </Typography>
-                  </Box>
-                  <Link
-                    component="button"
-                    underline="none"
-                    sx={{ fontSize: "xs", color: "text.tertiary" }}
-                    onClick={() => setReplyCommentId(comment1._id)}
+            {expanded && (
+              <CardContent>
+                {post.comments.map((comment1: any) => (
+                  <Box
+                    key={comment1._id}
+                    sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
                   >
-                    Reply
-                  </Link>
-                  {replyCommentId === comment1._id && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        mt: 1,
-                      }}
-                    >
-                      {/* showing replies */}
-                      {comment1.replies?.map((reply: any) => (
-                        <Box
-                          key={reply._id}
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 1,
-                            pl: 3,
-                            my: 0.5,
-                          }}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
+                        <Link
+                          component="button"
+                          color="neutral"
+                          sx={{ textDecoration: "none" }}
                         >
-                          <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
-                            <Link
-                              component="button"
-                              color="neutral"
-                              textColor="text.primary"
-                              sx={{ fontWeight: "lg", textDecoration: "none" }}
-                            >
-                              {reply.userName}
-                            </Link>
-                          </Typography>
-                          <Typography
-                            sx={{ fontSize: "sm", color: "text.secondary" }}
-                          >
-                            {reply.content}
-                          </Typography>
-                        </Box>
-                      ))}
-
-                      <Input
-                        variant="plain"
-                        size="sm"
-                        placeholder="Reply..."
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        sx={{ flex: 1 }}
-                      />
-                      <Link
-                        component="button"
-                        underline="none"
-                        sx={{ fontSize: "sm", color: "primary.main" }}
-                        onClick={() => handleReplyPost(post._id, comment1._id)}
+                          {comment1.userName}
+                        </Link>
+                      </Typography>
+                      <Typography
+                        sx={{ fontSize: "sm", color: "text.secondary" }}
                       >
-                        Post
-                      </Link>
+                        {comment1.content}
+                      </Typography>
                     </Box>
-                  )}
-                </Box>
-              ))}
-            </CardContent>
+                    <Link
+                      component="button"
+                      underline="none"
+                      sx={{ fontSize: "xs", color: "text.tertiary" }}
+                      onClick={() => setReplyCommentId(comment1._id)}
+                    >
+                      Reply
+                    </Link>
+                    {/* <span>{formatChatTimestamp(comment1.createdAt)}</span> */}
+                    <span style={{ fontSize: "0.8rem", color: "#888" }}>
+                      {formatChatTimestamp(comment1.createdAt)}
+                    </span>
+                    {replyCommentId === comment1._id && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          mt: 1,
+                        }}
+                      >
+                        {/* showing replies */}
+                        {comment1.replies?.map((reply: any) => (
+                          <Box
+                            key={reply._id}
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                              pl: 3,
+                              my: 0.5,
+                            }}
+                          >
+                            <Typography
+                              sx={{ fontWeight: "lg", fontSize: "sm" }}
+                            >
+                              <Link
+                                component="button"
+                                color="neutral"
+                                textColor="text.primary"
+                                sx={{
+                                  fontWeight: "lg",
+                                  textDecoration: "none",
+                                }}
+                              >
+                                {reply.userName}
+                              </Link>
+                            </Typography>
+                            <Typography
+                              sx={{ fontSize: "sm", color: "text.secondary" }}
+                            >
+                              {reply.content}
+                            </Typography>
+                            <span style={{ fontSize: "0.8rem", color: "#888" }}>
+                      {formatChatTimestamp(reply.createdAt)}
+                    </span>
+                          </Box>
+                        ))}
+
+                        <Input
+                          variant="plain"
+                          size="sm"
+                          placeholder="Reply..."
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          sx={{ flex: 1 }}
+                        />
+                        <Link
+                          component="button"
+                          underline="none"
+                          sx={{ fontSize: "sm", color: "primary.main" }}
+                          onClick={() =>
+                            handleReplyPost(post._id, comment1._id)
+                          }
+                        >
+                          Post
+                        </Link>
+                      </Box>
+                    )}
+                  </Box>
+                ))}
+              </CardContent>
             )}
 
-          
             <CardContent orientation="horizontal" sx={{ gap: 1, padding: 1 }}>
               <IconButton
                 size="sm"
