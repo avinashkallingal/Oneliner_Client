@@ -35,6 +35,7 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import axiosInstance from "../../../Constarints/axios/userAxios";
+import mongoose, { Mongoose } from "mongoose";
 
 
 
@@ -56,17 +57,24 @@ export default function Navbar() {
   const [notificationData,setNotificationData]=React.useState<any>([]);
   const [notificationFlag, setNotificationFlag] = React.useState<boolean>(false);
   const id=localStorage.getItem("id")
+  const [readButtonFlag, setReadButtonFlag] = React.useState<boolean>(false);
 
 
 
   React.useEffect(()=>{
     SocketService.connect()
+    SocketService.emitUserOnlineStatus(`${id}`)
     SocketService.onNewNotification((notification)=>{
       console.log(notification," notification in useeffect socket fuction")
       if(notification.senderId==id){
       toast.info(notification.message)}
     
     })
+    return(
+     
+          SocketService.disconnect()
+          
+         )
   },[])
   
 
@@ -75,9 +83,11 @@ const fetchNotificationData=async()=>{
   console.log(result.data," result of notification data")
   if(result.data.data){
     setNotificationData(result.data.data)
+    setReadButtonFlag(true)
   }else{
     console.log("error fetching notification data")
     // toast.error("error fetching notification data")
+    setReadButtonFlag(false)
     setNotificationData([{message:"NO notification"}])
   }
 }
@@ -124,6 +134,23 @@ const fetchNotificationData=async()=>{
   const handleUserProfileClick=()=>{
     navigate('/userProfile',{ state: { id } })
   }
+
+  
+  const handleUserProfileClickOnNorification=(id:any)=>{
+    const newId = new mongoose.Types.ObjectId(id);
+    navigate('/userProfile',{ state: { id } })
+  }
+const readNotification=async (notificationId:any)=>{
+  const result=await axiosInstance.get("http://localhost:4000/message/readNotification",{params:{id:notificationId}})
+  if(result.data){
+    toast.info("notification cleared")
+    setNotificationData([])
+  //   setNotificationData((prevData) =>
+  //     prevData.filter((notification) => notification.senderId !== notificationId)
+  // );
+  }
+}
+
 //
 const list = (anchor:"top") => (
   <Box
@@ -146,17 +173,39 @@ const list = (anchor:"top") => (
     </List>
     <Divider /> */}
     <List>   
-{notificationData.map((text:any, index:any) => (
-        <ListItem key={text._id} disablePadding>
-          <ListItemButton>
-            {/* <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon> */}
-            <ListItemText primary={text.message} />
-          </ListItemButton>
-        </ListItem>
-      ))}
+
+      {notificationData.map((notification: any) => (
+    <ListItem key={notification._id || notification.index} disablePadding>
+        <ListItemButton>
+            <ListItemText primary={notification.message} />
+            {readButtonFlag && (
+                <div>
+                   
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        color="secondary"
+                        onClick={() => handleUserProfileClickOnNorification(notification.userId)}
+                        style={{ marginLeft: "8px" }}
+                    >
+                        View Profile
+                    </Button>
+                </div>
+            )}
+            
+        </ListItemButton>
+    </ListItem>
+    
+))}
     </List>
+    {readButtonFlag&&(<Button
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                        onClick={() => readNotification(id)}
+                    >
+                        Mark as Read
+                    </Button>)}
   </Box>
 );
 

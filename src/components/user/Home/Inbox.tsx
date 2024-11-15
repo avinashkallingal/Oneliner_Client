@@ -73,7 +73,18 @@ export default function Inbox() {
       {/* <Typography level="title-sm"  onClick={() => chatHandle(element.sender,element.chatRoomData)}
                 sx={{ cursor: 'pointer' }}>{element.sender.username}</Typography> */}
       <Typography level="body-sm" noWrap>
-        {element.content}
+        {(element.fileType=='image'||element.fileType=="pdf"||element.fileType=="video")?<p style={{
+    display: "inline-block",
+    padding: "5px 10px",
+    backgroundColor: "#e0f7e9",  // light green background for a file indicator
+    color: "green",
+    borderRadius: "15px",
+    fontSize: "0.85rem",
+    fontWeight: "bold",
+    margin: "5px 0"
+}}>
+  File
+</p>:element.content}
       </Typography>
     </ListItemContent>
   </ListItem>

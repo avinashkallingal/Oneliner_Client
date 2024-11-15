@@ -45,14 +45,19 @@ class SocketService {
   onTyping(id: string) {
     this.socket.emit('userTyping', id)
   }
-  emitOnline(id: string) {
-    this.socket.emit('userOnline', id)
-  }
-  onUserOnline(callback: (id:string) => void) {
-    this.socket.on('onUserOnline', callback)
+  // emitFetchOnlineUsers(id: string) {
+  //   this.socket.emit('emitUserOnline', id)
+  // }
+  onGotOnlineUsers(callback: (onlineId:any) => void) {
+    this.socket.on('emitUserOnline', callback)
   }
   onUserOnlineOff(callback: () => void) {
     this.socket.off('onUserOnline', callback)
+  }
+  
+ 
+  onGotOfflineUsers(callback: (onlineId:any) => void) {
+    this.socket.on('userOffline', callback)
   }
 
 
@@ -67,10 +72,15 @@ class SocketService {
     this.socket.emit('sendMessage', message)
   }
 
-  emitUserOnline(userId: string) {
+  emitUserOnlineStatus(userId: string) {
     console.log(userId);
     this.socket.emit('userConnected', userId);
   }
+
+  // emitUserOffline(userId: string) {
+  //   console.log(userId);
+  //   this.socket.emit('userOffline', userId);
+  // }
 
   onUserStatusChanged(callback: (data: { userId: string, isOnline: boolean }) => void) {
     this.socket.on('userStatusChanged', callback);

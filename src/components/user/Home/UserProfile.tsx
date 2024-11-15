@@ -18,6 +18,7 @@ import { styled } from "@mui/material/styles";
 import { toast } from "sonner";
 
 export default function UserCard({ id }) {
+  console.log(id,"^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
   interface User {
     id?: number;
     username?: string;
@@ -49,6 +50,7 @@ export default function UserCard({ id }) {
       console.log(result.data.result.user_data._doc, "data from user fetch");
       if (result.data.success) {
         setUser(result.data.result.user_data._doc);
+        console.log(result.data.result.user_data._doc,"&&&&&&&&&&&&&&&&user data")
         console.log(result.data.result.user_data.loginUserFollowings,"$%%$%$%$%$%$%$%$%$%$%$%$$$$$$$$$$$$$$$$")
         if (result.data.result.user_data.loginUserFollowings) {
           const found = result.data.result.user_data.loginUserFollowings.filter((val:any)=>val==userId)

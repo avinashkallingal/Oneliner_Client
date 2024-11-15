@@ -58,7 +58,8 @@ export default function ChatBox() {
   useEffect(() => {
     SocketService.connect();
     SocketService.joinConversation(chatData._id);
-    SocketService.emitOnline(`${userId}`)
+    // SocketService.emitUserOnlineStatus(`${userId}`)
+    // SocketService.emitOnline(`${userId}`)
     console.log(chatData, " chatData");
     
    async function fetchMessages(){
@@ -77,6 +78,7 @@ export default function ChatBox() {
          
          
     return(
+      // SocketService.emitUserOffline(`${userId}`),
           SocketService.disconnect(),
           setOnline(false)
          )
@@ -103,9 +105,20 @@ export default function ChatBox() {
 
    useEffect(() => {
     // Setting up the listener once when the component mounts
-    SocketService.onUserOnline(()=>{
-      console.log("hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
-      setOnline(true)
+    // SocketService.emitFetchOnlineUsers(`${userData._id}`)
+    SocketService.onGotOnlineUsers((onlineId:any)=>{
+      console.log(onlineId,"hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
+      if(onlineId==userData._id.toString()){
+        setOnline(true)
+      }
+      
+     })
+     SocketService.onGotOfflineUsers((onlineId:any)=>{
+      console.log(onlineId,"hiiiii user offline&&&&&&&&&&&&&&&&&&&&&")
+      if(onlineId==userData._id.toString()){
+        setOnline(false)
+      }
+      
      })
   
     // Cleanup function to remove listener when the component unmounts

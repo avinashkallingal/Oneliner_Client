@@ -41,6 +41,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Chatbox from "../ChatBox/ChatBox";
 import Contacts from "../../../Components/user/Home/Contacts";
 import Inbox from "../../../Components/user/Home/Inbox";
+import { useNavigate } from "react-router-dom";
 
 import { Tabs, Tab } from '@mui/material';
 
@@ -70,8 +71,8 @@ function Home1() {
     { name: "Technology", icon: <TechnologyIcon /> },
   ];
   const [fetchGenre, setFetchGenre] = useState<any>("All");
-
   const [activeTab, setActiveTab] = useState<Number>(0);
+  const navigate=useNavigate()
 
   const handleChange= (event:React.ChangeEvent<HTMLInputElement>, newValue:Number) => {
     setActiveTab(newValue);
@@ -82,7 +83,12 @@ function Home1() {
   const handleGenre = (genre: string) => {
     setFetchGenre(genre);
   };
-  
+  useEffect(()=>{
+    const id=localStorage.getItem("userToken")
+    if(!id){
+      navigate("/")
+    }
+  })
 
   return (
     <div

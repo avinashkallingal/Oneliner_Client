@@ -369,11 +369,11 @@ export const MessageRight = (props: rightMsg) => {
           {renderFile()}
           <MessageTimeStampRight>
             {formatChatTimestamp(timestamp)}
-            {!read ? (
+            {/* {!read ? (
               <CheckIcon sx={{ fontSize: '0.8rem', color: '#4fc3f7' }} />
             ) : (
               <DoneAllIcon sx={{ fontSize: '0.8rem', color: '#4fc3f7', marginLeft: '2px' }} />
-            )}
+            )} */}
           </MessageTimeStampRight>
         </MessageOrange>
       </MessageRowRight>
