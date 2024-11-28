@@ -11,11 +11,12 @@ import Home from "../Pages/user/Home/Home";
 import EditPost from "../Components/user/Home/EditPost"
 import ChatBox from "../Pages/user/ChatBox/ChatBox";
 import ViewPost from "../Pages/user/ViewPost/ViewPost";
+import VideoChat from "../Components/user/Home/VideoChat";
 
 
 
 function UserRoute() {
-  console.log("hi this is user router page");
+  // console.log("hi this is user router page");
   return (
     <>
 
@@ -30,10 +31,8 @@ function UserRoute() {
         <Route path="/add-post" element={<AddPost />} />
         <Route path="/editPost" element={<EditPost />} />
         <Route path="/viewPost" element={<ViewPost />} />
-        <Route path="/chats" element={<ChatBox />} />
-
-
-      
+        <Route path="/chats" element={<ChatBox />} /> 
+        <Route path="/videoChat" element={<VideoChat />} />       
       </Routes>
     </>
   );

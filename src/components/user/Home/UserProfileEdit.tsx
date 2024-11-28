@@ -58,7 +58,7 @@ export default function UserProfile() {
         "http://localhost:4000/fetchUserData",
         { id: id }
       );
-      console.log(result.data.result.user_data, "data from user fetch");
+      // console.log(result.data.result.user_data, "data from user fetch");
       if (result.data.success) {
         setUser(result.data.result.user_data._doc);
         console.log(user,"state in user state")

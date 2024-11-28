@@ -184,7 +184,7 @@ interface leftMsg {
 //with modal left message
 export const MessageLeft = (props: leftMsg) => {
   const { message = "no message", timestamp, photoURL = "dummy.js", displayName = "名無しさん", fileType } = props;
-  console.log(message, " message in left dialog box**************");
+  // console.log(message, " message in left dialog box**************");
 
   const formatChatTimestamp = (timestamp1: any) => {
     const now = moment();

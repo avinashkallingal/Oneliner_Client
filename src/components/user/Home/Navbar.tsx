@@ -36,6 +36,7 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import mongoose, { Mongoose } from "mongoose";
+import { SimpleDialog } from "./SearchBox";
 
 
 
@@ -58,6 +59,7 @@ export default function Navbar() {
   const [notificationFlag, setNotificationFlag] = React.useState<boolean>(false);
   const id=localStorage.getItem("id")
   const [readButtonFlag, setReadButtonFlag] = React.useState<boolean>(false);
+  const [searchFlag,setSearchFlag] = React.useState<boolean>(false);
 
 
 
@@ -115,7 +117,11 @@ const fetchNotificationData=async()=>{
       // dispatch(showCahatBox({token:null,userData:null}))
       console.log(data1," selected data from redux")
      
-    }else{
+    }else if(path=="/search"){
+    
+      setSearchFlag(true)
+    }
+    else{
       console.log(path," navbar paths")
       navigate(path);  // Navigate to the path when a button is clicked
       handleCloseNavMenu();  // Close the navigation menu (for small screens)
@@ -152,66 +158,129 @@ const readNotification=async (notificationId:any)=>{
 }
 
 //
-const list = (anchor:"top") => (
+
+
+// const list = (anchor:"top") => (
+//   <Box
+//     sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+//     role="presentation"
+//     // onClick={toggleDrawer(anchor, false)}
+//     // onKeyDown={toggleDrawer(anchor, false)}
+//   >
+//        <List>   
+
+//       {notificationData.map((notification: any) => (
+//     <ListItem key={notification._id || notification.index} disablePadding>
+//         <ListItemButton>
+//             <ListItemText primary={notification.message} />
+//             {readButtonFlag && (
+//                 <div>
+                   
+//                     <Button
+//                         variant="outlined"
+//                         size="small"
+//                         color="secondary"
+//                         onClick={() => handleUserProfileClickOnNorification(notification.userId)}
+//                         style={{ marginLeft: "8px" }}
+//                     >
+//                         View Profile
+//                     </Button>
+//                 </div>
+//             )}
+            
+//         </ListItemButton>
+//     </ListItem>
+    
+// ))}
+//     </List>
+//     {readButtonFlag&&(<Button
+//                         variant="contained"
+//                         size="small"
+//                         color="primary"
+//                         onClick={() => readNotification(id)}
+//                     >
+//                         Mark as Read
+//                     </Button>)}
+//   </Box>
+
+
+const list = (anchor: string) => (
   <Box
-    sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+    sx={{
+      width: anchor === "top" || anchor === "bottom" ? "auto" : 250,
+      bgcolor: "#f9f9f9", // Subtle background color for better contrast
+      padding: "16px",
+      borderRadius: "4px",
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+    }}
     role="presentation"
-    // onClick={toggleDrawer(anchor, false)}
-    // onKeyDown={toggleDrawer(anchor, false)}
   >
-    {/* <List>
-      {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-        <ListItem key={text} disablePadding>
-          <ListItemButton>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
+    <Typography variant="h6" sx={{ textAlign: "center", mb: 2 }}>
+      Notifications
+    </Typography>
+    <List>
+      {notificationData.map((notification: any) => (
+        <ListItem
+          key={notification._id || notification.index}
+          disablePadding
+          sx={{
+            mb: "8px",
+            borderRadius: "8px",
+            overflow: "hidden",
+            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
+            bgcolor: "white",
+            "&:hover": { bgcolor: "#f0f0f0" },
+          }}
+        >
+          <ListItemButton sx={{ flexDirection: "column", alignItems: "center" }}>
+            <ListItemText
+              primary={
+                <Typography variant="body1" sx={{ fontWeight: 500, textAlign: "center" }}>
+                  {notification.message}
+                </Typography>
+              }
+            />
+            {readButtonFlag && (
+              <Button
+                variant="outlined"
+                size="small"
+                color="secondary"
+                onClick={() => handleUserProfileClickOnNorification(notification.userId)}
+                sx={{ mt: 1 }}
+              >
+                View Profile
+              </Button>
+            )}
           </ListItemButton>
         </ListItem>
       ))}
     </List>
-    <Divider /> */}
-    <List>   
-
-      {notificationData.map((notification: any) => (
-    <ListItem key={notification._id || notification.index} disablePadding>
-        <ListItemButton>
-            <ListItemText primary={notification.message} />
-            {readButtonFlag && (
-                <div>
-                   
-                    <Button
-                        variant="outlined"
-                        size="small"
-                        color="secondary"
-                        onClick={() => handleUserProfileClickOnNorification(notification.userId)}
-                        style={{ marginLeft: "8px" }}
-                    >
-                        View Profile
-                    </Button>
-                </div>
-            )}
-            
-        </ListItemButton>
-    </ListItem>
-    
-))}
-    </List>
-    {readButtonFlag&&(<Button
-                        variant="contained"
-                        size="small"
-                        color="primary"
-                        onClick={() => readNotification(id)}
-                    >
-                        Mark as Read
-                    </Button>)}
+    {readButtonFlag && (
+      <Button
+        variant="contained"
+        size="small"
+        color="primary"
+        onClick={() => readNotification(id)}
+        sx={{
+          display: "block",
+          mx: "auto",
+          mt: 2,
+          paddingX: "16px",
+        }}
+      >
+        Mark All as Read
+      </Button>
+    )}
   </Box>
 );
 
 const toggleDrawer = () => {
   setNotificationFlag(false);
 };
+
+const handleCloseSearch=()=>{
+  setSearchFlag(false)
+}
 
 //
 
@@ -325,6 +394,20 @@ const toggleDrawer = () => {
           >
             {list("top")}
           </Drawer>
+        </React.Fragment>
+      )}
+    </div>
+
+    </>}
+    {searchFlag&&<>
+      <div>
+      { (
+        <React.Fragment key="top">
+          {/* <Button onClick={toggleDrawer("top", true)}></Button> */}
+          <SimpleDialog       
+        open={searchFlag}
+        onClose={handleCloseSearch}
+      />
         </React.Fragment>
       )}
     </div>

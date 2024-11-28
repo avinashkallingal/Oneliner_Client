@@ -19,7 +19,7 @@ export default function Inbox() {
    
     async function fetchInboxData(){
       const response=await axiosInstance.get('http://localhost:4000/message/getInboxMessages', {params: {userId: userId}})
-    console.log(response.data," response in inbox")
+    // console.log(response.data," response in inbox")
     if(response.data){
     setInboxData(response.data.data)
     }else{
@@ -44,7 +44,7 @@ export default function Inbox() {
   };
 
 
-  console.log(inboxData," state inbox data))))))))))))))))))))))")
+  // console.log(inboxData," state inbox data))))))))))))))))))))))")
   return (
     <Box sx={{ width: 320 }}>
       <Typography

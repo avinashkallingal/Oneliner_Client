@@ -397,8 +397,8 @@ export default function SignIn() {
                 const result=await axios.post("http://localhost:4000/googleLogin",{decoded})
                 console.log(result," google login response in front end")
                 if(result.data.success){
-                  localStorage.setItem("userToken", result.data.token);
-                  localStorage.setItem("userRefreshToken", result.data.refreshToken);
+                  localStorage.setItem("userToken", result.data.token.accessToken);
+                  localStorage.setItem("userRefreshToken", result.data.token.refreshToken);
                   localStorage.setItem("email", result.data.user_data.email);
                   localStorage.setItem("id", result.data.user_data._id);
 

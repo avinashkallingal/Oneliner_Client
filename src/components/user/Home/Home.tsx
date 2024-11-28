@@ -74,7 +74,7 @@ export default function InstagramPost({ fetchGenre }) {
   // Fetch data using useEffect
   useEffect(() => {
     setLoading(true);
-    console.log(fetchGenre, "  hirr+++++++++++");
+    // console.log(fetchGenre, "  hirr+++++++++++");
     if (fetchGenre) {
       genre = fetchGenre;
     }
@@ -106,7 +106,7 @@ export default function InstagramPost({ fetchGenre }) {
         "http://localhost:4000/fetchUserData",
         { id: userId, loginUserId: "" }
       );
-      console.log(result.data.result.user_data._doc, "data from user fetch");
+      // console.log(result.data.result.user_data._doc, "data from user fetch");
       if (result.data.success) {
         setLoggedUser(result.data.result.user_data._doc);
       }
@@ -125,6 +125,7 @@ export default function InstagramPost({ fetchGenre }) {
   //   }
   //   chat();
   // })
+  
 
   const formatChatTimestamp = (timestamp1: any) => {
     const now = moment();
@@ -538,18 +539,18 @@ export default function InstagramPost({ fetchGenre }) {
                   </ExpandMore>
                 </IconButtons>
 
-                <IconButton variant="soft" color="neutral" size="sm">
+                {/* <IconButton variant="soft" color="neutral" size="sm">
                   <SendOutlined />
-                </IconButton>
+                </IconButton> */}
               </Box>
-              <IconButton
+              {/* <IconButton
                 size="sm"
                 variant="soft"
                 color="neutral"
                 sx={{ ml: "auto" }}
               >
                 <BookmarkBorderRoundedIcon />
-              </IconButton>
+              </IconButton> */}
             </CardContent>
             <CardContent>
               <Link

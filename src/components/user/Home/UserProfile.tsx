@@ -38,7 +38,9 @@ export default function UserCard({ id }) {
   // const email:string="avinashkallingal@gmail.com"
   const [user, setUser] = React.useState<User[]>([]);
   const [post, setPost] = React.useState<any>([]);
-  const [followHide,setFollowHide]=React.useState<boolean>()
+  const [followFlag,setFollowFlag]=React.useState<boolean>(true)
+  const [followersCount,setFollowersCount]=React.useState<Number>(0)
+  const [followingCount,setFollowingCount]=React.useState<Number>(0)
   const userId = localStorage.getItem("id");
 
   React.useEffect(() => {
@@ -47,22 +49,24 @@ export default function UserCard({ id }) {
         "http://localhost:4000/fetchUserData",
         { id: id ,loginUserId:userId}
       );
-      console.log(result.data.result.user_data._doc, "data from user fetch");
+      console.log(result.data.result.user_data._doc.followers.length, "data count from user fetch");
       if (result.data.success) {
         setUser(result.data.result.user_data._doc);
+        setFollowersCount(result.data.result.user_data._doc.followers.length)
+        setFollowingCount(result.data.result.user_data._doc.followings.length)
         console.log(result.data.result.user_data._doc,"&&&&&&&&&&&&&&&&user data")
         console.log(result.data.result.user_data.loginUserFollowings,"$%%$%$%$%$%$%$%$%$%$%$%$$$$$$$$$$$$$$$$")
+
         if (result.data.result.user_data.loginUserFollowings) {
-          const found = result.data.result.user_data.loginUserFollowings.filter((val:any)=>val==userId)
+          const found = result.data.result.user_data.loginUserFollowings.filter((val:any)=>val.toString()==result.data.result.user_data._doc._id?.toString())
           console.log(found," filter )()()()()()(")
-          if (found) {
-            setFollowHide(true)
+          if (found&&found.length>0) {
+            setFollowFlag(false)
           } else {
-            setFollowHide(false)
+            setFollowFlag(true)
           }
-        }else{
-        setFollowHide(false)
         }
+        console.log(followFlag," follow flag current state")
       }
 
       const resultPost = await axiosInstance.get(
@@ -111,10 +115,11 @@ export default function UserCard({ id }) {
     );
     if(result.data.success){
       
-      setFollowHide(true)
+      setFollowFlag(false)
+      setFollowersCount((prev)=>prev + 1)
       console.log(result.data,"  data of follow from back end ********************")
       
-      toast.info(followHide)
+      // toast.info("follow done")
     
     }else{
       toast.info("follow error")
@@ -127,7 +132,8 @@ export default function UserCard({ id }) {
       { followId: id,userId:userId }
     );
     if(result.data.success){
-      setFollowHide(false)
+      setFollowFlag(true)
+      setFollowersCount((prev)=>prev - 1)
       console.log(result.data,"  data of follow from back end ********************")
      
     }else{
@@ -230,7 +236,8 @@ export default function UserCard({ id }) {
                   Follower
                 </Typography>
                 <Typography sx={{ fontWeight: "lg" }}>
-                  {user.followers?.length ?? 0}
+                  {/* {user.followers?.length ?? 0} */}
+                  {followersCount??0}
                 </Typography>
               </div>
               <div>
@@ -238,7 +245,8 @@ export default function UserCard({ id }) {
                   Following
                 </Typography>
                 <Typography sx={{ fontWeight: "lg" }}>
-                  {user.followings?.length ?? 0}
+                  {/* {user.followings?.length ?? 0} */}
+                  {followingCount??0}
                 </Typography>
               </div>
             </Sheet>
@@ -246,14 +254,16 @@ export default function UserCard({ id }) {
               <Box
                 sx={{ display: "flex", gap: 1.5, "& > button": { flex: 1 } }}
               >
-                {followHide&&<Button variant="outlined" color="neutral" onClick={handleFollow}>
+                {followFlag?(<Button variant="outlined" color="neutral" onClick={handleFollow}>
                     Follow
-                  </Button>}
-              {!followHide&&
+                  </Button>):(<Button variant="outlined" color="danger" onClick={handleUnfollow}>
+                    Unfollow
+                  </Button>)}
+              {/* {!followHide&&
                   <Button variant="outlined" color="danger" onClick={handleUnfollow}>
                     Unfollow
                   </Button>
-                }
+                } */}
               </Box>
             ) : (
               <Button variant="solid" color="primary" onClick={editAction}>

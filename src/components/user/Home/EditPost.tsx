@@ -8,12 +8,13 @@ import { TextField, Button, MenuItem, InputAdornment } from "@mui/material";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../../../utilities/CropImage"; // A utility function to crop the image
 import { Card, CardContent, Typography, Box } from "@mui/material";
-import axiosInstance from "../../../Constarints/axios/adminAxios";
+import axiosInstance from "../../../Constarints/axios/userAxios";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { EmbedPDF } from "@simplepdf/react-embed-pdf";
+import Navbar from "./Navbar";
 
 const steps = ["Add synopsis", "Add PDF", "Upload Photo", "Preview"];
 
@@ -190,6 +191,7 @@ export default function EditPost() {
   if (pdf) {
     return (
       <>
+      <Navbar/>
         {pdf ? (
           <div
             style={{
@@ -480,6 +482,7 @@ export default function EditPost() {
 
   return (
     <div>
+    <Navbar/>
       <Stepper sx={{alignItems:"center" ,width: "80%", marginTop: "10vh",marginLeft:29 }}>
         {steps.map((step, index) => (
           <Step

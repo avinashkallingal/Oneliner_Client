@@ -58,13 +58,13 @@ export default function ChatBox() {
   useEffect(() => {
     SocketService.connect();
     SocketService.joinConversation(chatData._id);
-    // SocketService.emitUserOnlineStatus(`${userId}`)
+    SocketService.emitUserOnlineStatus(`${userId}`)
     // SocketService.emitOnline(`${userId}`)
-    console.log(chatData, " chatData");
+    // console.log(chatData, " chatData");
     
    async function fetchMessages(){
     const response = await axiosInstance.get('http://localhost:4000/message/getmessages', {params: {userId: userId, receiverId: userData._id}})
-    console.log(response.data.data," message db response in front end") 
+    // console.log(response.data.data," message db response in front end") 
     if(response.data.success){
       if(response.data.data){
         response.data.data.map((val:any)=>dispatch(addMessage({message:val})))
@@ -144,7 +144,7 @@ export default function ChatBox() {
   const handleClose = () => {
     dispatch(hide());
   };
-  console.log(messages," messages in redux")
+  // console.log(messages," messages in redux")
 
   return (
     <Container>
@@ -167,10 +167,10 @@ export default function ChatBox() {
             {userData.username}
             
           </span>
-          <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
+          {/* <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
           {online?<p>Online</p>:<p>Offline</p>}
             
-          </span>
+          </span> */}
           <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
           {typingIndicator&&<p>typing.......</p>}
             
