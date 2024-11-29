@@ -87,32 +87,32 @@ export const TextInput = () => {
     };
   }, []);
   
-  useEffect(() => {
-    async function clickAccept() {
+  // useEffect(() => {
+  //   async function clickAccept() {
      
-      socketService.incomingNotification(async (offer: any) => {
-        try {
-          console.log(
-            offer.offer.offer,
-            "hii received offer from sender%%%%%%%%%%%%"
-          );
+  //     socketService.incomingNotification(async (offer: any) => {
+  //       try {
+  //         console.log(
+  //           offer.offer.offer,
+  //           "hii received offer from sender%%%%%%%%%%%%"
+  //         );
   
-          const ans: any = await peer.getAnswer(offer.offer.offer);
-          console.log(ans, "answer of offer############");
-          socketService.acceptCall({
-            chatId: chat._id,
-            senderId: sender._id,
-            senderName: sender.username,
-            receiverId: receiver._id,
-            ans: ans,
-          });
-        } catch (error) {
-          console.error("Error handling incoming notification:", error);
-        }
-      });
-    }
-    clickAccept();
-  },[]);
+  //         const ans: any = await peer.getAnswer(offer.offer.offer);
+  //         console.log(ans, "answer of offer############");
+  //         socketService.acceptCall({
+  //           chatId: chat._id,
+  //           senderId: sender._id,
+  //           senderName: sender.username,
+  //           receiverId: receiver._id,
+  //           ans: ans,
+  //         });
+  //       } catch (error) {
+  //         console.error("Error handling incoming notification:", error);
+  //       }
+  //     });
+  //   }
+  //   clickAccept();
+  // },[]);
   
 
   
@@ -146,8 +146,8 @@ export const TextInput = () => {
     }
   };
   const handleOpenvidoChat = () => {
-    // setOpenVideoChat(true);//old need to view when using classic webrtc
-    navigate("/videoChat")
+    setOpenVideoChat(true);//old need to view when using classic webrtc
+    // navigate("/videoChat")
   
   };
 
@@ -370,7 +370,7 @@ export const TextInput = () => {
         </DialogActions>
       </Dialog>
       {/* Modal for image/video preview ends */}
-      {/* <VideoChat open={openVideoChat} onClose={() => setOpenVideoChat(false)} /> */}
+      {openVideoChat&&<VideoChat open={openVideoChat} onClose={() => setOpenVideoChat(false)} />}
     </>
   );
 };

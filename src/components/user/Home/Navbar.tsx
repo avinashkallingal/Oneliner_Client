@@ -37,6 +37,9 @@ import MailIcon from '@mui/icons-material/Mail';
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import mongoose, { Mongoose } from "mongoose";
 import { SimpleDialog } from "./SearchBox";
+import {recieve as recieveCall} from "../../../redux/Slice/VideoChatSlice";
+import VideoChat from "./VideoChat";
+import IncomingCallWindow from "./CallAccept";
 
 
 
@@ -60,6 +63,11 @@ export default function Navbar() {
   const id=localStorage.getItem("id")
   const [readButtonFlag, setReadButtonFlag] = React.useState<boolean>(false);
   const [searchFlag,setSearchFlag] = React.useState<boolean>(false);
+  const [videoChatFlag,setVideoChatFlag] = React.useState<boolean>(false);
+  const [callAcceptWindowFlag,setCallAcceptWindowFlag]=React.useState<boolean>(false);
+  const [callerName,setCallerName]=React.useState<string|null>(null);
+  
+  
 
 
 
@@ -79,6 +87,22 @@ export default function Navbar() {
          )
   },[])
   
+ 
+  //useEffect for recieving call and showing call accept window
+  React.useEffect(()=>{
+      // Handle incoming call
+    SocketService.receiveCallUser((data) => {
+      console.log(data, "data in receive user call^^^^^^^^^");
+      // setReceivingCall(true);
+      // setCaller(data.from);
+      // setName(data.name);
+      // setCallerSignal(data.signal); 
+      dispatch(recieveCall({receivingCall:true,caller:data.from,name:data.name,callerSignal:data.signal}))      
+       setCallAcceptWindowFlag(true)
+       setCallerName(data.name)
+      //  setVideoChatFlag(true)
+    });
+  })
 
 const fetchNotificationData=async()=>{
   const result=await axiosInstance.get("http://localhost:4000/message/getNotification",{params:{id}})
@@ -282,7 +306,18 @@ const handleCloseSearch=()=>{
   setSearchFlag(false)
 }
 
-//
+//ansering the video call functions starts
+const handleDecline=()=>{
+  setCallAcceptWindowFlag(false)
+}
+const handleAccept=()=>{
+  setVideoChatFlag(true) 
+  setCallAcceptWindowFlag(false)
+}
+const handleClose=()=>{
+  setCallAcceptWindowFlag(false)
+}
+//answering video call functions ends
 
   return (
     <>
@@ -413,6 +448,10 @@ const handleCloseSearch=()=>{
     </div>
 
     </>}
+    {callAcceptWindowFlag&&<IncomingCallWindow open={callAcceptWindowFlag} callerName={callerName} onClose={handleClose} onDecline={handleDecline} onAccept={handleAccept} />}
+    {videoChatFlag&&<VideoChat open={videoChatFlag} onClose={() => setVideoChatFlag(false)} />}
+
+
     </>
   );
 }

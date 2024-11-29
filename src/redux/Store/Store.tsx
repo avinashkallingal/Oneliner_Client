@@ -47,6 +47,7 @@ import userAuthSlice from '../Slice/UserSlice';
 import adminAuthSlice from '../Slice/AdminSlice';
 import chatDisplaySlice from '../Slice/ChatSlice';
 import messageStoreSlice from '../Slice/MessageSlice';
+import videoChatSlice from '../Slice/VideoChatSlice';
 
 // Persist configuration for user and admin slices
 const persistConfiguration = {
@@ -64,7 +65,9 @@ const rootReducer = combineReducers({
     UserAuth: persistedUserReducer,
     AdminAuth: persistedAdminReducer,
     ChatDisplay: chatDisplaySlice.reducer, // No persistence
-    messageStore: messageStoreSlice.reducer // No persistence
+    messageStore: messageStoreSlice.reducer, // No persistence
+    VideoChat:videoChatSlice.reducer,// No persistence
+    
 });
 
 // Configure the store with the combined reducers

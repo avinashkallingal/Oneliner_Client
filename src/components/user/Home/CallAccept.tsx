@@ -5,29 +5,28 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Typography from "@mui/material/Typography";
 
-interface IncomingCallWindowProps {
-  callerName: string; // The name or ID of the caller
-  offer: any; // The WebRTC offer object
-  onAccept: (offer: any) => void; // Function to handle call acceptance
-  onDecline: () => void; // Function to handle call decline
-}
 
-const IncomingCallWindow: React.FC<IncomingCallWindowProps> = ({
-  callerName,
-  offer,
-  onAccept,
-  onDecline,
-}) => {
-  const [open, setOpen] = useState<boolean>(true);
+interface IncomingCallWindowProps {
+  open: boolean;
+  callerName?:string|null;
+  onClose: () => void;
+  onDecline: () => void;
+  onAccept:()=> void;
+}
+const IncomingCallWindow: React.FC<IncomingCallWindowProps> = ({ open,callerName, onClose,onDecline,onAccept }) => {
+
+  // const [open, setOpen] = useState<boolean>(true);
 
   const handleAccept = () => {
-    setOpen(false);
-    onAccept(offer);
+    // setOpen(false);
+    onAccept()
   };
 
   const handleDecline = () => {
-    setOpen(false);
     onDecline();
+    // setOpen(false);
+    onClose()
+    
   };
 
   return (
