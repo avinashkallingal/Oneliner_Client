@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../Constarints/axios/adminAxios';
-import { Card, CardContent, Typography, Box, Grid } from '@mui/material';
+import { Card, CardContent, Typography, Box, Grid, Button } from '@mui/material';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 function Posts() {
   const [posts, setPosts] = useState<any[]>([]);
-  const [removeButton,stepRemoveButton]=useState<any>(true);
- const navigate=useNavigate();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const postsPerPage = 2; // Number of posts per page
+  const navigate = useNavigate();
+
   useEffect(() => {
     async function fetchPosts() {
       try {
@@ -21,33 +23,39 @@ function Posts() {
       }
     }
     fetchPosts();
- 
   }, []);
-  const handleRemove=async(postId:any)=>{
-   
-    const result=await axiosInstance.get(`http://localhost:4000/post/admin/removePost?postId=${postId}`)
-    if(result.data.success){
-        toast.success("Post removed")
-        navigate("/admin/login")
-        stepRemoveButton(false)
+
+  const handleRemove = async (postId: any) => {
+    const result = await axiosInstance.get(`http://localhost:4000/post/admin/removePost?postId=${postId}`);
+    if (result.data.success) {
+      toast.success("Post removed");
+      navigate("/admin/login");
     }
-}
+  };
+
+  // Calculate the start and end index for slicing the posts array
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+  // Change page function
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= Math.ceil(posts.length / postsPerPage)) {
+      setCurrentPage(newPage);
+    }
+  };
 
   return (
-
     <Box
       display="flex"
       flexDirection="column"
       flexGrow={1}
-      height="100vh"  // Set to 100vh to cover the full height of the viewport
-      width="100vw"   // Set to 100vw to cover the full width of the viewport
-    //   bgcolor="grey.100" // Set the background color to eliminate white background
-      p={3}           // Optional padding for some spacing
+      height="100vh" // Set to 100vh to cover the full height of the viewport
+      width="100vw" // Set to 100vw to cover the full width of the viewport
+      p={3} // Optional padding for some spacing
     >
-        
-      <Grid container spacing={3} justifyContent="center"  alignItems="center" flexGrow={1}>
-     
-        {posts.map((post, index) => (
+      <Grid container spacing={3} justifyContent="center" alignItems="center" flexGrow={1}>
+        {currentPosts.map((post, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
@@ -58,7 +66,7 @@ function Posts() {
                   {post.summary || 'Untitled Post'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  <strong>Author Id:</strong> {post.userId||'Unknown'}
+                  <strong>Author Id:</strong> {post.userId || 'Unknown'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   <strong>Genre:</strong> {post.genre || 'N/A'}
@@ -72,13 +80,32 @@ function Posts() {
                 <Typography variant="body2" color="text.secondary">
                   <strong>Created At:</strong> {new Date(post.created_at).toLocaleString()}
                 </Typography>
-                {!post.isDelete&&<button onClick={()=>handleRemove(post._id)}>Remove Post</button>}
-                {post.isDelete&&<button  style={{ color: 'red' }} onClick={()=>handleRemove(post._id)} disabled>Post Removed</button>}
+                {!post.isDelete && <button onClick={() => handleRemove(post._id)}>Remove Post</button>}
+                {post.isDelete && <button style={{ color: 'red' }} onClick={() => handleRemove(post._id)} disabled>Post Removed</button>}
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
+
+      {/* Pagination Controls */}
+      <Box mt={3} display="flex" justifyContent="center">
+        <Button
+          variant="contained"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === Math.ceil(posts.length / postsPerPage)}
+          sx={{ ml: 2 }}
+        >
+          Next
+        </Button>
+      </Box>
     </Box>
   );
 }

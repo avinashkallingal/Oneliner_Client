@@ -37,6 +37,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Chatbox from "../../../Pages/user/ChatBox/ChatBox";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
+import moment from "moment";
 
 export default function ViewPost() {
   
@@ -49,6 +50,18 @@ export default function ViewPost() {
   const [fetchGenres,setFetchGenres]=useState<any>("all");
   const [error,setError]=useState<any>('')
   const [chatDisplay,setChatDisplay]=useState<boolean>(false);
+  const [replyTo, setReplyTo] = useState(null);
+  const [replyText, setReplyText] = useState("");
+  const [replyCommentId, setReplyCommentId] = React.useState(null); // Track which comment is being replied to
+  const [postRefresh, setPostRefresh] = useState<boolean>();
+
+    {/* State for managing displayed comments */}
+const [visibleComments, setVisibleComments] = useState(5);
+
+{/* Function to handle showing more comments */}
+const handleShowMoreComments = () => {
+  setVisibleComments((prev) => prev + 10);
+};
 
 
 
@@ -68,10 +81,23 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 
- 
+const formatChatTimestamp = (timestamp1: any) => {
+  const now = moment();
+  const messageTime = moment(timestamp1);
+
+  if (messageTime.isSame(now, "day")) {
+    return messageTime.fromNow();
+  } else if (messageTime.isSame(now, "year")) {
+    return messageTime.format("MMM Do, h:mm A");
+  } else {
+    return messageTime.format("MMM Do YYYY, h:mm A");
+  }
+};
 // Fetch data using useEffect
   useEffect(() => {
-  
+  console.log(location," navigate state value in view post ++++++++++++++++")
+  console.log( location.state.post._id," navigate state value in view post ------------------")
+ 
     setLoading(true);
      const fetchPosts = async () => {
       try {
@@ -96,6 +122,87 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   const handleExpandClick = () => {
     setExpanded(!expanded);
 };
+
+
+
+//for comments
+//handling comments
+const handleComment = async (
+  postId: string,
+  parentCommentId?: any,
+  text?: any
+) => {
+  try {
+    const payload = {
+      postId,
+      content: comment,
+      userId: loggeduser?._id,
+      avatar: loggeduser?.profilePicture,
+      userName: loggeduser?.username,
+      parentCommentId: null,
+      replayText: "",
+    };
+
+    if (parentCommentId) {
+      // If replying to a comment, add parentCommentId
+      payload.parentCommentId = parentCommentId;
+      payload.replayText = text;
+    }
+
+    const result = await axiosInstance.post(
+      "http://localhost:4000/post/addComment",
+      payload
+    );
+
+    if (result.data.success) {
+      setPosts((prevPosts: any) =>
+        prevPosts.map((p: any) =>
+          p._id === postId
+            ? {
+                ...p,
+                comments: p.comments.map((comment1: any) => {
+                  if (comment1._id === parentCommentId) {
+                    // If it is a reply, update the specific comment's replies array
+                    return {
+                      ...comment1,
+                      replies: [
+                        ...comment1.replies,
+                        {
+                          _id: result.data.commentId,
+                          UserId: loggeduser._id,
+                          content: comment,
+                          createdAt: new Date().toISOString(),
+                          avatar: loggeduser?.profilePicture,
+                          userName: loggeduser?.name,
+                        },
+                      ],
+                    };
+                  }
+                  return comment1;
+                }),
+              }
+            : p
+        )
+      );
+      setPostRefresh(!postRefresh);
+      setExpanded(true);
+
+      // setSelectedEmoji(''); // Clear the input after posting
+      toast.success("Reply added successfully");
+    } else {
+      toast.error("Failed to add comment/reply");
+    }
+  } catch (error) {
+    toast.error("Something went wrong");
+  }
+};
+
+const handleReplyPost = (postId: any, commentId: any) => {
+  handleComment(postId, commentId, replyText);
+  setReplyText("");
+  setReplyTo(null);
+};
+
 
 // useEffect(()=>{
 //   function chat(){
@@ -240,80 +347,80 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   // toast.info(id)
   // }
   //
-  const handleComment = async (postId: string, parentCommentId?: any) => {
-    try {
-      const payload = {
-        postId,
-        content: comment, // use replyText for replies, comment for normal comment
-        userId: loggeduser?._id,
-        avatar: loggeduser?.avatar,
-        userName: loggeduser?.name,
-        replayText: "",
-        parentCommentId: "", // null if it's a normal comment
-      };
+  // const handleComment = async (postId: string, parentCommentId?: any) => {
+  //   try {
+  //     const payload = {
+  //       postId,
+  //       content: comment, // use replyText for replies, comment for normal comment
+  //       userId: loggeduser?._id,
+  //       avatar: loggeduser?.avatar,
+  //       userName: loggeduser?.name,
+  //       replayText: "",
+  //       parentCommentId: "", // null if it's a normal comment
+  //     };
 
-      if (replyTo) {
-        payload.parentCommentId = replyTo;
-        payload.replayText = replyText;
-      }
+  //     if (replyTo) {
+  //       payload.parentCommentId = replyTo;
+  //       payload.replayText = replyText;
+  //     }
 
-      const result = await axiosInstance.post("/post/comment", payload);
+  //     const result = await axiosInstance.post("/post/comment", payload);
 
-      if (result.data.success) {
-        const newComment = {
-          _id: result.data.commentId,
-          UserId: loggeduser?._id,
-          content: comment,
-          createdAt: new Date().toISOString(),
-          avatar: loggeduser?.avatar,
-          userName: loggeduser?.name,
-          replies: parentCommentId ? [] : [], // Empty replies array for a new comment
-        };
+  //     if (result.data.success) {
+  //       const newComment = {
+  //         _id: result.data.commentId,
+  //         UserId: loggeduser?._id,
+  //         content: comment,
+  //         createdAt: new Date().toISOString(),
+  //         avatar: loggeduser?.avatar,
+  //         userName: loggeduser?.name,
+  //         replies: parentCommentId ? [] : [], // Empty replies array for a new comment
+  //       };
 
-        // Update state based on whether it's a reply or a new comment
-        setPostData((prevPost) => {
-          if (parentCommentId) {
-            // Handle reply
-            return {
-              ...prevPost!,
-              comments: prevPost!.comments.map((comment) => {
-                if (comment._id === parentCommentId) {
-                  return {
-                    ...comment,
-                    replies: [
-                      ...comment.replies,
-                      {
-                        _id: result.data.commentId,
-                        UserId: loggeduser?._id,
-                        content: replyText,
-                        createdAt: new Date().toISOString(),
-                        avatar: loggeduser?.avatar,
-                        userName: loggeduser?.name,
-                      },
-                    ],
-                  };
-                }
-                return comment;
-              }),
-            };
-          } else {
-            // Handle new comment
-            return {
-              ...prevPost!,
-              comments: [...prevPost!.comments, newComment],
-            };
-          }
-        });
+  //       // Update state based on whether it's a reply or a new comment
+  //       setPostData((prevPost) => {
+  //         if (parentCommentId) {
+  //           // Handle reply
+  //           return {
+  //             ...prevPost!,
+  //             comments: prevPost!.comments.map((comment) => {
+  //               if (comment._id === parentCommentId) {
+  //                 return {
+  //                   ...comment,
+  //                   replies: [
+  //                     ...comment.replies,
+  //                     {
+  //                       _id: result.data.commentId,
+  //                       UserId: loggeduser?._id,
+  //                       content: replyText,
+  //                       createdAt: new Date().toISOString(),
+  //                       avatar: loggeduser?.avatar,
+  //                       userName: loggeduser?.name,
+  //                     },
+  //                   ],
+  //                 };
+  //               }
+  //               return comment;
+  //             }),
+  //           };
+  //         } else {
+  //           // Handle new comment
+  //           return {
+  //             ...prevPost!,
+  //             comments: [...prevPost!.comments, newComment],
+  //           };
+  //         }
+  //       });
 
-        setComment(""); // Clear the comment input field
-        toast.success("Comment added successfully");
-      } else {
-        toast.error("Failed to add comment/reply");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  };
+  //       setComment(""); // Clear the comment input field
+  //       toast.success("Comment added successfully");
+  //     } else {
+  //       toast.error("Failed to add comment/reply");
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
+  // };
   //
 
   return (
@@ -569,31 +676,117 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
               </Link>
             </CardContent>
 
-            <CardContent orientation="horizontal" sx={{ gap: 1, padding: 1 }}>
-              <IconButton
-                size="sm"
-                variant="plain"
-                color="neutral"
-                sx={{ ml: -1 }}
+            {expanded && (
+  <CardContent>
+    {post.comments.slice(0, visibleComments).map((comment1: any) => (
+      <Box
+        key={comment1._id}
+        sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
+            <Link
+              component="button"
+              color="neutral"
+              sx={{ textDecoration: "none" }}
+            >
+              {comment1.userName}
+            </Link>
+          </Typography>
+          <Typography sx={{ fontSize: "sm", color: "text.secondary" }}>
+            {comment1.content}
+          </Typography>
+        </Box>
+        <Link
+          component="button"
+          underline="none"
+          sx={{ fontSize: "xs", color: "text.tertiary" }}
+          onClick={() => setReplyCommentId(comment1._id)}
+        >
+          Reply
+        </Link>
+        <span style={{ fontSize: "0.8rem", color: "#888" }}>
+          {formatChatTimestamp(comment1.createdAt)}
+        </span>
+        {replyCommentId === comment1._id && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              mt: 1,
+            }}
+          >
+            {/* Showing Replies */}
+            {comment1.replies?.map((reply: any) => (
+              <Box
+                key={reply._id}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  pl: 3,
+                  my: 0.5,
+                }}
               >
-                <Face />
-              </IconButton>
-              <Input
-                variant="plain"
-                size="sm"
-                placeholder="Add a comment…"
-                sx={{ flex: 1, px: 0, "--Input-focusedThickness": "0px" }}
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <Link
-                underline="none"
-                role="button"
-                onClick={() => handleComment(post._id)}
-              >
-                Post
-              </Link>
-              {/* <button onClick={()=>toast.error("post button clicked")}></button> */}
-            </CardContent>
+                <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
+                  <Link
+                    component="button"
+                    color="neutral"
+                    textColor="text.primary"
+                    sx={{
+                      fontWeight: "lg",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {reply.userName}
+                  </Link>
+                </Typography>
+                <Typography
+                  sx={{ fontSize: "sm", color: "text.secondary" }}
+                >
+                  {reply.content}
+                </Typography>
+                <span style={{ fontSize: "0.8rem", color: "#888" }}>
+                  {formatChatTimestamp(reply.createdAt)}
+                </span>
+              </Box>
+            ))}
+            <Input
+              variant="plain"
+              size="sm"
+              placeholder="Reply..."
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              sx={{ flex: 1 }}
+            />
+            <Link
+              component="button"
+              underline="none"
+              sx={{ fontSize: "sm", color: "primary.main" }}
+              onClick={() =>
+                handleReplyPost(post._id, comment1._id)
+              }
+            >
+              Post
+            </Link>
+          </Box>
+        )}
+      </Box>
+    ))}
+    {/* Show more button */}
+    {visibleComments < post.comments.length && (
+      <Link
+        component="button"
+        underline="none"
+        sx={{ fontSize: "sm", color: "primary.main", mt: 1 }}
+        onClick={handleShowMoreComments}
+      >
+        Show More
+      </Link>
+    )}
+  </CardContent>
+)}
           </Card>
         ))
       )}

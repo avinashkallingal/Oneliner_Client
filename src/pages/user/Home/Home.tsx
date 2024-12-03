@@ -78,7 +78,7 @@ function Home1() {
   const navigate = useNavigate();
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // Dialog visibility
-  const isMobile = useMediaQuery("(max-width:600px)"); // Media query for mobile view
+  const isMobile = useMediaQuery("(max-width:500px)"); // Media query for mobile view
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -232,7 +232,7 @@ function Home1() {
         )}
 
         {/* Main Box */}
-        <Box
+        {!isMobile&&(<Box
           sx={{
             boxShadow: 15,
             padding: 2,
@@ -244,7 +244,25 @@ function Home1() {
           }}
         >
           <Home fetchGenre={fetchGenre} />
-        </Box>
+        </Box>)}
+
+        {/* main window for mobile */}
+        {isMobile && (
+  <Box
+    sx={{
+      boxShadow: 15,
+      padding: 2,
+      zIndex: 500,
+      borderRadius: 2,
+      width: "90%", // 90% of the screen width
+      maxWidth: "100%", // Prevent overflow
+      margin: "0 auto", // Center horizontally
+    }}
+  >
+    <Home fetchGenre={fetchGenre} />
+  </Box>
+)}
+
 
         {/* Right Box old*/}
         {/* <Paper

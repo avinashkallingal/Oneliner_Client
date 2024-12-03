@@ -7,8 +7,25 @@ import Divider from '@mui/joy/Divider';
 import Typography from '@mui/joy/Typography';
 import { Box } from '@mui/joy';
 import axiosInstance from '../../../Constarints/axios/userAxios';
+import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 
 export default function ProfilePostCard({ posts }: any) {
+const navigate=useNavigate()
+
+  // const handleUserClick = async (id: any) => {
+  //   try {
+  //     navigate("/userProfile", { state: { id } });
+  //     console.log(id,"  id in handle user click")
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
+  // };
+  const handlePostViewClick = (post: any) => {
+    console.log(post,"post in post view function")
+    
+    navigate("/viewPost", { state: { post } });
+  }
   
   return (
     <Box
@@ -24,6 +41,7 @@ export default function ProfilePostCard({ posts }: any) {
     {posts.map((post: any, index: number) => (
       <Card
         key={index}
+       
         variant="outlined"
         sx={{
           flexGrow: 1,          // Allows the card to grow within available space
@@ -65,6 +83,7 @@ export default function ProfilePostCard({ posts }: any) {
             >
               1 hour ago
             </Typography>
+            <button  onClick={() => handlePostViewClick(post)}>View post</button>
           </CardContent>
         </CardOverflow>
       </Card>

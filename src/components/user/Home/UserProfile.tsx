@@ -108,6 +108,10 @@ export default function UserCard({ id }) {
     }
   };
 
+
+
+ 
+
   const handleFollow=async()=>{
     const result=await axiosInstance.put(
       "http://localhost:4000/follow",
@@ -276,7 +280,7 @@ export default function UserCard({ id }) {
         <Grid container spacing={2}>
           {post.map((post, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
-              <ProfilePostCard posts={[post]} />{" "}
+              <ProfilePostCard  posts={[post]} />{" "}
               {/* Pass individual post to ProfilePostCard */}
             </Grid>
           ))}

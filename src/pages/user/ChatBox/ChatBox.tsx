@@ -24,7 +24,7 @@ function Chatbox() {
 
           bottom: -138,
           marginLeft:"70vw",
-          zIndex: 1000,
+          zIndex: 2000,
           cursor: 'move',
         }}
       >

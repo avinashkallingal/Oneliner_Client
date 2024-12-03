@@ -4,6 +4,7 @@ import Dashboard from '../../../Components/admin/Dashboard/Dashboard';
 import UserList from '../../../Components/admin/UserManagement/UserManagement';
 import { useNavigate } from 'react-router-dom';
 import Posts from '../../../Components/admin/Posts/Posts';
+import { autoBatchEnhancer } from '@reduxjs/toolkit';
 
 const App: React.FC = () => {
   const [tabIndex, setTabIndex] = useState<number>(0);
@@ -54,32 +55,40 @@ const App: React.FC = () => {
         flexGrow={1}
         p={3}
         mt={2}
-        sx={{ width: '100vw', maxWidth: '100vw', color: '#333' }}
+        sx={{
+          width: '100vw',
+          maxWidth: '100vw',
+          color: '#333',
+          background: '#cfe2f3', // Background applied here         
+          display: 'flex',
+          flexDirection: 'column', // Allow vertical stacking of content
+           
+        }}
       >
         <Container
           sx={{
-            minHeight: '100vh',
-            width: '100vw',
-            background: "#D3D3D3",
+            flexGrow: 1,
+            width: '100%',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+           
           }}
         >
-          {/* Center the Dashboard and UserList */}
+          {/* Render the appropriate tab content */}
           {tabIndex === 0 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100vw' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw' }}>
               <Dashboard />
             </Box>
           )}
           {tabIndex === 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100vw' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw' }}>
               <UserList />
             </Box>
           )}
           {tabIndex === 2 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100vw' }}>
-              <Posts/>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw' }}>
+              <Posts />
             </Box>
           )}
         </Container>
