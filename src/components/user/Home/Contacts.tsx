@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { show as showCahatBox } from "../../../redux/Slice/ChatSlice";
 import { clearMessages } from '../../../redux/Slice/MessageSlice';
+import { userEndpoints } from '../../../Constarints/endpoints/userEndpoints';
+import { messageEndpoints } from '../../../Constarints/endpoints/messageEndPoints';
 
 export default function Contacts() {
   const [contacts, setContacts] = React.useState<any[]>([]);
@@ -22,7 +24,7 @@ export default function Contacts() {
 
   React.useEffect(() => {
     async function fetchUsers() {
-      const result = await axiosInstance.post("http://localhost:4000/contacts", { id: userId });
+      const result = await axiosInstance.post(userEndpoints.contactsFetch, { id: userId });
 
       if (result.data.success) {
         setContacts(result.data.result.contacts_data);
@@ -35,13 +37,15 @@ export default function Contacts() {
 
   const chatHandle = async (userData: any) => {
     try {
-      const response = await axiosInstance.post(`http://localhost:4000/message/createChatId?userId=${userId}&recieverId=${userData._id}`);
+      const response = await axiosInstance.post(messageEndpoints.createChatId(userId,userData._id));
 
       if (response.data.success) {
         const chatId = response.data.data._id;
         console.log("Chat ID from server:", chatId);
         dispatch(clearMessages());
+        console.log(response.data.data,"response in contacts%%%%%%%%%%%%%")
         dispatch(showCahatBox({ token: null, userData: userData, chatRoomData: response.data.data }));
+        // dispatch(showCahatBox({ token: null, userData: userData, chatRoomData: chatId }));
       }
     } catch (error) {
       console.log("Error occurred while navigating message area", error);

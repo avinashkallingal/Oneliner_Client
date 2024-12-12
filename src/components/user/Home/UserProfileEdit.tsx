@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '../../../utilities/CropImage'; // A utility function to crop the image
+import { HttpStatus } from "../../../Interfaces/StatusCode";
+import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 
 const defaultTheme = createTheme();
 
@@ -55,7 +57,7 @@ export default function UserProfile() {
     const fetchData = async () => {
       console.log(email, "email from localstorage");
       const result = await axiosInstance.post(
-        "http://localhost:4000/fetchUserData",
+               userEndpoints.fetchUserData,
         { id: id }
       );
       // console.log(result.data.result.user_data, "data from user fetch");
@@ -138,7 +140,7 @@ const handleCrop = async () => {
     try {
       // Make the API call to update profile
       const response = await axiosInstance.put(
-        `http://localhost:4000/userProfile/update/${id}`,
+       userEndpoints.updateUserProfile(id),
         formData,
         {
           headers: {
@@ -161,7 +163,7 @@ const handleCrop = async () => {
         }
     } catch (error:any) {
       console.error("Error while updating profile:", error);
-      if (error.response.status != 200) {
+      if (error.response.status != HttpStatus.OK) {
         toast.error("unauthorized access");
         localStorage.removeItem("userToken");
         localStorage.removeItem("refreshToken");

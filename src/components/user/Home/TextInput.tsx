@@ -23,6 +23,7 @@ import peer from "../../../service/peer";
 import { useNavigate } from "react-router-dom";
 
 import VideoChat from "./VideoChat";
+import { messageEndpoints } from "../../../Constarints/endpoints/messageEndPoints";
 
 const WrapForm = styled(Box)({
   display: "flex",
@@ -123,6 +124,7 @@ export const TextInput = () => {
 
   const handleSendMessage = async () => {
     if (message.trim() && chat._id && userId && receiver._id) {
+      
       socketService.sendMessage({
         chatId: chat._id,
         senderId: userId,
@@ -217,7 +219,7 @@ export const TextInput = () => {
           // formData.append('file', File);
 
           const response = await axiosInstance.post(
-            "http://localhost:4000/message/upload",
+            messageEndpoints.upload,
             { FileData },
             {
               headers: {

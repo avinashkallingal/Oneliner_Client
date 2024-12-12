@@ -37,6 +37,8 @@ import { useSelector, useDispatch } from "react-redux";
 import Chatbox from "../../../Pages/user/ChatBox/ChatBox";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
+import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 
 export default function InstagramPost({ fetchGenre }) {
   const [posts, setPosts] = useState([]);
@@ -90,7 +92,7 @@ const handleShowMoreComments = () => {
     const fetchPosts = async () => {
       try {
         const result = await axiosInstance.get(
-          `http://localhost:4000/post/getPosts?genre=${genre}`
+          postEndpoints.getPosts(genre)
         );
         // if(result.status!==200){
         //   console.log(result.status,"hiiiiiiiiiiii")
@@ -111,7 +113,7 @@ const handleShowMoreComments = () => {
   useEffect(() => {
     async function fetchUser() {
       const result = await axiosInstance.post(
-        "http://localhost:4000/fetchUserData",
+        userEndpoints.fetchUserData,
         { id: userId, loginUserId: "" }
       );
       // console.log(result.data.result.user_data._doc, "data from user fetch");
@@ -151,7 +153,7 @@ const handleShowMoreComments = () => {
   const viewPdf = async (postId: any) => {
     try {
       const result = await axiosInstance.post(
-        "http://localhost:4000/post/pdfUrlFetch",
+        postEndpoints.pdfUrlFetch,
         { postId }
       );
 
@@ -191,7 +193,7 @@ const handleShowMoreComments = () => {
 
     try {
       const response = await axiosInstance.post(
-        "http://localhost:4000/post/likePost",
+        postEndpoints.likePost,
         { postId, userId, postUserId, likeFlag }
       );
       if (!response.data.success) {
@@ -292,7 +294,7 @@ const handleShowMoreComments = () => {
       }
 
       const result = await axiosInstance.post(
-        "http://localhost:4000/post/addComment",
+        postEndpoints.addComment,
         payload
       );
 

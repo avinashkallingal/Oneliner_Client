@@ -18,6 +18,7 @@ import EditPost from "./EditPost";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import Swal from "sweetalert2";
+import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 
 export default function PostMenu({ postData }: any) {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -58,7 +59,7 @@ export default function PostMenu({ postData }: any) {
       if (result.isConfirmed) {
         try {
           const response = await axiosInstance.put(
-            "http://localhost:4000/post/reportPost",
+            postEndpoints.reportPost,
             { postId: post._id, reportUserId: id }
           );
 
@@ -102,7 +103,7 @@ export default function PostMenu({ postData }: any) {
       if (result.isConfirmed) {
         try {
           const response = await axiosInstance.post(
-            "http://localhost:4000/post/deletePost",
+            postEndpoints.deletePost,
             { postId: post._id, imageKey: post.imageUrl, pdfKey: post.pdfUrl }
           );
 

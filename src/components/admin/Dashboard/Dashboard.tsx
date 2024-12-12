@@ -19,6 +19,8 @@ import {
   ArcElement,
 } from "chart.js";
 import axiosInstance from "../../../Constarints/axios/userAxios";
+import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
+import { adminEndpoints } from "../../../Constarints/endpoints/adminEndpoints";
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
@@ -31,7 +33,7 @@ const Dashboard: React.FC = () => {
     async function fetchData() {
       try {
         const result = await axiosInstance.get(
-          "http://localhost:4000/admin/userList"
+          adminEndpoints.userList
         );
         if (result.data.userData) {
           setUsers(result.data.userData);
@@ -43,7 +45,7 @@ const Dashboard: React.FC = () => {
       try {
         const genre = "All";
         const resultPosts = await axiosInstance.get(
-          `http://localhost:4000/post/getPosts?genre=${genre}`
+          postEndpoints.getPosts(genre)
         );
         setPosts(resultPosts.data.data);
       } catch (error) {

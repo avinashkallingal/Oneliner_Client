@@ -16,6 +16,8 @@ import Grid from "@mui/material/Grid";
 import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { toast } from "sonner";
+import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
+import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 
 export default function UserCard({ id }) {
   console.log(id,"^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
@@ -46,7 +48,7 @@ export default function UserCard({ id }) {
   React.useEffect(() => {
     const fetchData = async () => {
       const result = await axiosInstance.post(
-        "http://localhost:4000/fetchUserData",
+        userEndpoints.fetchUserData,
         { id: id ,loginUserId:userId}
       );
       console.log(result.data.result.user_data._doc.followers.length, "data count from user fetch");
@@ -69,8 +71,8 @@ export default function UserCard({ id }) {
         console.log(followFlag," follow flag current state")
       }
 
-      const resultPost = await axiosInstance.get(
-        `http://localhost:4000/post/getUserPosts?id=${id}`
+      const resultPost = await axiosInstance.get(        
+        postEndpoints.getUserPosts(id)
       );
       console.log(resultPost.data.data, " data of user posts");
       if (resultPost.data.success) {
@@ -114,7 +116,7 @@ export default function UserCard({ id }) {
 
   const handleFollow=async()=>{
     const result=await axiosInstance.put(
-      "http://localhost:4000/follow",
+      userEndpoints.follow,
       { followId: id,userId:userId }
     );
     if(result.data.success){
@@ -132,7 +134,7 @@ export default function UserCard({ id }) {
 
   const handleUnfollow=async()=>{
     const result=await axiosInstance.put(
-      "http://localhost:4000/unFollow",
+      userEndpoints.unFollow,
       { followId: id,userId:userId }
     );
     if(result.data.success){

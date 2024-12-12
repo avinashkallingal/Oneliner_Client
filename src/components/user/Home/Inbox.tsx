@@ -10,32 +10,48 @@ import axiosInstance from '../../../Constarints/axios/userAxios';
 import { useDispatch } from 'react-redux';
 import { show as showCahatBox } from "../../../redux/Slice/ChatSlice";
 import { clearMessages } from '../../../redux/Slice/MessageSlice';
+import { messageEndpoints } from '../../../Constarints/endpoints/messageEndPoints';
+import SocketService from '../../../socket/SocketService';
 
 export default function Inbox() {
   const userId=localStorage.getItem("id")
   const [inboxData,setInboxData]=React.useState([])
+  const [count,setCount]=React.useState<Number|null>(null)
   const dispatch = useDispatch()
   React.useEffect(()=>{
    
     async function fetchInboxData(){
-      const response=await axiosInstance.get('http://localhost:4000/message/getInboxMessages', {params: {userId: userId}})
+      const response=await axiosInstance.get(messageEndpoints.getInboxMessages, {params: {userId: userId}})
     // console.log(response.data," response in inbox")
     if(response.data){
+      console.log(response.data.data,"inbox data^^^^^^^^^^^^^^^")
     setInboxData(response.data.data)
     }else{
       console.log("error in fetching inbox messages")
     }
     }
     fetchInboxData()
-  },[])
+  },[count])
+
+  React.useEffect(()=>{
+    SocketService.onNewMessage((newMessage) => {
+   
+   
+      if (newMessage) {
+        setCount(1)
+      }
+    });
+  })
+
 
   const chatHandle = async (userData: any,chatId:any) => {
     try {
       
       if (userData) {
-      
+      chatId._id=chatId.chatId//did this to neglect complication here chat id need to pass other end _id field have chat id
        
         dispatch(clearMessages());
+        console.log(chatId,"chat id in inbox *****************")
         dispatch(showCahatBox({ token: null, userData: userData, chatRoomData: chatId }));
       }
     } catch (error) {

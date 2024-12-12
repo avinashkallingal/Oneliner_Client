@@ -3,6 +3,8 @@ import axiosInstance from '../../../Constarints/axios/adminAxios';
 import { Card, CardContent, Typography, Box, Grid, Button } from '@mui/material';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { adminEndpoints } from '../../../Constarints/endpoints/adminEndpoints';
+import { postEndpoints } from '../../../Constarints/endpoints/postEndpoints';
 
 function Posts() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -13,7 +15,7 @@ function Posts() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const result = await axiosInstance.get("http://localhost:4000/post/adminPostData");
+        const result = await axiosInstance.get(postEndpoints.adminPostData);
         if (result.data.success) {
           console.log(result.data, "data came to backend");
           setPosts(result.data.data); // Assuming the response contains an array of posts
@@ -26,7 +28,7 @@ function Posts() {
   }, []);
 
   const handleRemove = async (postId: any) => {
-    const result = await axiosInstance.get(`http://localhost:4000/post/admin/removePost?postId=${postId}`);
+    const result = await axiosInstance.get(postEndpoints.removePost(postId));
     if (result.data.success) {
       toast.success("Post removed");
       navigate("/admin/login");

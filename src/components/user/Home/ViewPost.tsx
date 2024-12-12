@@ -38,6 +38,7 @@ import Chatbox from "../../../Pages/user/ChatBox/ChatBox";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import moment from "moment";
+import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 
 export default function ViewPost() {
   
@@ -102,7 +103,7 @@ const formatChatTimestamp = (timestamp1: any) => {
      const fetchPosts = async () => {
       try {
         const result = await axiosInstance.get(
-          `http://localhost:4000/post/getPost?id=${location.state.post._id}`
+          postEndpoints.getPost(location.state.post._id)
         );
         // if(result.status!==200){
         //   console.log(result.status,"hiiiiiiiiiiii")
@@ -150,7 +151,7 @@ const handleComment = async (
     }
 
     const result = await axiosInstance.post(
-      "http://localhost:4000/post/addComment",
+      postEndpoints.addComment,
       payload
     );
 
@@ -215,7 +216,7 @@ const handleReplyPost = (postId: any, commentId: any) => {
   const viewPdf = async (postId: any) => {
     try {
       const result = await axiosInstance.post(
-        "http://localhost:4000/post/pdfUrlFetch",
+        postEndpoints.pdfUrlFetch,
         { postId }
       );
 
@@ -258,7 +259,7 @@ const handleReplyPost = (postId: any, commentId: any) => {
 
     try {
       const response = await axiosInstance.post(
-        "http://localhost:4000/post/likePost",
+        postEndpoints.likePost,
         { postId, userId, postUserId, likeFlag }
       );
       if (!response.data.success) {

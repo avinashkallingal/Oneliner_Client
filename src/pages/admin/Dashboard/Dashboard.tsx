@@ -19,12 +19,12 @@ const App: React.FC = () => {
     navigate("/admin/login");
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/admin/login");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("adminToken");
+  //   if (!token) {
+  //     navigate("/admin/login");
+  //   }
+  // }, [navigate]);
 
   return (
     <Box display="flex" flexDirection="column" height="100vh">

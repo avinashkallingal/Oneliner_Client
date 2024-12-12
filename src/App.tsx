@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminRoute from "./Router/AdminRoute"
-import UserRoute from "./Router/UserRoute"
+import AdminRoute from "./Router/admin/AdminRoute"
+import UserRoute from "./Router/user/UserRoute"
 
 
 import './App.css'

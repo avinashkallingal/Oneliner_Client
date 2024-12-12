@@ -16,6 +16,8 @@ import Swalert from "sweetalert2";
 import axiosInstance from "../../../Constarints/axios/adminAxios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { HttpStatus } from "../../../Interfaces/StatusCode";
+import { adminEndpoints } from "../../../Constarints/endpoints/adminEndpoints";
 
 interface User {
   id?: number;
@@ -36,7 +38,7 @@ const UserList: React.FC = () => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get(
-          "http://localhost:4000/admin/userList"
+          adminEndpoints.userList
         );
         setUsers(response.data.userData);
       } catch (error) {
@@ -50,7 +52,7 @@ const UserList: React.FC = () => {
   const toggleBlockUser = async (email: string) => {
     try {
       const result = await axiosInstance.post(
-        "http://localhost:4000/admin/userBlock",
+       adminEndpoints.userBlock,
         { email, isBlocked: !block }
       );
       if (result.data.blocked) {
@@ -61,7 +63,7 @@ const UserList: React.FC = () => {
         setBlock(false);
       }
     } catch (error: any) {
-      if (error.response?.status !== 200) {
+      if (error.response?.status !== HttpStatus.OK) {
         toast.error("Unauthorized access");
         localStorage.removeItem("userToken");
         localStorage.removeItem("refreshToken");

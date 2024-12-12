@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import axiosInstance from "../../../Constarints/axios/userAxios";
+import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 
 const defaultTheme = createTheme();
 
@@ -46,7 +47,7 @@ export default function OtpEntry() {
 
     const otpData: any = { otp: otp };
     console.log(data, "this is the otp typed by client");
-    const result = await axios.post("http://localhost:4000/verifyOtp", otpData);
+    const result = await axios.post(userEndpoints.otpVerify, otpData);
     if (result.data.success === true) {
       toast.success(result.data.message);
       console.log("user created");
@@ -62,7 +63,7 @@ export default function OtpEntry() {
     setTimer(60); // Reset timer
     try {
       // Send request to resend OTP
-      const response = await axios.post("http://localhost:4000/resendOtp");
+      const response = await axios.post(userEndpoints.resendOtp);
       if (response.data.success) {
         toast.success(response.data.message);
       } else {

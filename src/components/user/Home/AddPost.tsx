@@ -12,6 +12,7 @@ import axiosInstance from '../../../Constarints/axios/adminAxios';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { postEndpoints } from '../../../Constarints/endpoints/postEndpoints';
 
 const steps = ['Add synopsis', 'Add PDF', 'Upload Photo', 'Preview'];
 
@@ -131,7 +132,7 @@ export default function ButtonStepper() {
   const userId=localStorage.getItem("id")
   const submitPost=async()=>{
    
-    const response=await axios.post("http://localhost:4000/post/addPost",{userId,title,summary,tags,genre,pdfFile,photoFile},{
+    const response=await axios.post(postEndpoints.addPost,{userId,title,summary,tags,genre,pdfFile,photoFile},{
       headers: {
         "Content-Type": "multipart/form-data",
       }
@@ -217,22 +218,116 @@ export default function ButtonStepper() {
           </div>
         );
       case 1:
+        // return (
+        //   <div>
+        //     <input type="file" name='pdf' accept="application/pdf" onChange={handleFileChange} />
+        //     {pdfFile && <p>{pdfFile.name}</p>}
+        //     {errors.pdf && <p style={{ color: 'red' }}>{errors.pdf}</p>}
+        //     <Button variant="contained" onClick={()=>{setStepDisable(true);
+        //     if(!(activeStep<=0)){
+        //       setActiveStep(activeStep-1)
+        //     }}}>
+        //       Back
+        //     </Button>
+        //     <Button variant="contained" onClick={handleNext}>
+        //       Next
+        //     </Button>
+        //   </div>
+        // );
         return (
-          <div>
-            <input type="file" name='pdf' accept="application/pdf" onChange={handleFileChange} />
-            {pdfFile && <p>{pdfFile.name}</p>}
-            {errors.pdf && <p style={{ color: 'red' }}>{errors.pdf}</p>}
-            <Button variant="contained" onClick={()=>{setStepDisable(true);
-            if(!(activeStep<=0)){
-              setActiveStep(activeStep-1)
-            }}}>
-              Back
-            </Button>
-            <Button variant="contained" onClick={handleNext}>
-              Next
-            </Button>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "100vh", // Center vertically in viewport
+              backgroundColor: "#f8f9fa", // Light background
+              overflow: "hidden", // Prevent scrolling
+            }}
+          >
+            <div
+              style={{
+                padding: "20px",
+                borderRadius: "10px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
+                backgroundColor: "#fff", // White card
+                width: "400px", // Limit box width
+                textAlign: "center", // Center text and content
+              }}
+            >
+              <input
+                type="file"
+                name="pdf"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                style={{
+                  display: "block",
+                  margin: "10px auto",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                  width: "100%",
+                }}
+              />
+              {pdfFile && (
+                <p
+                  style={{
+                    marginTop: "10px",
+                    color: "#555",
+                    fontSize: "14px",
+                    wordBreak: "break-word", // Ensure long filenames wrap
+                  }}
+                >
+                  {pdfFile.name}
+                </p>
+              )}
+              {errors.pdf && (
+                <p
+                  style={{
+                    color: "red",
+                    fontSize: "14px",
+                    marginTop: "5px",
+                  }}
+                >
+                  {errors.pdf}
+                </p>
+              )}
+              {/* Buttons Section */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "20px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setStepDisable(true);
+                    if (!(activeStep <= 0)) {
+                      setActiveStep(activeStep - 1);
+                    }
+                  }}
+                  style={{
+                    width: "48%", // Equal width for both buttons
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  style={{
+                    width: "48%", // Equal width for both buttons
+                  }}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           </div>
         );
+        
       case 2:
         return (
           <div>

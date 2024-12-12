@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../Constarints/axios/adminAxios';
+import { adminEndpoints } from '../../../Constarints/endpoints/adminEndpoints';
 
 const LoginPage = () => {
   const [email, setemail] = useState('');
@@ -35,7 +36,7 @@ const LoginPage = () => {
       console.log("login clicked");
       
       // Proceed with login logic
-      const result=await axios.post("http://localhost:4000/admin/login",{email,password})
+      const result=await axios.post(adminEndpoints.adminLogin,{email,password})
       console.log(result.data," admin login result")
       if(result.data.success){
         localStorage.setItem("adminToken",result.data.token)
@@ -50,12 +51,12 @@ const LoginPage = () => {
     }
     
   };
-  useEffect(() => {
-    const token=localStorage.getItem("adminToken")
-    if(token){
-      navigate("/admin/dashboard")
-    }  
-  }, [])
+  // useEffect(() => {
+  //   const token=localStorage.getItem("adminToken")
+  //   if(token){
+  //     navigate("/admin/dashboard")
+  //   }  
+  // }, [])
 
   return (
     <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh' }}>

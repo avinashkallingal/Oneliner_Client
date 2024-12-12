@@ -26,17 +26,18 @@ import "./Login.css";
 import {useDispatch} from "react-redux"
 import {RootState} from "../../../../redux/Store/Store"
 import { login, logout } from "../../../../redux/Slice/UserSlice";
+import { userEndpoints } from "../../../../Constarints/endpoints/userEndpoints";
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    console.log("token in login useeffect", token);
-    if (token) {
-      navigate("/home");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("userToken");
+  //   console.log("token in login useeffect", token);
+  //   if (token) {
+  //     navigate("/home");
+  //   }
+  // }, []);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [errors, setErrors] = React.useState<{
@@ -78,7 +79,7 @@ export default function SignIn() {
     //
     try {
       // Make POST request with Axios
-      const result = await axios.post("http://localhost:4000/login", data);
+      const result = await axios.post(userEndpoints.login, data);
       console.log(result.data, "hi i am avinash");
       if (result.data.success) {
         toast.info("logged in successfully");
@@ -143,7 +144,7 @@ export default function SignIn() {
       //
       if (email) {
         const response: any = await axios.post(
-          "http://localhost:4000/verifyEmail",
+          userEndpoints.verifyEmail,
           { email }
         );
         console.log("Full Response:", response.data);
@@ -191,7 +192,7 @@ export default function SignIn() {
                 const otp = value;
                 const operation = "change_password_otp";
                 const response: any = await axios.post(
-                  "http://localhost:4000/verifyOtp",
+                  userEndpoints.otpVerify,
                   { otp, operation }
                 );
                 if (!response.data.success) {
@@ -209,7 +210,7 @@ export default function SignIn() {
           if (otp) {
             const operation = "change_password_otp";
             const response: any = await axios.post(
-              "http://localhost:4000/verifyOtp",
+              userEndpoints.otpVerify,
               { otp, operation }
             );
             if (response.data.success) {
@@ -223,24 +224,74 @@ export default function SignIn() {
                 focusConfirm: false,
                 confirmButtonText: "Change Password",
                 showCancelButton: true,
-                preConfirm: () => {
-                  const password = (
-                    document.getElementById("swal-input1") as HTMLInputElement
-                  ).value;
-                  const confirmPassword = (
-                    document.getElementById("swal-input2") as HTMLInputElement
-                  ).value;
+                // preConfirm: () => {
+                //   const password = (
+                //     document.getElementById("swal-input1") as HTMLInputElement
+                //   ).value;
+                //   const confirmPassword = (
+                //     document.getElementById("swal-input2") as HTMLInputElement
+                //   ).value;
 
+                //   if (!password || !confirmPassword) {
+                //     Swalert.showValidationMessage("Both fields are required!");
+                //     return;
+                //   }
+
+                //   if (password !== confirmPassword) {
+                //     Swalert.showValidationMessage("Passwords do not match!");
+                //     return;
+                //   }
+
+                //   return { password, confirmPassword };
+                // },
+                preConfirm: () => {
+                  const password = (document.getElementById("swal-input1") as HTMLInputElement).value;
+                  const confirmPassword = (document.getElementById("swal-input2") as HTMLInputElement).value;
+                
+                  // Validation Rules
+                  const minLength = 8;
+                
                   if (!password || !confirmPassword) {
                     Swalert.showValidationMessage("Both fields are required!");
                     return;
                   }
-
+                
                   if (password !== confirmPassword) {
                     Swalert.showValidationMessage("Passwords do not match!");
                     return;
                   }
-
+                
+                  if (password.length < minLength) {
+                    Swalert.showValidationMessage(`Password must be at least ${minLength} characters long.`);
+                    return;
+                  }
+                
+                  if (!/[A-Z]/.test(password)) {
+                    Swalert.showValidationMessage("Password must include at least one uppercase letter.");
+                    return;
+                  }
+                
+                  if (!/[a-z]/.test(password)) {
+                    Swalert.showValidationMessage("Password must include at least one lowercase letter.");
+                    return;
+                  }
+                
+                  if (!/[0-9]/.test(password)) {
+                    Swalert.showValidationMessage("Password must include at least one number.");
+                    return;
+                  }
+                
+                  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                    Swalert.showValidationMessage("Password must include at least one special character.");
+                    return;
+                  }
+                
+                  if (/\s/.test(password)) {
+                    Swalert.showValidationMessage("Password must not contain spaces.");
+                    return;
+                  }
+                
+                  // If validation passes, return the passwords
                   return { password, confirmPassword };
                 },
               });
@@ -249,7 +300,7 @@ export default function SignIn() {
                 const { password } = formValues;
 
                 const resetResponse = await axios.post(
-                  "http://localhost:4000/resetPassword",
+                  userEndpoints.resetPassword,
                   {
                     email,
                     newPassword: password,
@@ -394,7 +445,7 @@ export default function SignIn() {
 
                 const decoded = jwtDecode(credentialResponse?.credential);
                 console.log(decoded);
-                const result=await axios.post("http://localhost:4000/googleLogin",{decoded})
+                const result=await axios.post(userEndpoints.googleLogin,{decoded})
                 console.log(result," google login response in front end")
                 if(result.data.success){
                   localStorage.setItem("userToken", result.data.token.accessToken);

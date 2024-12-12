@@ -16,6 +16,7 @@ import image from "../../../../Assets/bg_onliner3.jpeg";
 import { useNavigate } from "react-router-dom";
 // import { ToastContainer, toast } from "react-toastify";
 import { toast } from 'sonner';
+import { userEndpoints } from "../../../../Constarints/endpoints/userEndpoints";
 
 const defaultTheme = createTheme();
 
@@ -84,7 +85,7 @@ export default function SignUp() {
 
     try {
       // Make POST request with Axios
-      const result = await axios.post("http://localhost:4000/register", data);
+      const result = await axios.post(userEndpoints.register, data);
       console.log(result.data);
       if (result.data.data.success) {
         toast.info("Verify your email");

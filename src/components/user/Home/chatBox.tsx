@@ -11,6 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { toast } from "sonner";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import { addMessage } from '../../../redux/Slice/MessageSlice';
+import { messageEndpoints } from "../../../Constarints/endpoints/messageEndPoints";
 
 const Container = styled(Box)({
   width: "100vw",
@@ -63,7 +64,7 @@ export default function ChatBox() {
     // console.log(chatData, " chatData");
     
    async function fetchMessages(){
-    const response = await axiosInstance.get('http://localhost:4000/message/getmessages', {params: {userId: userId, receiverId: userData._id}})
+    const response = await axiosInstance.get(messageEndpoints.getMessages, {params: {userId: userId, receiverId: userData._id}})
     // console.log(response.data.data," message db response in front end") 
     if(response.data.success){
       if(response.data.data){

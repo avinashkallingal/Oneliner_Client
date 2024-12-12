@@ -40,6 +40,7 @@ import { SimpleDialog } from "./SearchBox";
 import {recieve as recieveCall} from "../../../redux/Slice/VideoChatSlice";
 import VideoChat from "./VideoChat";
 import IncomingCallWindow from "./CallAccept";
+import { messageEndpoints } from "../../../Constarints/endpoints/messageEndPoints";
 
 
 
@@ -105,7 +106,7 @@ export default function Navbar() {
   })
 
 const fetchNotificationData=async()=>{
-  const result=await axiosInstance.get("http://localhost:4000/message/getNotification",{params:{id}})
+  const result=await axiosInstance.get(messageEndpoints.getNotification,{params:{id}})
   console.log(result.data," result of notification data")
   if(result.data.data){
     setNotificationData(result.data.data)
@@ -144,6 +145,7 @@ const fetchNotificationData=async()=>{
     }else if(path=="/search"){
     
       setSearchFlag(true)
+      // navigate("/search")
     }
     else{
       console.log(path," navbar paths")
@@ -171,7 +173,7 @@ const fetchNotificationData=async()=>{
     navigate('/userProfile',{ state: { id } })
   }
 const readNotification=async (notificationId:any)=>{
-  const result=await axiosInstance.get("http://localhost:4000/message/readNotification",{params:{id:notificationId}})
+  const result=await axiosInstance.get(messageEndpoints.readNotification,{params:{id:notificationId}})
   if(result.data){
     toast.info("notification cleared")
     setNotificationData([])
@@ -421,14 +423,33 @@ const handleClose=()=>{
       { (
         <React.Fragment key="top">
           {/* <Button onClick={toggleDrawer("top", true)}></Button> */}
-          <Drawer
+          {/* <Drawer
             anchor="top"
             open={true}
             onClose={()=>toggleDrawer()}
             
           >
             {list("top")}
-          </Drawer>
+          </Drawer> */}
+
+<Drawer
+  anchor="top"
+  open={true}
+  onClose={() => toggleDrawer()}
+  sx={{
+    "& .MuiDrawer-paper": {
+      width: {
+        xs: "90%", // Width for small screens
+        sm: "70%", // Width for medium screens
+        md: "50%", // Width for large screens
+      },
+      margin: "0 auto", // Center it horizontally
+    },
+  }}
+>
+  {list("top")}
+</Drawer>
+
         </React.Fragment>
       )}
     </div>
@@ -449,7 +470,15 @@ const handleClose=()=>{
 
     </>}
     {callAcceptWindowFlag&&<IncomingCallWindow open={callAcceptWindowFlag} callerName={callerName} onClose={handleClose} onDecline={handleDecline} onAccept={handleAccept} />}
-    {videoChatFlag&&<VideoChat open={videoChatFlag} onClose={() => setVideoChatFlag(false)} />}
+    {/* {videoChatFlag&&<VideoChat open={videoChatFlag} onClose={() => setVideoChatFlag(false)} />} */}
+    {videoChatFlag && (
+  <div style={{ zIndex: 2000, position: "relative" }}>
+    <VideoChat
+      open={videoChatFlag}
+      onClose={() => setVideoChatFlag(false)}
+    />
+  </div>
+)}
 
 
     </>

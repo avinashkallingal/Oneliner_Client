@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { EmbedPDF } from "@simplepdf/react-embed-pdf";
 import Navbar from "./Navbar";
+import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 
 const steps = ["Add synopsis", "Add PDF", "Upload Photo", "Preview"];
 
@@ -76,7 +77,7 @@ export default function EditPost() {
   const viewPdf = async (postId: any) => {
     try {
       const result = await axiosInstance.post(
-        "http://localhost:4000/post/pdfUrlFetch",
+        postEndpoints.pdfUrlFetch,
         { postId }
       );
 
@@ -173,7 +174,7 @@ export default function EditPost() {
   const postId=location.state.post._id
   const submitPost = async () => {
     const response = await axios.post(
-      "http://localhost:4000/post/editPost",
+      postEndpoints.editPost,
       { userId, title, summary, tags, genre, pdfFile, photoFile,postId },
       {
         headers: {
@@ -311,35 +312,145 @@ export default function EditPost() {
           </div>
         );
       case 1:
+        // return (
+        //   <div>
+        //      <button style={{flexFlow:"column"}} onClick={() => viewPdf(location.state?.post?._id)}>
+        //                 Preview PDF
+        //               </button>
+        //     <input
+        //       type="file"
+        //       name="pdf"
+        //       accept="application/pdf"
+        //       onChange={handleFileChange}
+        //     />
+        //     {pdfFile && <p>{pdfFile.name}</p>}
+        //     {errors.pdf && <p style={{ color: "red" }}>{errors.pdf}</p>}
+            // <Button
+            //   variant="contained"
+            //   onClick={() => {
+            //     setStepDisable(true);
+            //     if (!(activeStep <= 0)) {
+            //       setActiveStep(activeStep - 1);
+            //     }
+            //   }}
+            // >
+            //   Back
+            // </Button>
+            // <Button variant="contained" onClick={handleNext}>
+            //   Next
+            // </Button>
+        //   </div>
+        // );
         return (
-          <div>
-             <button style={{flexFlow:"column"}} onClick={() => viewPdf(location.state?.post?._id)}>
-                        Preview PDF
-                      </button>
-            <input
-              type="file"
-              name="pdf"
-              accept="application/pdf"
-              onChange={handleFileChange}
-            />
-            {pdfFile && <p>{pdfFile.name}</p>}
-            {errors.pdf && <p style={{ color: "red" }}>{errors.pdf}</p>}
-            <Button
-              variant="contained"
-              onClick={() => {
-                setStepDisable(true);
-                if (!(activeStep <= 0)) {
-                  setActiveStep(activeStep - 1);
-                }
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "100vh", // Center vertically in viewport
+              backgroundColor: "#f8f9fa", // Light background
+              overflow: "hidden", // Prevent scrolling
+            }}
+          >
+            <div
+              style={{
+                padding: "20px",
+                borderRadius: "10px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
+                backgroundColor: "#fff", // White card
+                width: "400px", // Limit box width
+                textAlign: "center", // Center text and content
               }}
             >
-              Back
-            </Button>
-            <Button variant="contained" onClick={handleNext}>
-              Next
-            </Button>
+              <button
+                style={{
+                  width: "100%",
+                  padding: "10px 0",
+                  marginBottom: "15px",
+                  backgroundColor: "#007bff",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                }}
+                onClick={() => viewPdf(location.state?.post?._id)}
+              >
+                Preview PDF
+              </button>
+              <input
+                type="file"
+                name="pdf"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                style={{
+                  display: "block",
+                  margin: "10px auto",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                  width: "100%",
+                }}
+              />
+              {pdfFile && (
+                <p
+                  style={{
+                    marginTop: "10px",
+                    color: "#555",
+                    fontSize: "14px",
+                    wordBreak: "break-word", // Ensure long filenames wrap
+                  }}
+                >
+                  {pdfFile.name}
+                </p>
+              )}
+              {errors.pdf && (
+                <p
+                  style={{
+                    color: "red",
+                    fontSize: "14px",
+                    marginTop: "5px",
+                  }}
+                >
+                  {errors.pdf}
+                </p>
+              )}
+              {/* Buttons Section */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "20px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setStepDisable(true);
+                    if (!(activeStep <= 0)) {
+                      setActiveStep(activeStep - 1);
+                    }
+                  }}
+                  style={{
+                    width: "48%", // Equal width for both buttons
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  style={{
+                    width: "48%", // Equal width for both buttons
+                  }}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           </div>
         );
+        
       case 2:
         return (
           <div>
@@ -406,52 +517,146 @@ export default function EditPost() {
           </div>
         );
       case 3:
+        // return (
+        //   <Box
+        //     sx={{
+        //       display: "flex",
+        //       justifyContent: "center",
+        //       alignItems: "center",
+        //       // minHeight: '100vh', // Full viewport height for vertical centering
+        //       backgroundColor: "#f0f0f0", // Optional: background for contrast
+        //     }}
+        //   >
+        //     <Card variant="outlined" sx={{ maxWidth: 550, padding: 2 }}>
+        //       <CardContent>
+        //         <Typography variant="h5" gutterBottom>
+        //           Preview
+        //         </Typography>
+
+        //         <Typography variant="body1">
+        //           <strong>Title:</strong> {title}
+        //         </Typography>
+        //         {photoFile && (
+        //           <Box
+        //             component="img"
+        //             src={URL.createObjectURL(photoFile)}
+        //             alt="Cropped Preview"
+        //             sx={{ maxWidth: "100%", marginTop: 2 }}
+        //           />
+        //         )}
+        //         <Typography variant="body1">
+        //           <strong>Genre:</strong> {genre}
+        //         </Typography>
+
+        //         <Typography variant="body1">
+        //           <strong>Tags:</strong> {tags.join(", ")}
+        //         </Typography>
+
+        //         <Typography variant="body1">
+        //           <strong>Summary:</strong> {summary}
+        //         </Typography>
+
+        //         {pdfFile && (
+        //           <Typography variant="body1">
+        //             <strong>PDF File:</strong> {pdfFile.name}
+        //           </Typography>
+        //         )}
+
+        //         <Box mt={2}>
+        //           <Button
+        //             variant="contained"
+        //             onClick={() => {
+        //               setStepDisable(true);
+        //               if (!(activeStep <= 0)) {
+        //                 setActiveStep(activeStep - 1);
+        //               }
+        //             }}
+        //           >
+        //             Back
+        //           </Button>
+        //           <Button
+        //             onClick={submitPost}
+        //             variant="contained"
+        //             color="primary"
+        //           >
+        //             Submit
+        //           </Button>
+        //         </Box>
+        //       </CardContent>
+        //     </Card>
+        //   </Box>
+        // );
         return (
           <Box
             sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              // minHeight: '100vh', // Full viewport height for vertical centering
-              backgroundColor: "#f0f0f0", // Optional: background for contrast
+              minHeight: "100vh", // Ensure vertical centering
+              backgroundColor: "#f0f0f0", // Light background for better contrast
+              overflow: "hidden", // Prevent scrolling within the container
             }}
           >
-            <Card variant="outlined" sx={{ maxWidth: 550, padding: 2 }}>
+            <Card
+              variant="outlined"
+              sx={{
+                maxWidth: 550,
+                padding: 3,
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow for card
+                backgroundColor: "#fff", // White background
+                borderRadius: "10px",
+              }}
+            >
               <CardContent>
                 <Typography variant="h5" gutterBottom>
                   Preview
                 </Typography>
-
-                <Typography variant="body1">
+        
+                <Typography variant="body1" gutterBottom>
                   <strong>Title:</strong> {title}
                 </Typography>
+        
                 {photoFile && (
                   <Box
                     component="img"
                     src={URL.createObjectURL(photoFile)}
                     alt="Cropped Preview"
-                    sx={{ maxWidth: "100%", marginTop: 2 }}
+                    sx={{
+                      maxWidth: "100%",
+                      height: "auto",
+                      marginTop: 2,
+                      borderRadius: "5px", // Rounded corners
+                    }}
                   />
                 )}
-                <Typography variant="body1">
+        
+                <Typography variant="body1" gutterBottom>
                   <strong>Genre:</strong> {genre}
                 </Typography>
-
-                <Typography variant="body1">
+        
+                <Typography variant="body1" gutterBottom>
                   <strong>Tags:</strong> {tags.join(", ")}
                 </Typography>
-
-                <Typography variant="body1">
+        
+                <Typography variant="body1" gutterBottom>
                   <strong>Summary:</strong> {summary}
                 </Typography>
-
+        
                 {pdfFile && (
-                  <Typography variant="body1">
+                  <Typography variant="body1" gutterBottom>
                     <strong>PDF File:</strong> {pdfFile.name}
                   </Typography>
                 )}
-
-                <Box mt={2}>
+        
+                {/* Buttons Section */}
+                <Box
+                  mt={3}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 2, // Adds space between buttons
+                  }}
+                >
                   <Button
                     variant="contained"
                     onClick={() => {
@@ -460,6 +665,7 @@ export default function EditPost() {
                         setActiveStep(activeStep - 1);
                       }
                     }}
+                    sx={{ width: "48%" }}
                   >
                     Back
                   </Button>
@@ -467,6 +673,7 @@ export default function EditPost() {
                     onClick={submitPost}
                     variant="contained"
                     color="primary"
+                    sx={{ width: "48%" }}
                   >
                     Submit
                   </Button>
@@ -475,6 +682,7 @@ export default function EditPost() {
             </Card>
           </Box>
         );
+        
       default:
         return "Unknown step";
     }

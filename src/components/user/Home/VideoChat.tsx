@@ -223,9 +223,9 @@ const VideoChat: React.FC<VideoChatProps> = ({ open, onClose }) => {
     if (myStream) {
       myStream.getTracks().forEach((track) => track.stop());
     }
-    // if (remoteStream) {
-    //   remoteStream.getTracks().forEach((track) => track.stop());
-    // }
+    if (remoteStream) {
+      remoteStream.getTracks().forEach((track) => track.stop());
+    }
 
     // Clear streams
     setStream(null);
@@ -321,6 +321,7 @@ const VideoChat: React.FC<VideoChatProps> = ({ open, onClose }) => {
           position: "relative",
           height: "500px",
           background: "#000",
+         
         }}
       >
         {/* Main Video (Remote Stream) */}
@@ -419,6 +420,7 @@ const VideoChat: React.FC<VideoChatProps> = ({ open, onClose }) => {
         {/* Control Buttons */}
         <div
           style={{
+            
             position: "absolute",
             bottom: "20px",
             left: "20px",
