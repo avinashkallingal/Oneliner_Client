@@ -1,4 +1,3 @@
-import * as React from "react";
 import IconButton from "@mui/joy/IconButton";
 import Menu from "@mui/joy/Menu";
 import MenuItem from "@mui/joy/MenuItem";
@@ -12,17 +11,14 @@ import Dropdown from "@mui/joy/Dropdown";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ReportIcon from "@mui/icons-material/Report";
 import { toast } from "sonner";
-import ViewPost from "./ViewPost";
-import { useState, useEffect } from "react";
-import EditPost from "./EditPost";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import Swal from "sweetalert2";
 import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 
 export default function PostMenu({ postData }: any) {
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [editPost, setEditPost] = useState(null);
+  // const [selectedPost, setSelectedPost] = useState(null);
+  // const [editPost, setEditPost] = useState(null);
   const navigate = useNavigate();
   const id = localStorage.getItem("id");
 

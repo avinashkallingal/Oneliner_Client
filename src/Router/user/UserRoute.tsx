@@ -11,8 +11,6 @@ import Home from "../../Pages/user/Home/Home";
 import EditPost from "../../Components/user/Home/EditPost"
 import ChatBox from "../../Pages/user/ChatBox/ChatBox";
 import ViewPost from "../../Pages/user/ViewPost/ViewPost";
-import VideoChat from "../../Components/user/Home/VideoChat";
-import { SimpleDialog } from "../../Components/user/Home/SearchBox";
 import PrivateRoute from "./PrivateRoute";
 import PrivateRouteUser from "./PrivateUserRoute";
 

@@ -1,20 +1,17 @@
-// import React from 'react'
-import React, { useState } from 'react';
+
 import Draggable from 'react-draggable';
 import ChatBoxComponent from '../../../Components/user/Home/ChatBox';
-import { Box, IconButton, Paper } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import { useDispatch, useSelector } from 'react-redux';
-import { hide } from '../../../redux/Slice/ChatSlice';
+import { Box } from '@mui/material';
+
 
 
 function Chatbox() {
-  const [isOpen, setIsOpen] = useState(true); // State to control visibility
+  // const [isOpen, setIsOpen] = useState(true); // State to control visibility
   
 
 
 
-  if (!isOpen) return null; // Don't render if closed
+  // if (!isOpen) return null; // Don't render if closed
 
   return (
     <Draggable>

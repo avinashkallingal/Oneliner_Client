@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { toast } from 'sonner';
-import jwt from 'jsonwebtoken';
+// import { toast } from 'sonner';
+// import jwt from 'jsonwebtoken';
 import { HttpStatus } from '../../Interfaces/StatusCode';
 import { userEndpoints } from '../endpoints/userEndpoints';
 

@@ -87,6 +87,7 @@ export default function EditPost() {
         // Return the PDF URL if successful
       } else {
         toast.error("Error while viewing PDF");
+        setErrors({ pdfError: "Error while viewing PDF" });
       }
     } catch (error) {
       console.error("Error viewing PDF:", error);
@@ -118,6 +119,7 @@ export default function EditPost() {
   };
 
   const handleCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
+    console.log(croppedArea,"croped area")
     setCroppedAreaPixels(croppedAreaPixels);
   };
   if (location.state && location.state.post && Array.isArray(location.state.post.imageUrlS3)) {
@@ -127,7 +129,7 @@ export default function EditPost() {
 
   const handleCrop = async () => {
     if (imageSrc && croppedAreaPixels) {
-      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const croppedImage:any = await getCroppedImg(imageSrc, croppedAreaPixels);
       setPhotoFile(croppedImage);
       setImageSrc(""); // Reset the imageSrc after cropping
     }
@@ -142,30 +144,30 @@ export default function EditPost() {
   //   }));
   // };
 
-  const validateStep = () => {
-    let newErrors: { [key: string]: string } = {};
+  // const validateStep = () => {
+  //   let newErrors: { [key: string]: string } = {};
 
-    switch (activeStep) {
-      case 0:
-        if (!title) newErrors.title = "Title is required.";
-        if (!summary) newErrors.summary = "Summary is required.";
-        // if (tags.length === 0) newErrors.tags = 'At least one tag is required.';
-        if (!genre) newErrors.genre = "Genre is required.";
-        setStepDisable(true);
-        break;
-      case 1:
-        if (!pdfFile) newErrors.pdf = "Please upload a PDF file.";
-        break;
-      case 2:
-        if (!photoFile) newErrors.photo = "Please upload a photo.";
-        break;
-      default:
-        break;
-    }
+  //   switch (activeStep) {
+  //     case 0:
+  //       if (!title) newErrors.title = "Title is required.";
+  //       if (!summary) newErrors.summary = "Summary is required.";
+  //       // if (tags.length === 0) newErrors.tags = 'At least one tag is required.';
+  //       if (!genre) newErrors.genre = "Genre is required.";
+  //       setStepDisable(true);
+  //       break;
+  //     case 1:
+  //       if (!pdfFile) newErrors.pdf = "Please upload a PDF file.";
+  //       break;
+  //     case 2:
+  //       if (!photoFile) newErrors.photo = "Please upload a photo.";
+  //       break;
+  //     default:
+  //       break;
+  //   }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // Return true if no errors
-  };
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0; // Return true if no errors
+  // };
 
   const handleNext = () => {
     setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));

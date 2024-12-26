@@ -1,4 +1,3 @@
-import React from 'react'
 import ViewPost1 from '../../../Components/user/Home/ViewPost'
 
 function ViewPost() {

@@ -1,4 +1,4 @@
-import React, { useEffect,useLayoutEffect,useRef, useState } from "react";
+import  { useEffect,useRef, useState } from "react";
 import { Paper, IconButton, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import { TextInput } from "./TextInput";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import { addMessage } from '../../../redux/Slice/MessageSlice';
 import { messageEndpoints } from "../../../Constarints/endpoints/messageEndPoints";
+import { clearCount } from "../../../redux/Slice/MessageCount";
 
 const Container = styled(Box)({
   width: "100vw",
@@ -47,7 +48,7 @@ export default function ChatBox() {
   const chatData = useSelector((state: any) => state.ChatDisplay.chatRoomData);
   const [typingIndicator,setTypingIndicator]=useState<boolean>(false)
   
-  const [online,setOnline]=useState<boolean>(false)
+  // const [online,setOnline]=useState<boolean>(false)
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 // useLayoutEffect(()=>{
@@ -62,7 +63,7 @@ export default function ChatBox() {
     SocketService.emitUserOnlineStatus(`${userId}`)
     // SocketService.emitOnline(`${userId}`)
     // console.log(chatData, " chatData");
-    
+    dispatch(clearCount())
    async function fetchMessages(){
     const response = await axiosInstance.get(messageEndpoints.getMessages, {params: {userId: userId, receiverId: userData._id}})
     // console.log(response.data.data," message db response in front end") 
@@ -80,8 +81,9 @@ export default function ChatBox() {
          
     return(
       // SocketService.emitUserOffline(`${userId}`),
-          SocketService.disconnect(),
-          setOnline(false)
+          SocketService.disconnect()
+          // setOnline(false)
+          
          )
     
   }, [chatData]);
@@ -110,14 +112,14 @@ export default function ChatBox() {
     SocketService.onGotOnlineUsers((onlineId:any)=>{
       console.log(onlineId,"hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
       if(onlineId==userData._id.toString()){
-        setOnline(true)
+        // setOnline(true)
       }
       
      })
      SocketService.onGotOfflineUsers((onlineId:any)=>{
       console.log(onlineId,"hiiiii user offline&&&&&&&&&&&&&&&&&&&&&")
       if(onlineId==userData._id.toString()){
-        setOnline(false)
+        // setOnline(false)
       }
       
      })

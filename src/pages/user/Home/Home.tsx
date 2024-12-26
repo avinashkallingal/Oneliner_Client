@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import Navbar from "../../../Components/user/Home/Navbar";
 import Home from "../../../Components/user/Home/Home";
 import { Box, Paper } from "@mui/material"; // Import Paper for a card-like effect
-import TopBar from "../../../Components/user/Home/TopBar";
 import {
   List,
   ListItem,
@@ -10,7 +9,6 @@ import {
   ListItemDecorator,
   ListItemContent,
 } from "@mui/joy";
-import HomeIcon from "@mui/icons-material/Home";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 
 // icon import
@@ -35,19 +33,16 @@ import NonFictionIcon from "@mui/icons-material/Description"; // Example: Descri
 import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects"; // Science icon
 import TechnologyIcon from "@mui/icons-material/Memory"; // Example: Memory/Chip icon for Technology
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive"; // Example: All icon
-import { toast } from "sonner";
-import ChatBox from "../../../Components/user/Home/ChatBox";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Chatbox from "../ChatBox/ChatBox";
 import Contacts from "../../../Components/user/Home/Contacts";
 import Inbox from "../../../Components/user/Home/Inbox";
-import { useNavigate } from "react-router-dom";
 import { Dialog, Fab, useMediaQuery } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import { Tabs, Tab } from "@mui/material";
 
 import { Drawer, IconButton } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+
 
 function Home1() {
   const genres = [
@@ -73,12 +68,12 @@ function Home1() {
     { name: "Science", icon: <EmojiObjectsIcon /> }, // Using Lightbulb for Science as a placeholder
     { name: "Technology", icon: <TechnologyIcon /> },
   ];
-  const [fetchGenre, setFetchGenre] = useState<any>("All");
+  const [fetchGenre, setFetchGenre] = useState<string>("All");
   const [activeTab, setActiveTab] = useState<Number>(0);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // Dialog visibility
-  const isMobile = useMediaQuery("(max-width:500px)"); // Media query for mobile view
+  const isMobile = useMediaQuery("(max-width:1300px)"); // Media query for mobile view
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -94,6 +89,7 @@ function Home1() {
     event: React.ChangeEvent<HTMLInputElement>,
     newValue: Number
   ) => {
+    console.log(event)
     setActiveTab(newValue);
   };
 
@@ -102,12 +98,6 @@ function Home1() {
   const handleGenre = (genre: string) => {
     setFetchGenre(genre);
   };
-  useEffect(() => {
-    const id = localStorage.getItem("userToken");
-    if (!id) {
-      navigate("/");
-    }
-  });
 
   return (
     <div
@@ -131,45 +121,15 @@ function Home1() {
           width: "100%",
         }}
       >
-        {/* Left Box old*/}
-        {/* <Paper
-          sx={{
-            position: "fixed",
-            top: "10%",
-            left: 20,
-            boxShadow: 15,
-            background: "white",
-            padding: 2,
-            borderRadius: 2,
-            width: 290,
-            height: "85vh",
-            overflowY: "scroll",
-            scrollbarWidth: "none",
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-          }}
-        >
-          <List>
-            {genres.map(({ name, icon},index) => (
-              <ListItem key={index}>
-                <ListItemButton onClick={() => handleGenre(name)}>
-                  <ListItemDecorator>{icon}</ListItemDecorator>
-                  <ListItemContent>{name}</ListItemContent>
-                  <KeyboardArrowRight />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Paper> */}
         {/* Responsive Left Box */}
         {/* Mobile View: Hamburger Icon */}
+
         {isMobile && (
           <IconButton
-            sx={{ position: "fixed", top: 16, left: 16, zIndex: 1000 }}
+            sx={{ position: "fixed", top: "50vh", left: "5vw", zIndex: 1000 }}
             onClick={toggleDrawer}
           >
-            <MenuIcon />
+            <KeyboardArrowRight sx={{ fontSize: "3.5rem" }} />
           </IconButton>
         )}
 
@@ -232,63 +192,38 @@ function Home1() {
         )}
 
         {/* Main Box */}
-        {!isMobile&&(<Box
-          sx={{
-            boxShadow: 15,
-            padding: 2,
-            zIndex: 500,
-            borderRadius: 2,
-            flexGrow: 50, // To center the main box between left and right components
-            marginLeft: "25%", // Offset to center between left and right
-            marginRight: "80%",
-          }}
-        >
-          <Home fetchGenre={fetchGenre} />
-        </Box>)}
+        {!isMobile && (
+          <Box
+            sx={{
+              boxShadow: 15,
+              padding: 2,
+              zIndex: 500,
+              borderRadius: 2,
+              flexGrow: 50, // To center the main box between left and right components
+              marginLeft: "25%", // Offset to center between left and right
+              marginRight: "80%",
+            }}
+          >
+            <Home fetchGenre={fetchGenre} />
+          </Box>
+        )}
 
         {/* main window for mobile */}
         {isMobile && (
-  <Box
-    sx={{
-      boxShadow: 15,
-      padding: 2,
-      zIndex: 500,
-      borderRadius: 2,
-      width: "90%", // 90% of the screen width
-      maxWidth: "100%", // Prevent overflow
-      margin: "0 auto", // Center horizontally
-    }}
-  >
-    <Home fetchGenre={fetchGenre} />
-  </Box>
-)}
-
-
-        {/* Right Box old*/}
-        {/* <Paper
-      sx={{
-        position: "fixed",
-        top: "10%",
-        right: 20,
-        boxShadow: 3,
-        padding: 2,
-        borderRadius: 2,
-        width: 370,
-        height: "fit-content",
-      }}
-    >
-      
-      <Tabs value={activeTab} onChange={handleChange} variant="fullWidth">
-        <Tab label="Inbox" />
-        <Tab label="Contacts" />
-      </Tabs>
-
-  
-      <Box sx={{ paddingTop: 2 }}>
-        {activeTab === 0 && <Inbox />}
-        {activeTab === 1 && <Contacts />}
-      </Box>
-    </Paper> */}
+          <Box
+            sx={{
+              boxShadow: 15,
+              padding: 2,
+              zIndex: 500,
+              borderRadius: 2,
+              // width: "90%", // 90% of the screen width add it later when error,disabling this made the post to center in mobile view
+              maxWidth: "100%", // Prevent overflow
+              margin: "0 auto", // Center horizontally
+            }}
+          >
+            <Home fetchGenre={fetchGenre} />
+          </Box>
+        )}
 
         {/* responsive rightbox */}
         {/* Floating Action Button for Mobile */}

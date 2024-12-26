@@ -7,17 +7,22 @@ import ListItemContent from '@mui/joy/ListItemContent';
 import ListItemDecorator from '@mui/joy/ListItemDecorator';
 import Typography from '@mui/joy/Typography';
 import axiosInstance from '../../../Constarints/axios/userAxios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { show as showCahatBox } from "../../../redux/Slice/ChatSlice";
 import { clearMessages } from '../../../redux/Slice/MessageSlice';
 import { messageEndpoints } from '../../../Constarints/endpoints/messageEndPoints';
 import SocketService from '../../../socket/SocketService';
+import { incrementCount } from '../../../redux/Slice/MessageCount';
+import { RootState } from '../../../redux/Store/Store';
+
 
 export default function Inbox() {
   const userId=localStorage.getItem("id")
   const [inboxData,setInboxData]=React.useState([])
-  const [count,setCount]=React.useState<Number|null>(null)
+  const [count,setCount]=React.useState<number|null>(null)
   const dispatch = useDispatch()
+  // const userData = useSelector((state: any) => state.ChatDisplay.userData);
+const countData=useSelector((state:RootState)=>state.messageCountSlice.count)
   React.useEffect(()=>{
    
     async function fetchInboxData(){
@@ -31,17 +36,24 @@ export default function Inbox() {
     }
     }
     fetchInboxData()
-  },[count])
+  },[countData,count])
 
   React.useEffect(()=>{
     SocketService.onNewMessage((newMessage) => {
    
    
       if (newMessage) {
-        setCount(1)
+        // setCount((prev)=>prev+1)
+       
+        setCount((prev) => prev + 1);
+        console.log(newMessage," message in inbox%%%%%%%%%")
+        if(newMessage.senderId!=userId){
+          dispatch(incrementCount(1))
+        }
+        
       }
     });
-  })
+  },[])
 
 
   const chatHandle = async (userData: any,chatId:any) => {
@@ -102,6 +114,7 @@ export default function Inbox() {
   File
 </p>:element.content}
       </Typography>
+      {countData&&<Typography>New Message {Math.floor(countData/4)}</Typography>}
     </ListItemContent>
   </ListItem>
 ))}

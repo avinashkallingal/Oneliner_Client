@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 class SocketService {
@@ -106,7 +105,7 @@ class SocketService {
     this.socket.on('newMessage', callback);
   }
 
-  offNewMessage(callback: (message: any) => void) {
+  offNewMessage(callback: () => void) {
     this.socket.off('newMessage', callback); // Unsubscribe the specific listener
   }
 

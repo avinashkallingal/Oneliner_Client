@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Types } from 'mongoose';
+
 
 interface MyDynamicObject {
     [key: string]: any;
@@ -12,11 +12,11 @@ interface UserData {
     avatar:string | null;
 }
 
-interface chatData {
-    _id: string | null;
-    participants:string[] | null;
-    lastMessage?: Types.ObjectId | null;
-}
+// interface chatData {
+//     _id: string | null;
+//     participants:string[] | null;
+//     lastMessage?: Types.ObjectId | null;
+// }
 
 
 interface chatState{

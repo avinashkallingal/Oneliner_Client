@@ -6,43 +6,68 @@ import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import Typography from "@mui/joy/Typography";
 import Sheet from "@mui/joy/Sheet";
-import axios from "axios";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/Store/Store";
 import ProfilePostCard from "./ProfilePostCard";
 import Grid from "@mui/material/Grid";
-import { Paper } from "@mui/material";
-import { styled } from "@mui/material/styles";
+// import { Paper } from "@mui/material";
+// import { styled } from "@mui/material/styles";
 import { toast } from "sonner";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
+import { IUser } from "../../../Interfaces/Iuser";
 
 export default function UserCard({ id }) {
   console.log(id,"^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-  interface User {
-    id?: number;
-    username?: string;
-    email?: string;
-    gender?: string;
-    isBlocked?: boolean;
-    followers?: string[];
-    followings?: string[];
-    profilePicture?: string;
-  }
+  // interface User {
+  //   id?: number;
+  //   username?: string;
+  //   email?: string;
+  //   gender?: string;
+  //   isBlocked?: boolean;
+  //   followers?: string[];
+  //   followings?: string[];
+  //   profilePicture?: string;
+  // }
+
+  const defaultUser: IUser = {
+    _id: undefined,
+    username: "",
+    name: "",
+    email: "",
+    about: "",
+    password: "",
+    gender: "",
+    language: "",
+    profilePicture: "",
+    followers: [],
+    followings: [],
+    isOnline: false,
+    isAdmin: false,
+    desc: "",
+    isBlocked: false,
+    created_at: undefined,
+  };
+
+
+  //   const user1:IUser ={
+  
+  // }
+
+
   // const email = useSelector((state: RootState) => state.userAuth?.userData?.email);
 
   const navigate = useNavigate();
-  const initialData = [{ username: "avinash" }];
 
-  const email = localStorage.getItem("email");
+
+  // const email = localStorage.getItem("email");
   // const email:string="avinashkallingal@gmail.com"
-  const [user, setUser] = React.useState<User[]>([]);
+  // const [user, setUser] = React.useState<IUser>([]);
+  const [user, setUser] = React.useState<IUser>(defaultUser);
   const [post, setPost] = React.useState<any>([]);
   const [followFlag,setFollowFlag]=React.useState<boolean>(true)
-  const [followersCount,setFollowersCount]=React.useState<Number>(0)
-  const [followingCount,setFollowingCount]=React.useState<Number>(0)
+  const [followersCount,setFollowersCount]=React.useState<number>(0)
+  const [followingCount,setFollowingCount]=React.useState<number>(0)
   const userId = localStorage.getItem("id");
 
   React.useEffect(() => {
@@ -85,30 +110,30 @@ export default function UserCard({ id }) {
     navigate("/userProfileEdit");
   };
 
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(0.5),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-    ...theme.applyStyles("dark", {
-      backgroundColor: "#1A2027",
-    }),
-  }));
+  // const Item = styled(Paper)(({ theme }) => ({
+  //   backgroundColor: "#fff",
+  //   ...theme.typography.body2,
+  //   padding: theme.spacing(0.5),
+  //   textAlign: "center",
+  //   color: theme.palette.text.secondary,
+  //   ...theme.applyStyles("dark", {
+  //     backgroundColor: "#1A2027",
+  //   }),
+  // }));
  
   const userCheck = () => {
     return id == userId;
   };
-  const followCheck = () => {
-    if (user.followings) {
-      const found = user.followings.filter((val: any) => val == id);
-      if (found) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
+  // const followCheck = () => {
+  //   if (user.followings) {
+  //     const found = user.followings.filter((val: any) => val == id);
+  //     if (found) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }
+  // };
 
 
 

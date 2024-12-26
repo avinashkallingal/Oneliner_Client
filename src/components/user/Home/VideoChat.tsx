@@ -7,19 +7,13 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import MicIcon from "@mui/icons-material/Mic";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import VideocamIcon from "@mui/icons-material/Videocam";
-import peer from "../../../service/peer";
 import SocketService from "../../../socket/SocketService";
-import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useRef } from "react";
-import { toast } from "sonner";
+import {  useSelector } from "react-redux";
+import {  useRef } from "react";
 import Peer from "simple-peer";
 import { RootState } from "../../../redux/Store/Store";
-
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import PhoneIcon from "@mui/icons-material/Phone";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+
 
 interface VideoChatProps {
   open: boolean;
@@ -28,13 +22,9 @@ interface VideoChatProps {
 const VideoChat: React.FC<VideoChatProps> = ({ open, onClose }) => {
   //   const [myStream, setMyStream] = useState<MediaStream | null>(null); // State for user's stream
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null); // State for remote stream
-  const [isCallActive, setIsCallActive] = useState<boolean>(false); // Call state
   const [isMicMuted, setIsMicMuted] = useState<boolean>(false); // Mic state
   const [isVideoHidden, setIsVideoHidden] = useState<boolean>(false); // Video state
-
-  const chat = useSelector((state: RootState) => state.ChatDisplay.chatRoomData);
-  const receiver = useSelector((state: any) => state.ChatDisplay.userData);
-  const sender = useSelector((state: RootState) => state.UserAuth.userData);
+   const receiver = useSelector((state: any) => state.ChatDisplay.userData);
 
   //taking redux video data after accepting the call
   const callerData = useSelector((state: RootState) => state.VideoChat.caller);
@@ -195,8 +185,7 @@ const VideoChat: React.FC<VideoChatProps> = ({ open, onClose }) => {
 
     // Close the dialog
     onClose();
-    setIsCallActive(false);
-  };
+    };
 
   const toggleMic = () => {
     if (myStream) {
@@ -231,8 +220,8 @@ const VideoChat: React.FC<VideoChatProps> = ({ open, onClose }) => {
     setStream(null);
     setRemoteStream(null);
 
-    // Close the dialog
-    setIsCallActive(false);
+    // // Close the dialog
+    // setIsCallActive(false);
    
 
 

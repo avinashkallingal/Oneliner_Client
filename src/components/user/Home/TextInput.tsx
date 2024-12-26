@@ -14,22 +14,25 @@ import { toast } from "sonner";
 import socketService from "../../../socket/SocketService";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../../redux/Slice/MessageSlice";
-import { RootState } from "../../../redux/Store/Store";
 import AttachmentIcon from "@mui/icons-material/Attachment";
-import SvgIcon from "@mui/joy/SvgIcon";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
-import peer from "../../../service/peer";
-import { useNavigate } from "react-router-dom";
-
 import VideoChat from "./VideoChat";
 import { messageEndpoints } from "../../../Constarints/endpoints/messageEndPoints";
 
-const WrapForm = styled(Box)({
-  display: "flex",
-  justifyContent: "center",
-  width: "95%",
-  margin: "auto",
+// const WrapForm = styled(Box)({
+//   display: "flex",
+//   justifyContent: "center",
+//   width: "95%",
+//   margin: "auto",
+// });
+
+// Styled component
+const WrapForm = styled(Box)<{ component?: React.ElementType }>({
+  display: 'flex',
+  justifyContent: 'center',
+  width: '95%',
+  margin: 'auto',
 });
 
 const WrapText = styled(TextField)({
@@ -55,13 +58,13 @@ export const TextInput = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [openVideoChat, setOpenVideoChat] = useState<boolean>(false);
 
-  const navigate=useNavigate()
+  // const navigate=useNavigate()
 
   //from rdux
   const chat = useSelector((state: any) => state.ChatDisplay.chatRoomData);
   const userId = localStorage.getItem("id");
   const receiver = useSelector((state: any) => state.ChatDisplay.userData);
-  const sender = useSelector((state: any) => state.UserAuth.userData);
+  // const sender = useSelector((state: any) => state.UserAuth.userData);
 
   const currentDate = new Date();
   const options: Intl.DateTimeFormatOptions = {
@@ -84,7 +87,7 @@ export const TextInput = () => {
       }
     });
     return () => {
-      socketService.offNewMessage((newMessage: any) => {});
+      socketService.offNewMessage(() => {});
     };
   }, []);
   
@@ -153,17 +156,17 @@ export const TextInput = () => {
   
   };
 
-  type MessageType = {
-    chatId: string;
-    senderId: string;
-    receiverId: string;
-    content: string;
-    updatedAt: string;
-    _id: string;
-    image?: File;
-    video?: File;
-    pdf?: File;
-  };
+  // type MessageType = {
+  //   chatId: string;
+  //   senderId: string;
+  //   receiverId: string;
+  //   content: string;
+  //   updatedAt: string;
+  //   _id: string;
+  //   image?: File;
+  //   video?: File;
+  //   pdf?: File;
+  // };
 
   // const handleSendFile = async () => {
   //   if (selectedFile && chat._id && userId && receiverId._id) {
@@ -316,7 +319,7 @@ export const TextInput = () => {
           }}
         />
 
-        <Button component="label" variant="outlined" color="neutral">
+        <Button component="label" variant="outlined" color="primary">
           <AttachmentIcon />
           <VisuallyHiddenInput type="file" onChange={handleFileSelect} />
         </Button>
@@ -324,7 +327,7 @@ export const TextInput = () => {
         <Button
           component="label"
           variant="outlined"
-          color="neutral"
+          color="primary"
           onClick={handleOpenvidoChat}
         >
           <VideoCallIcon />

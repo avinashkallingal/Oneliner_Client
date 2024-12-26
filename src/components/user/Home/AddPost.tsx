@@ -8,7 +8,6 @@ import { TextField, Button, MenuItem, InputAdornment } from '@mui/material';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '../../../utilities/CropImage'; // A utility function to crop the image
 import { Card, CardContent, Typography, Box } from '@mui/material';
-import axiosInstance from '../../../Constarints/axios/adminAxios';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -89,11 +88,12 @@ export default function ButtonStepper() {
 
   const handleCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
+    console.log(croppedArea,"croppedArea")    
   };
 
   const handleCrop = async () => {
     if (imageSrc && croppedAreaPixels) {
-      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const croppedImage:any  = await getCroppedImg(imageSrc, croppedAreaPixels);
       setPhotoFile(croppedImage);
       setImageSrc(''); // Reset the imageSrc after cropping
     }

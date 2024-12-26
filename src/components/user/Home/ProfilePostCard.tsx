@@ -1,4 +1,3 @@
-import * as React from 'react';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
@@ -6,9 +5,8 @@ import CardOverflow from '@mui/joy/CardOverflow';
 import Divider from '@mui/joy/Divider';
 import Typography from '@mui/joy/Typography';
 import { Box } from '@mui/joy';
-import axiosInstance from '../../../Constarints/axios/userAxios';
 import { useNavigate } from "react-router-dom";
-import { toast } from 'sonner';
+
 
 export default function ProfilePostCard({ posts }: any) {
 const navigate=useNavigate()

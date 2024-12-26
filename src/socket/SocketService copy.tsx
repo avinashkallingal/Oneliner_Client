@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 class SocketService {
@@ -48,7 +47,7 @@ class SocketService {
   // emitFetchOnlineUsers(id: string) {
   //   this.socket.emit('emitUserOnline', id)
   // }
-  onGotOnlineUsers(callback: (onlineId:any) => void) {
+  onGotOnlineUsers(callback: (onlineId:string) => void) {
     this.socket.on('emitUserOnline', callback)
   }
   onUserOnlineOff(callback: () => void) {
@@ -56,7 +55,7 @@ class SocketService {
   }
   
  
-  onGotOfflineUsers(callback: (onlineId:any) => void) {
+  onGotOfflineUsers(callback: (onlineId:string) => void) {
     this.socket.on('userOffline', callback)
   }
 

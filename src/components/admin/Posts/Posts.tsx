@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axiosInstance from '../../../Constarints/axios/adminAxios';
 import { Card, CardContent, Typography, Box, Grid, Button } from '@mui/material';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { adminEndpoints } from '../../../Constarints/endpoints/adminEndpoints';
 import { postEndpoints } from '../../../Constarints/endpoints/postEndpoints';
 
 function Posts() {

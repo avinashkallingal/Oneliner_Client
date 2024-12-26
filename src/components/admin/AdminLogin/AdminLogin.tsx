@@ -1,9 +1,8 @@
-import React, { useState,useEffect } from 'react';
+import  { useState } from 'react';
 import {  Grid, TextField, Paper, Button, Typography } from "@mui/material";
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../../../Constarints/axios/adminAxios';
 import { adminEndpoints } from '../../../Constarints/endpoints/adminEndpoints';
 
 const LoginPage = () => {

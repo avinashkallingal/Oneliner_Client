@@ -10,12 +10,9 @@ import IconButton from "@mui/joy/IconButton";
 import Favorite from "@mui/icons-material/Favorite";
 import Input from "@mui/joy/Input";
 import Typography from "@mui/joy/Typography";
-import MoreHoriz from "@mui/icons-material/MoreHoriz";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import ModeCommentOutlined from "@mui/icons-material/ModeCommentOutlined";
-import SendOutlined from "@mui/icons-material/SendOutlined";
 import Face from "@mui/icons-material/Face";
-import BookmarkBorderRoundedIcon from "@mui/icons-material/BookmarkBorderRounded";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 
@@ -23,22 +20,21 @@ import Skeleton from "@mui/joy/Skeleton";
 import Stack from "@mui/joy/Stack";
 import Button from "@mui/joy/Button";
 import { toast } from "sonner";
-import PdfViewer from "../../../utilities/pdfViewer";
 import PostMenu from "./PostMenu";
 import { EmbedPDF } from "@simplepdf/react-embed-pdf";
 
-import CardContents from "@mui/joy/CardContent";
-import IconButtons from "@mui/joy/IconButton";
-import CircularProgress from "@mui/joy/CircularProgress";
+// import IconButtons from "@mui/joy/IconButton";
 import { styled } from "@mui/material/styles";
-import { IconButtonProps } from "@mui/material/IconButton";
+import { IconButtonProps } from "@mui/joy/IconButton";
 
-import { useSelector, useDispatch } from "react-redux";
-import Chatbox from "../../../Pages/user/ChatBox/ChatBox";
+
+
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
+import { IUser } from "../../../Interfaces/Iuser";
+
 
 export default function InstagramPost({ fetchGenre }) {
   const [posts, setPosts] = useState([]);
@@ -46,9 +42,9 @@ export default function InstagramPost({ fetchGenre }) {
   const [pdf, setPdf] = useState<any>(null);
   const [comment, setComment] = useState<any>(null);
   const [expanded, setExpanded] = useState<boolean>(false);
-  const [fetchGenres, setFetchGenres] = useState<any>("all");
-  const [error, setError] = useState<any>("");
-  const [chatDisplay, setChatDisplay] = useState<boolean>(false);
+  // const [fetchGenres, setFetchGenres] = useState<string>("all");
+  const [error, setError] = useState<any>(null);
+  // const [chatDisplay, setChatDisplay] = useState<boolean>(false);
   const [replyTo, setReplyTo] = useState(null);
   const [replyText, setReplyText] = useState("");
   const [replyCommentId, setReplyCommentId] = React.useState(null); // Track which comment is being replied to
@@ -64,6 +60,7 @@ const handleShowMoreComments = () => {
 
   const userId = localStorage.getItem("id");
   const navigate = useNavigate();
+console.log(replyTo,"reply to")
 
   interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -79,6 +76,7 @@ const handleShowMoreComments = () => {
       duration: theme.transitions.duration.shortest,
     }),
   }));
+  
   let genre = "All";
 
   // Fetch data using useEffect
@@ -88,7 +86,7 @@ const handleShowMoreComments = () => {
     if (fetchGenre) {
       genre = fetchGenre;
     }
-    setFetchGenres(fetchGenre);
+    // setFetchGenres(fetchGenre);
     const fetchPosts = async () => {
       try {
         const result = await axiosInstance.get(
@@ -99,9 +97,15 @@ const handleShowMoreComments = () => {
         //   setError("No posts found for this Genre.........")
         //   setLoading(false);
         // }
+        setError(null)
+        console.log(result," no genre post in fetchpost")
         setPosts(result.data.data); // Assuming result.data.data is the posts array
         setLoading(false);
       } catch (error) {
+        if(error.status==500){
+        setError("No posts found for this Genre.........")
+        setLoading(false);
+        }
         console.error("Error fetching posts:", error);
       }
     };
@@ -109,7 +113,7 @@ const handleShowMoreComments = () => {
   }, [fetchGenre, postRefresh]);
 
   //fetching user data
-  const [loggeduser, setLoggedUser] = useState();
+  const [loggeduser, setLoggedUser] = useState<IUser>();
   useEffect(() => {
     async function fetchUser() {
       const result = await axiosInstance.post(
@@ -215,7 +219,7 @@ const handleShowMoreComments = () => {
       toast.error("Error while liking/unliking post.");
     }
   };
-  const linkRef = React.useRef(null);
+  // const linkRef = React.useRef(null);
   // if(useSelector((state:any) => state.ChatDisplay.chatBoxDisplay)){
   //   return(
   //     <Chatbox/>
@@ -276,6 +280,9 @@ const handleShowMoreComments = () => {
     parentCommentId?: any,
     text?: any
   ) => {
+    if (!loggeduser) {
+      throw new Error("Logged user is undefined");
+  }
     try {
       const payload = {
         postId,
@@ -307,6 +314,9 @@ const handleShowMoreComments = () => {
                   comments: p.comments.map((comment1: any) => {
                     if (comment1._id === parentCommentId) {
                       // If it is a reply, update the specific comment's replies array
+                      if (!loggeduser) {
+                        throw new Error("Logged user is undefined");
+                    }
                       return {
                         ...comment1,
                         replies: [
@@ -356,6 +366,24 @@ const handleShowMoreComments = () => {
   };
   return (
     <Box sx={{ marginTop: "9vh", boxShadow: 30 }}>
+     {error && (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      color: "goldenrod",
+      fontSize: "1.5rem",
+      fontWeight: "bold",
+      textAlign: "center",
+      background: "rgba(0, 0, 0, 0.05)", // Optional: Light background for emphasis
+    }}
+  >
+    <h2>No post found for the genre</h2>
+  </div>
+)}
+
       {loading ? (
         <>
           {[1, 2, 3].map((value) => (
@@ -538,7 +566,7 @@ const handleShowMoreComments = () => {
                   </IconButton>
                 )}
 
-                <IconButtons variant="plain" color="neutral" size="sm">
+                <IconButton variant="plain" color="neutral" size="sm">
                   <ExpandMore
                     expand={expanded}
                     onClick={handleExpandClick}
@@ -547,7 +575,7 @@ const handleShowMoreComments = () => {
                   >
                     <ModeCommentOutlined />
                   </ExpandMore>
-                </IconButtons>
+                </IconButton>
 
                 {/* <IconButton variant="soft" color="neutral" size="sm">
                   <SendOutlined />

@@ -25,6 +25,7 @@ interface User {
   email?: string;
   gender?: string;
   isBlocked?: boolean;
+  profilePicture?:string;
 }
 
 const UserList: React.FC = () => {

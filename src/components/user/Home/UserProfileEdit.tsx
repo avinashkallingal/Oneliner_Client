@@ -21,8 +21,8 @@ const defaultTheme = createTheme();
 
 export default function UserProfile() {
   const isSmallScreen = useMediaQuery(defaultTheme.breakpoints.down("sm"));
-  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = React.useState<string>("");
+  // const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  // const [previewUrl, setPreviewUrl] = React.useState<string>("");
   const [user, setUser] = React.useState<User>({
     username: "",
     about: "",
@@ -34,7 +34,7 @@ export default function UserProfile() {
   const [crop, setCrop] = React.useState({ x: 0, y: 0 });
   const [zoom, setZoom] = React.useState(1);
   const [imageSrc, setImageSrc] = React.useState<string | null>(null);
-  const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
+  // const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
 
   interface User {
     id?: number;
@@ -79,13 +79,13 @@ export default function UserProfile() {
   };
 
   // Handle file change for avatar
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  };
+  // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     setSelectedFile(file);
+  //     setPreviewUrl(URL.createObjectURL(file));
+  //   }
+  // };
 //crop
 const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   const file = event.target.files?.[0];
@@ -100,12 +100,13 @@ const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 const handleCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
+  console.log(croppedArea)
   setCroppedAreaPixels(croppedAreaPixels);
 };
 
 const handleCrop = async () => {
   if (imageSrc && croppedAreaPixels) {
-    const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
+    const croppedImage:any = await getCroppedImg(imageSrc, croppedAreaPixels);
     setPhotoFile(croppedImage);
     setImageSrc(''); // Reset the imageSrc after cropping
   }
@@ -126,9 +127,9 @@ const handleCrop = async () => {
     formData.append("language", user.language || "");
 
     // If a file is selected, append it as 'avatar'
-    if (selectedFile) {
-      formData.append("avatar", selectedFile);
-    }
+    // if (selectedFile) {
+    //   formData.append("avatar", selectedFile);
+    // }
     if(photoFile){
       formData.append("avatar", photoFile);
     }
@@ -216,8 +217,7 @@ const handleCrop = async () => {
               style={{ width: 96, height: 96, borderRadius: "50%" }}
             /> ):<Avatar
               src={
-                previewUrl ||
-                user?.profilePicture               
+                               user?.profilePicture               
               }
               style={{ width: 96, height: 96, borderRadius: "50%" }}
             />}

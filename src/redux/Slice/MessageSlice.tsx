@@ -4,12 +4,12 @@ interface MyDynamicObject {
     [key: string]: any;
   }
 
-interface ChatMessage {
-    chatId: string | null;
-    senderId: string | null;
-    receiverId: string | null;
-    content: string | null;
-}
+// interface ChatMessage {
+//     chatId: string | null;
+//     senderId: string | null;
+//     receiverId: string | null;
+//     content: string | null;
+// }
 
 interface MessageState {
     messages: MyDynamicObject[];
@@ -18,6 +18,7 @@ interface MessageState {
 const initialState: MessageState = {
     messages: []
 };
+
 
 const messageStoreSlice = createSlice({
     name: 'messageStore',
@@ -30,6 +31,7 @@ const messageStoreSlice = createSlice({
             }
             // state.messages = [...state.messages, action.payload.message];
         },
+     
         clearMessages: (state) => {
             state.messages = [];
         }
@@ -38,3 +40,4 @@ const messageStoreSlice = createSlice({
 
 export const { addMessage, clearMessages } = messageStoreSlice.actions;
 export default messageStoreSlice;
+

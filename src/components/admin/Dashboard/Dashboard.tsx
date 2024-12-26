@@ -23,7 +23,15 @@ import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 import { adminEndpoints } from "../../../Constarints/endpoints/adminEndpoints";
 
 // Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const Dashboard: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -32,9 +40,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const result = await axiosInstance.get(
-          adminEndpoints.userList
-        );
+        const result = await axiosInstance.get(adminEndpoints.userList);
         if (result.data.userData) {
           setUsers(result.data.userData);
         }
@@ -170,6 +176,7 @@ const Dashboard: React.FC = () => {
       },
       title: {
         display: true,
+        text: "Posts Count by Day",
       },
     },
   };
@@ -179,35 +186,35 @@ const Dashboard: React.FC = () => {
       <Grid container spacing={4}>
         {/* User Count and Post Count */}
         <Grid container spacing={4} justifyContent="center">
-  <Grid item xs={12} sm={6} md={4}>
-    <Box
-      p={4}
-      bgcolor="primary.light"
-      borderRadius={1}
-      textAlign="center"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-    >
-      <Typography variant="h5">User Count</Typography>
-      <Typography variant="h4">{users.length}</Typography>
-    </Box>
-  </Grid>
-  <Grid item xs={12} sm={6} md={4}>
-    <Box
-      p={4}
-      bgcolor="secondary.light"
-      borderRadius={1}
-      textAlign="center"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-    >
-      <Typography variant="h5">Post Count</Typography>
-      <Typography variant="h4">{posts.length}</Typography>
-    </Box>
-  </Grid>
-</Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Box
+              p={4}
+              bgcolor="primary.light"
+              borderRadius={1}
+              textAlign="center"
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+            >
+              <Typography variant="h5">User Count</Typography>
+              <Typography variant="h4">{users.length}</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Box
+              p={4}
+              bgcolor="secondary.light"
+              borderRadius={1}
+              textAlign="center"
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+            >
+              <Typography variant="h5">Post Count</Typography>
+              <Typography variant="h4">{posts.length}</Typography>
+            </Box>
+          </Grid>
+        </Grid>
 
         {/* User Count Bar Chart */}
         <Grid item xs={12} md={6}>
@@ -215,7 +222,18 @@ const Dashboard: React.FC = () => {
             <Typography variant="h5" gutterBottom>
               User Creation Count by Month
             </Typography>
-            <Bar data={userChartData} options={{ ...chartOptions, title: { text: "User Creation Count" } }} />
+            <Bar
+              data={userChartData}
+              options={{
+                ...chartOptions,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: "User Creation Count",
+                  },
+                },
+              }}
+            />
           </Box>
         </Grid>
 
@@ -225,7 +243,18 @@ const Dashboard: React.FC = () => {
             <Typography variant="h5" gutterBottom>
               Post Creation Count by Month
             </Typography>
-            <Bar data={postChartData} options={{ ...chartOptions, title: { text: "Post Creation Count" } }} />
+            <Bar
+              data={postChartData}
+              options={{
+                ...chartOptions,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: "Post Creation Count",
+                  },
+                },
+              }}
+            />
           </Box>
         </Grid>
 
@@ -235,7 +264,35 @@ const Dashboard: React.FC = () => {
             <Typography variant="h5" gutterBottom>
               Posts Count by Day
             </Typography>
-            <Bar data={postByDayChartData} options={{ ...chartOptions, title: { text: "Posts Count by Day" } }} />
+            <Bar
+              data={postByDayChartData}
+              options={{
+                responsive: true,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: "Posts Count by Day",
+                  },
+                  legend: {
+                    display: false, // Set to true if you have multiple datasets and want a legend
+                  },
+                },
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: "Days of the Week", // Customize as needed
+                    },
+                  },
+                  y: {
+                    title: {
+                      display: true,
+                      text: "Number of Posts", // Customize as needed
+                    },
+                  },
+                },
+              }}
+            />
           </Box>
         </Grid>
 
@@ -245,7 +302,22 @@ const Dashboard: React.FC = () => {
             <Typography variant="h5" gutterBottom>
               Genre-wise Post Distribution
             </Typography>
-            <Pie data={genreChartData} options={{ ...chartOptions, title: { text: "Genre-wise Post Distribution" } }} />
+            <Pie
+              data={genreChartData}
+              options={{
+                responsive: true,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: "Genre-wise Post Distribution",
+                  },
+                  legend: {
+                    display: true, // Optional: Customize legend visibility
+                    position: "top", // Example: Set position of legend
+                  },
+                },
+              }}
+            />
           </Box>
         </Grid>
 
@@ -266,7 +338,8 @@ const Dashboard: React.FC = () => {
               {users
                 .sort(
                   (a, b) =>
-                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                    new Date(b.created_at).getTime() -
+                    new Date(a.created_at).getTime()
                 )
                 .slice(0, 5)
                 .map((user, index) => (

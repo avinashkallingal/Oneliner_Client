@@ -1,4 +1,4 @@
-import Otp1 from "../../../components/user/Auth/otp"
+import Otp1 from "../../../Components/user/Auth/otp"
 
 function Otp() {
   return (

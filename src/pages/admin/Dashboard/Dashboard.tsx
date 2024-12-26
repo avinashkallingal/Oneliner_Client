@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { AppBar, IconButton, Tabs, Tab, Box, Toolbar, Container } from '@mui/material';
 import Dashboard from '../../../Components/admin/Dashboard/Dashboard';
 import UserList from '../../../Components/admin/UserManagement/UserManagement';
 import { useNavigate } from 'react-router-dom';
 import Posts from '../../../Components/admin/Posts/Posts';
-import { autoBatchEnhancer } from '@reduxjs/toolkit';
+
 
 const App: React.FC = () => {
   const [tabIndex, setTabIndex] = useState<number>(0);
   const navigate = useNavigate();
 
   const handleTabChange = (event: React.SyntheticEvent, newIndex: number) => {
+    console.log(event)
     setTabIndex(newIndex);
   };
 

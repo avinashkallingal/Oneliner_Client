@@ -1,14 +1,12 @@
-import React from "react";
 import Avatar from "@mui/material/Avatar";
 import { deepOrange } from '@mui/material/colors';
-import { Box } from "@mui/material";
 import { styled } from "@mui/system";
 import moment from 'moment';
-import CheckIcon from '@mui/icons-material/Check';
-import DoneAllIcon from '@mui/icons-material/DoneAll'; // Importing double tick icon
+// import CheckIcon from '@mui/icons-material/Check';
+// import DoneAllIcon from '@mui/icons-material/DoneAll'; // Importing double tick icon
 
 import { useState } from 'react';
-import { Modal,IconButton} from '@mui/material';
+import { IconButton} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Dialog, DialogContent } from '@mui/material';
 
@@ -25,10 +23,10 @@ const MessageRowRight = styled('div')({
   justifyContent: "flex-end",
 });
 
-const MessageRowLeft = styled('div')({
-  display: "flex",
-  justifyContent: "flex-start",  // Aligns content to the left
-});
+// const MessageRowLeft = styled('div')({
+//   display: "flex",
+//   justifyContent: "flex-start",  // Aligns content to the left
+// });
 
 const MessageBlue = styled('div')({
   display: "flex",
@@ -116,16 +114,16 @@ const MessageTimeStampRight = styled('div')({
   gap: "2px",  // Space between timestamp and ticks
 });
 
-const MessageTimeStampLeft = styled('div')({
-  fontSize: ".75em",
-  fontWeight: "300",
-  color: "#999",
-  marginTop: "5px",
-  display: "flex",
-  alignItems: "center",
-  gap: "2px",  // Space between timestamp and ticks
-  justifyContent: "flex-start",  // Align the timestamp to the left
-});
+// const MessageTimeStampLeft = styled('div')({
+//   fontSize: ".75em",
+//   fontWeight: "300",
+//   color: "#999",
+//   marginTop: "5px",
+//   display: "flex",
+//   alignItems: "center",
+//   gap: "2px",  // Space between timestamp and ticks
+//   justifyContent: "flex-start",  // Align the timestamp to the left
+// });
 
 const DisplayName = styled('div')({
   marginLeft: "20px"
@@ -324,7 +322,7 @@ interface rightMsg {
 export const MessageRight = (props: rightMsg) => {
   const { message = "no message", fileType, timestamp, read } = props;
   const [openModal, setOpenModal] = useState(false);
-
+console.log(read,"read")
   const formatChatTimestamp = (timestamp1: any) => {
     const now = moment();
     const messageTime = moment(timestamp1);

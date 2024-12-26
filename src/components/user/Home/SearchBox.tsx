@@ -172,16 +172,18 @@ import axiosInstance from "../../../Constarints/axios/userAxios";
 import { toast } from "sonner";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 import Navbar from "./Navbar";
+import { IUser } from "../../../Interfaces/Iuser";
 
 export interface SimpleDialogProps {
   open: boolean;
   onClose: () => void;
 }
 
+
 export function SimpleDialog(props: SimpleDialogProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredUsers, setFilteredUsers] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
+  // const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -196,12 +198,12 @@ export function SimpleDialog(props: SimpleDialogProps) {
 
     if (query.trim() === "") {
       setFilteredUsers([]);
-      setLoading(false);
+      // setLoading(false);
       return;
     }
 
     debounceTimeout.current = setTimeout(async () => {
-      setLoading(true);
+      // setLoading(true);
       try {
         const response = await axiosInstance.get(userEndpoints.searchUsers, {
           params: { q: query },
@@ -212,7 +214,7 @@ export function SimpleDialog(props: SimpleDialogProps) {
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     }, 2000);
   };
@@ -230,7 +232,7 @@ export function SimpleDialog(props: SimpleDialogProps) {
       toast.error("Something went wrong");
     }
   };
-
+console.log(filteredUsers," filtererd users in search bar&&&&&&&&&&&&&&&&&")
   return (<>
  
     <Dialog

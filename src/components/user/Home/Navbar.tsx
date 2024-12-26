@@ -12,30 +12,27 @@ import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import SearchIcon from "@mui/icons-material/Search";
-import ChatIcon from "@mui/icons-material/Chat";
+
 import AddBoxIcon from "@mui/icons-material/AddBox";
-import PeopleIcon from "@mui/icons-material/People";
+
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import StoreIcon from "@mui/icons-material/Store";
+
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import {show as showCahatBox} from "../../../redux/Slice/ChatSlice";
-import {hide as hideCahatBox} from "../../../redux/Slice/ChatSlice";
+
 import SocketService from "../../../socket/SocketService";
 import { toast } from "sonner";
-import AnchorTemporaryDrawer from "./NotificationDrawer";
+
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
+
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
+
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+
 import axiosInstance from "../../../Constarints/axios/userAxios";
-import mongoose, { Mongoose } from "mongoose";
 import { SimpleDialog } from "./SearchBox";
 import {recieve as recieveCall} from "../../../redux/Slice/VideoChatSlice";
 import VideoChat from "./VideoChat";
@@ -169,11 +166,12 @@ const fetchNotificationData=async()=>{
 
   
   const handleUserProfileClickOnNorification=(id:any)=>{
-    const newId = new mongoose.Types.ObjectId(id);
+    // const newId = new mongoose.Types.ObjectId(id);
     navigate('/userProfile',{ state: { id } })
   }
 const readNotification=async (notificationId:any)=>{
   const result=await axiosInstance.get(messageEndpoints.readNotification,{params:{id:notificationId}})
+  console.log(notificationId," read notification clicked with id")
   if(result.data){
     toast.info("notification cleared")
     setNotificationData([])
@@ -455,6 +453,7 @@ const handleClose=()=>{
     </div>
 
     </>}
+
     {searchFlag&&<>
       <div>
       { (

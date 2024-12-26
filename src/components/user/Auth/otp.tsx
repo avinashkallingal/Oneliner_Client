@@ -13,7 +13,6 @@ import image from "../../../assets/bg_onliner3.jpeg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-import axiosInstance from "../../../Constarints/axios/userAxios";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 
 const defaultTheme = createTheme();
