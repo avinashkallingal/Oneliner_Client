@@ -1,5 +1,5 @@
 // export const API_GATEWAY_BASE_URL = 'https://mywebsite';
-export const API_GATEWAY_BASE_URL = "http://localhost:4000";
+export const API_GATEWAY_BASE_URL = import.meta.env.VITE_API_GATEWAY_BASE_URL;
 export const messageEndpoints = {
     // createChatId: `${API_GATEWAY_BASE_URL}/message/createChatId`,
     getMessages: `${API_GATEWAY_BASE_URL}/message/getmessages`,
