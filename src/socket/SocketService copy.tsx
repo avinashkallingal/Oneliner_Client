@@ -4,7 +4,7 @@ class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:4000', {
+    this.socket = io(import.meta.env.VITE_API_GATEWAY_BASE_URL, {
       transports: ['websocket'],
       upgrade: false
     });

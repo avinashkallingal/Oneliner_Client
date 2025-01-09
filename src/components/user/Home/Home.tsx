@@ -26,9 +26,7 @@ import { EmbedPDF } from "@simplepdf/react-embed-pdf";
 // import IconButtons from "@mui/joy/IconButton";
 import { styled } from "@mui/material/styles";
 import { IconButtonProps } from "@mui/joy/IconButton";
-
-
-
+import LikedUsersModal from "./LikeList";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
@@ -49,6 +47,8 @@ export default function InstagramPost({ fetchGenre }) {
   const [replyText, setReplyText] = useState("");
   const [replyCommentId, setReplyCommentId] = React.useState(null); // Track which comment is being replied to
   const [postRefresh, setPostRefresh] = useState<boolean>();
+  const [likeListOpen,setLikeListOpen]=useState<boolean>(false)
+
 
   {/* State for managing displayed comments */}
 const [visibleComments, setVisibleComments] = useState(5);
@@ -364,6 +364,18 @@ console.log(replyTo,"reply to")
       toast.error("Something went wrong");
     }
   };
+  
+  const handleCloseLikelist=async()=>{
+    setLikeListOpen(false)
+  }
+  const handleLikeList=async()=>{
+    setLikeListOpen(true)
+   
+  }
+
+  
+
+
   return (
     <Box sx={{ marginTop: "9vh", boxShadow: 30 }}>
      {error && (
@@ -590,12 +602,15 @@ console.log(replyTo,"reply to")
                 <BookmarkBorderRoundedIcon />
               </IconButton> */}
             </CardContent>
+
+            {likeListOpen&&<LikedUsersModal open={likeListOpen} postId={post._id} onClose={handleCloseLikelist} />}
             <CardContent>
               <Link
                 component="button"
                 underline="none"
                 textColor="text.primary"
                 sx={{ fontSize: "sm", fontWeight: "lg" }}
+                onClick={handleLikeList}
               >
                 {post.likes.length} Likes
               </Link>

@@ -5,7 +5,7 @@ import { HttpStatus } from '../../Interfaces/StatusCode';
 import { userEndpoints } from '../endpoints/userEndpoints';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_API_GATEWAY_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

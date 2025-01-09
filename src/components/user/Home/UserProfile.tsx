@@ -76,7 +76,8 @@ export default function UserCard({ id }) {
         userEndpoints.fetchUserData,
         { id: id ,loginUserId:userId}
       );
-      console.log(result.data.result.user_data._doc.followers.length, "data count from user fetch");
+      // console.log(result.data.result.user_data._doc.followers.length, "data count from user fetch");
+      console.log(result.data," result of useeffect fetch data")
       if (result.data.success) {
         setUser(result.data.result.user_data._doc);
         setFollowersCount(result.data.result.user_data._doc.followers.length)

@@ -15,6 +15,7 @@ export const postEndpoints = {
     pdfUrlFetch: `${API_GATEWAY_BASE_URL}/post/pdfUrlFetch`,
     imageUrlFetch: `${API_GATEWAY_BASE_URL}/post/imageUrlFetch`,
     likePost: `${API_GATEWAY_BASE_URL}/post/likePost`,
+    likeList: `${API_GATEWAY_BASE_URL}/post/likeList`,
     deletePost: `${API_GATEWAY_BASE_URL}/post/deletePost`,
     addComment: `${API_GATEWAY_BASE_URL}/post/addComment`,
     reportPost: `${API_GATEWAY_BASE_URL}/post/reportPost`,
