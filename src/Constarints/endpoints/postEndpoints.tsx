@@ -22,4 +22,5 @@ export const postEndpoints = {
     adminPostData: `${API_GATEWAY_BASE_URL}/post/adminPostData`,
     // removePostAdmin: `${API_GATEWAY_BASE_URL}/admin/removePost`,
     removePost: (postId:any) => `${API_GATEWAY_BASE_URL}/post/admin/removePost?postId=${encodeURIComponent(postId)}`,
+    
   };

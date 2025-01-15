@@ -15,6 +15,8 @@ import ModeCommentOutlined from "@mui/icons-material/ModeCommentOutlined";
 import Face from "@mui/icons-material/Face";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../../Constarints/axios/userAxios";
+import BookmarkBorderRoundedIcon from "@mui/icons-material/BookmarkBorderRounded";
+import SendOutlined from "@mui/icons-material/SendOutlined";
 
 import Skeleton from "@mui/joy/Skeleton";
 import Stack from "@mui/joy/Stack";
@@ -33,7 +35,6 @@ import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 import { IUser } from "../../../Interfaces/Iuser";
 
-
 export default function InstagramPost({ fetchGenre }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -47,20 +48,24 @@ export default function InstagramPost({ fetchGenre }) {
   const [replyText, setReplyText] = useState("");
   const [replyCommentId, setReplyCommentId] = React.useState(null); // Track which comment is being replied to
   const [postRefresh, setPostRefresh] = useState<boolean>();
-  const [likeListOpen,setLikeListOpen]=useState<boolean>(false)
+  const [likeListOpen, setLikeListOpen] = useState<boolean>(false);
+  const [postId1,setPostId1]=useState<string>('')
 
+  {
+    /* State for managing displayed comments */
+  }
+  const [visibleComments, setVisibleComments] = useState(5);
 
-  {/* State for managing displayed comments */}
-const [visibleComments, setVisibleComments] = useState(5);
-
-{/* Function to handle showing more comments */}
-const handleShowMoreComments = () => {
-  setVisibleComments((prev) => prev + 10);
-};
+  {
+    /* Function to handle showing more comments */
+  }
+  const handleShowMoreComments = () => {
+    setVisibleComments((prev) => prev + 10);
+  };
 
   const userId = localStorage.getItem("id");
   const navigate = useNavigate();
-console.log(replyTo,"reply to")
+  console.log(replyTo, "reply to");
 
   interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -76,7 +81,7 @@ console.log(replyTo,"reply to")
       duration: theme.transitions.duration.shortest,
     }),
   }));
-  
+
   let genre = "All";
 
   // Fetch data using useEffect
@@ -89,22 +94,20 @@ console.log(replyTo,"reply to")
     // setFetchGenres(fetchGenre);
     const fetchPosts = async () => {
       try {
-        const result = await axiosInstance.get(
-          postEndpoints.getPosts(genre)
-        );
+        const result = await axiosInstance.get(postEndpoints.getPosts(genre));
         // if(result.status!==200){
         //   console.log(result.status,"hiiiiiiiiiiii")
         //   setError("No posts found for this Genre.........")
         //   setLoading(false);
         // }
-        setError(null)
-        console.log(result," no genre post in fetchpost")
+        setError(null);
+        console.log(result, " no genre post in fetchpost");
         setPosts(result.data.data); // Assuming result.data.data is the posts array
         setLoading(false);
       } catch (error) {
-        if(error.status==500){
-        setError("No posts found for this Genre.........")
-        setLoading(false);
+        if (error.status == 500) {
+          setError("No posts found for this Genre.........");
+          setLoading(false);
         }
         console.error("Error fetching posts:", error);
       }
@@ -116,10 +119,10 @@ console.log(replyTo,"reply to")
   const [loggeduser, setLoggedUser] = useState<IUser>();
   useEffect(() => {
     async function fetchUser() {
-      const result = await axiosInstance.post(
-        userEndpoints.fetchUserData,
-        { id: userId, loginUserId: "" }
-      );
+      const result = await axiosInstance.post(userEndpoints.fetchUserData, {
+        id: userId,
+        loginUserId: "",
+      });
       // console.log(result.data.result.user_data._doc, "data from user fetch");
       if (result.data.success) {
         setLoggedUser(result.data.result.user_data._doc);
@@ -132,6 +135,25 @@ console.log(replyTo,"reply to")
     setExpanded(!expanded);
   };
 
+  const handleSavePost=async (postId:string)=>{
+
+    try {
+      const response=await axiosInstance.get(userEndpoints.savePost,{params:{postId,userId}})
+      console.log(response.data,'data response of saved post')
+      if (!response.data.success) {   
+    
+ 
+        toast.error("Something went wrong!");
+      } else {
+        toast.info("post saved");
+      }
+    } catch (error) {
+      console.error("Error liking/unliking post:", error);
+      toast.error("Error while liking/unliking post.");
+    }
+   
+  }
+
   // useEffect(()=>{
   //   function chat(){
   //   const chatShow = useSelector((state:any) => state.ChatDisplay.chatBoxDisplay); // Accessing counter state
@@ -139,7 +161,6 @@ console.log(replyTo,"reply to")
   //   }
   //   chat();
   // })
-  
 
   const formatChatTimestamp = (timestamp1: any) => {
     const now = moment();
@@ -156,10 +177,9 @@ console.log(replyTo,"reply to")
 
   const viewPdf = async (postId: any) => {
     try {
-      const result = await axiosInstance.post(
-        postEndpoints.pdfUrlFetch,
-        { postId }
-      );
+      const result = await axiosInstance.post(postEndpoints.pdfUrlFetch, {
+        postId,
+      });
 
       if (result.data.success) {
         setPdf(result.data.pdfUrl);
@@ -196,10 +216,12 @@ console.log(replyTo,"reply to")
     setPosts(updatedPosts);
 
     try {
-      const response = await axiosInstance.post(
-        postEndpoints.likePost,
-        { postId, userId, postUserId, likeFlag }
-      );
+      const response = await axiosInstance.post(postEndpoints.likePost, {
+        postId,
+        userId,
+        postUserId,
+        likeFlag,
+      });
       if (!response.data.success) {
         // Revert changes if API call fails
         if (likeFlag) {
@@ -282,7 +304,7 @@ console.log(replyTo,"reply to")
   ) => {
     if (!loggeduser) {
       throw new Error("Logged user is undefined");
-  }
+    }
     try {
       const payload = {
         postId,
@@ -316,7 +338,7 @@ console.log(replyTo,"reply to")
                       // If it is a reply, update the specific comment's replies array
                       if (!loggeduser) {
                         throw new Error("Logged user is undefined");
-                    }
+                      }
                       return {
                         ...comment1,
                         replies: [
@@ -364,37 +386,49 @@ console.log(replyTo,"reply to")
       toast.error("Something went wrong");
     }
   };
-  
-  const handleCloseLikelist=async()=>{
-    setLikeListOpen(false)
-  }
-  const handleLikeList=async()=>{
-    setLikeListOpen(true)
-   
-  }
 
+  const handleCloseLikelist = async () => {
+    setLikeListOpen(false);
+  };
+  const handleLikeList = async (postId:string) => {
+ 
+    setLikeListOpen(true);
+    setPostId1(postId);
+    
+    
+  };
+  if(likeListOpen){
+    return(
+      <>
+         <LikedUsersModal
+           open={likeListOpen}
+           postId={postId1}
+           onClose={handleCloseLikelist}
+         />
+    </>
+     )
+  }
   
-
 
   return (
     <Box sx={{ marginTop: "9vh", boxShadow: 30 }}>
-     {error && (
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh",
-      color: "goldenrod",
-      fontSize: "1.5rem",
-      fontWeight: "bold",
-      textAlign: "center",
-      background: "rgba(0, 0, 0, 0.05)", // Optional: Light background for emphasis
-    }}
-  >
-    <h2>No post found for the genre</h2>
-  </div>
-)}
+      {error && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            color: "goldenrod",
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            textAlign: "center",
+            background: "rgba(0, 0, 0, 0.05)", // Optional: Light background for emphasis
+          }}
+        >
+          <h2>No post found for the genre</h2>
+        </div>
+      )}
 
       {loading ? (
         <>
@@ -589,31 +623,32 @@ console.log(replyTo,"reply to")
                   </ExpandMore>
                 </IconButton>
 
-                {/* <IconButton variant="soft" color="neutral" size="sm">
+                <IconButton variant="soft" color="neutral" size="sm">
                   <SendOutlined />
-                </IconButton> */}
+                </IconButton>
               </Box>
-              {/* <IconButton
+              <IconButton
                 size="sm"
                 variant="soft"
                 color="neutral"
                 sx={{ ml: "auto" }}
+                onClick={() => handleSavePost(post._id)}
               >
                 <BookmarkBorderRoundedIcon />
-              </IconButton> */}
+              </IconButton>
             </CardContent>
 
-            {likeListOpen&&<LikedUsersModal open={likeListOpen} postId={post._id} onClose={handleCloseLikelist} />}
             <CardContent>
               <Link
                 component="button"
                 underline="none"
                 textColor="text.primary"
                 sx={{ fontSize: "sm", fontWeight: "lg" }}
-                onClick={handleLikeList}
+                onClick={()=>handleLikeList(post._id)}
               >
                 {post.likes.length} Likes
               </Link>
+             
               {/* <Typography sx={{ fontSize: "lg" }}>
                 Genre:{post.genre}
               </Typography> */}
@@ -636,6 +671,7 @@ console.log(replyTo,"reply to")
               >
                 more
               </Link>
+           
               {/* <Link
                 component="button"
                 underline="none"
@@ -645,118 +681,133 @@ console.log(replyTo,"reply to")
               </Link> */}
             </CardContent>
 
-          {/* Showing Comments */}
-{expanded && (
-  <CardContent>
-    {post.comments.slice(0, visibleComments).map((comment1: any) => (
-      <Box
-        key={comment1._id}
-        sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
-            <Link
-              component="button"
-              color="neutral"
-              sx={{ textDecoration: "none" }}
-            >
-              {comment1.userName}
-            </Link>
-          </Typography>
-          <Typography sx={{ fontSize: "sm", color: "text.secondary" }}>
-            {comment1.content}
-          </Typography>
-        </Box>
-        <Link
-          component="button"
-          underline="none"
-          sx={{ fontSize: "xs", color: "text.tertiary" }}
-          onClick={() => setReplyCommentId(comment1._id)}
-        >
-          Reply
-        </Link>
-        <span style={{ fontSize: "0.8rem", color: "#888" }}>
-          {formatChatTimestamp(comment1.createdAt)}
-        </span>
-        {replyCommentId === comment1._id && (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              mt: 1,
-            }}
-          >
-            {/* Showing Replies */}
-            {comment1.replies?.map((reply: any) => (
-              <Box
-                key={reply._id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  pl: 3,
-                  my: 0.5,
-                }}
-              >
-                <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
+            {/* Showing Comments */}
+            <div>{post.comments.length} comments</div>
+            {expanded && (
+              <CardContent>
+                {post.comments
+                  .slice(0, visibleComments)
+                  .map((comment1: any) => (
+                    <Box
+                      key={comment1._id}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 0.5,
+                      }}
+                    >
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <Typography sx={{ fontWeight: "lg", fontSize: "sm" }}>
+                          <Link
+                            component="button"
+                            color="neutral"
+                            sx={{ textDecoration: "none" }}
+                          >
+                            {comment1.userName}
+                          </Link>
+                        </Typography>
+                        <Typography
+                          sx={{ fontSize: "sm", color: "text.secondary" }}
+                        >
+                          {comment1.content}
+                        </Typography>
+                      </Box>
+                      <Link
+                        component="button"
+                        underline="none"
+                        sx={{ fontSize: "xs", color: "text.tertiary" }}
+                        onClick={() => setReplyCommentId(comment1._id)}
+                      >
+                        Reply
+                      </Link>
+                      <span style={{ fontSize: "0.8rem", color: "#888" }}>
+                        {formatChatTimestamp(comment1.createdAt)}
+                      </span>
+                      {replyCommentId === comment1._id && (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mt: 1,
+                          }}
+                        >
+                          {/* Showing Replies */}
+                          {comment1.replies?.map((reply: any) => (
+                            <Box
+                              key={reply._id}
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                pl: 3,
+                                my: 0.5,
+                              }}
+                            >
+                              <Typography
+                                sx={{ fontWeight: "lg", fontSize: "sm" }}
+                              >
+                                <Link
+                                  component="button"
+                                  color="neutral"
+                                  textColor="text.primary"
+                                  sx={{
+                                    fontWeight: "lg",
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  {reply.userName}
+                                </Link>
+                              </Typography>
+                              <Typography
+                                sx={{ fontSize: "sm", color: "text.secondary" }}
+                              >
+                                {reply.content}
+                              </Typography>
+                              <span
+                                style={{ fontSize: "0.8rem", color: "#888" }}
+                              >
+                                {formatChatTimestamp(reply.createdAt)}
+                              </span>
+                            </Box>
+                          ))}
+                          <Input
+                            variant="plain"
+                            size="sm"
+                            placeholder="Reply..."
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            sx={{ flex: 1 }}
+                          />
+                          <Link
+                            component="button"
+                            underline="none"
+                            sx={{ fontSize: "sm", color: "primary.main" }}
+                            onClick={() =>
+                              handleReplyPost(post._id, comment1._id)
+                            }
+                          >
+                            Post
+                          </Link>
+                        </Box>
+                      )}
+                    </Box>
+                  ))}
+                {/* Show more button */}
+                {visibleComments < post.comments.length && (
                   <Link
                     component="button"
-                    color="neutral"
-                    textColor="text.primary"
-                    sx={{
-                      fontWeight: "lg",
-                      textDecoration: "none",
-                    }}
+                    underline="none"
+                    sx={{ fontSize: "sm", color: "primary.main", mt: 1 }}
+                    onClick={handleShowMoreComments}
                   >
-                    {reply.userName}
+                    Show More
                   </Link>
-                </Typography>
-                <Typography
-                  sx={{ fontSize: "sm", color: "text.secondary" }}
-                >
-                  {reply.content}
-                </Typography>
-                <span style={{ fontSize: "0.8rem", color: "#888" }}>
-                  {formatChatTimestamp(reply.createdAt)}
-                </span>
-              </Box>
-            ))}
-            <Input
-              variant="plain"
-              size="sm"
-              placeholder="Reply..."
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              sx={{ flex: 1 }}
-            />
-            <Link
-              component="button"
-              underline="none"
-              sx={{ fontSize: "sm", color: "primary.main" }}
-              onClick={() =>
-                handleReplyPost(post._id, comment1._id)
-              }
-            >
-              Post
-            </Link>
-          </Box>
-        )}
-      </Box>
-    ))}
-    {/* Show more button */}
-    {visibleComments < post.comments.length && (
-      <Link
-        component="button"
-        underline="none"
-        sx={{ fontSize: "sm", color: "primary.main", mt: 1 }}
-        onClick={handleShowMoreComments}
-      >
-        Show More
-      </Link>
-    )}
-  </CardContent>
-)}
+                )}
+              </CardContent>
+            )}
 
             <CardContent orientation="horizontal" sx={{ gap: 1, padding: 1 }}>
               <IconButton

@@ -139,11 +139,13 @@ function LikedUsersModal(props: SimpleDialogProps) {
 
   useEffect(() => {
     const fetchLikeList = async () => {
+      console.log("Component rendered");
       try {
         const response = await axiosInstance.get(postEndpoints.likeList, {
           params: { postId },
         });
         console.log(response.data.like_data, "list of liked users");
+        console.log(postId," this is the post id $$$$$$$$$$")
         if (response?.data?.like_data) {
           setLikeList(response.data.like_data);
         }
@@ -153,7 +155,7 @@ function LikedUsersModal(props: SimpleDialogProps) {
     };
 
     fetchLikeList();
-  }, [postId]);
+  }, []);
 
   const handleClose = () => {
     onClose();

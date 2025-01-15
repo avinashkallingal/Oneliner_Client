@@ -26,4 +26,6 @@ export const userEndpoints = {
   contactsFetch: `${API_GATEWAY_BASE_URL}/contacts`,
   searchUsers: `${API_GATEWAY_BASE_URL}/search`,
   refreshToken: `${API_GATEWAY_BASE_URL}/refresh-token`,
+  savePost:`${API_GATEWAY_BASE_URL}/savePost`,
+  getSavedPosts:`${API_GATEWAY_BASE_URL}/getSavedPosts`,
 };

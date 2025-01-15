@@ -124,6 +124,26 @@ const VideoChat: React.FC<VideoChatProps> = ({ open, onClose }) => {
       initiator: true,
       trickle: false,
       stream: myStream || undefined, // Converts null to undefined
+      config: {
+
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' },
+          { urls: 'stun:stun3.l.google.com:19302' },
+          { urls: 'stun:stun4.l.google.com:19302' },
+          {
+            urls: 'turn:turn.bistri.com:80',
+            credential: 'homeo',
+            username: 'homeo',
+          },
+          {
+            urls: 'turn:turn.anyfirewall.com:443?transport=tcp',
+            credential: 'webrtc',
+            username: 'webrtc',
+          },
+        ]
+    }
     });
     console.log("Peer instance created:", peer);
     peer.on("signal", (data) => {

@@ -692,7 +692,7 @@ console.log(replyTo,"replyto")
                 2 DAYS AGO
               </Link>
             </CardContent>
-
+                <div>{post.comments.length} comments</div>
             {expanded && (
               <CardContent>
                 {post.comments

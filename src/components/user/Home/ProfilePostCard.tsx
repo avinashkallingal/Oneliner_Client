@@ -19,11 +19,18 @@ const navigate=useNavigate()
   //     toast.error("Something went wrong");
   //   }
   // };
+ 
+
+
   const handlePostViewClick = (post: any) => {
     console.log(post,"post in post view function")
     
     navigate("/viewPost", { state: { post } });
   }
+  if (!posts) {
+    return <div>Loading...</div>;
+  }
+  
   
   return (
     <Box
@@ -36,9 +43,9 @@ const navigate=useNavigate()
       alignItems: 'center', height: '100%'
     }}
   >
-    {posts.map((post: any, index: number) => (
+   
       <Card
-        key={index}
+        key={123}
        
         variant="outlined"
         sx={{
@@ -49,10 +56,11 @@ const navigate=useNavigate()
           margin: '10px',       // Adds margin between cards
         }}
       >
+       
         <CardOverflow>
           <AspectRatio ratio="2">
             <img
-              src={post.imageUrlS3}
+              src={posts?.imageUrlS3}
               srcSet="https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318&dpr=2 2x"
               loading="lazy"
               alt=""
@@ -60,8 +68,8 @@ const navigate=useNavigate()
           </AspectRatio>
         </CardOverflow>
         <CardContent>
-          <Typography level="title-md">{post.title}</Typography>
-          <Typography level="body-sm">California</Typography>
+          <Typography level="title-md">{posts?.title}</Typography>
+          <Typography level="body-sm">{posts?.genre}</Typography>
         </CardContent>
         <CardOverflow variant="soft" sx={{ bgcolor: 'background.level1' }}>
           <Divider inset="context" />
@@ -71,7 +79,7 @@ const navigate=useNavigate()
               textColor="text.secondary"
               sx={{ fontWeight: 'md' }}
             >
-              {posts.length} likes
+              {posts?.likes.length} likes
             </Typography>
             <Divider orientation="vertical" />
             <Typography
@@ -81,11 +89,11 @@ const navigate=useNavigate()
             >
               1 hour ago
             </Typography>
-            <button  onClick={() => handlePostViewClick(post)}>View post</button>
+            <button  onClick={() => handlePostViewClick(posts)}>View post</button>
           </CardContent>
         </CardOverflow>
       </Card>
-    ))}
+    
   </Box>
   
   );
