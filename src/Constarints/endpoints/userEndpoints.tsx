@@ -28,4 +28,5 @@ export const userEndpoints = {
   refreshToken: `${API_GATEWAY_BASE_URL}/refresh-token`,
   savePost:`${API_GATEWAY_BASE_URL}/savePost`,
   getSavedPosts:`${API_GATEWAY_BASE_URL}/getSavedPosts`,
+  fetchFollowers:`${API_GATEWAY_BASE_URL}/fetchFollowers`
 };

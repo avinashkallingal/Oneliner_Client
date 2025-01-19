@@ -302,7 +302,8 @@
 //   );
 // }
 
-import * as React from "react";
+// import * as React from "react";
+import React, { useEffect,useState } from "react";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
@@ -318,8 +319,9 @@ import { toast } from "sonner";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 import { IUser } from "../../../Interfaces/Iuser";
+import UsersListModal from "./UserListModal";
 
-export default function UserCard({ id }) {
+function UserCard({ id }) {
   const navigate = useNavigate();
 
   const defaultUser: IUser = {
@@ -341,21 +343,25 @@ export default function UserCard({ id }) {
     created_at: undefined,
   };
 
-  const [user, setUser] = React.useState<IUser>(defaultUser);
-  const [post, setPost] = React.useState<any[]>([]);
-  const [view, setView] = React.useState<"posts" | "savedPosts">("posts"); // Toggle between "posts" and "savedPosts"
-  const [followersCount, setFollowersCount] = React.useState<number>(0);
-  const [followingCount, setFollowingCount] = React.useState<number>(0);
-  const [followFlag, setFollowFlag] = React.useState<boolean>(true);
-  const userId = localStorage.getItem("id");
+  const [user, setUser] = useState<IUser>(defaultUser);
+  const [post, setPost] = useState<any[]>([]);
+  const [view, setView] = useState<"posts" | "savedPosts">("posts"); // Toggle between "posts" and "savedPosts"
+  const [followersCount, setFollowersCount] = useState<number>(0);
+  const [followingCount, setFollowingCount] = useState<number>(0);
+  const [followFlag, setFollowFlag] = useState<boolean>(true);
+  const [followersListOpen, setFollowersListOpen] = useState<boolean>(false);
+  const [followersListData, setFollowersListData] = useState<boolean>(false);
+  
 
-  React.useEffect(() => {
+  const userId = localStorage.getItem("id");
+  console.log("1111111111111111111111111")
+  useEffect(() => {
     const fetchData = async () => {
       const result = await axiosInstance.post(userEndpoints.fetchUserData, {
         id,
         loginUserId: userId,
       });
-
+      console.log("22222222222222222222")
       if (result.data.success) {
         const userData = result.data.result.user_data._doc;
         setUser(userData);
@@ -369,22 +375,44 @@ export default function UserCard({ id }) {
             );
           setFollowFlag(!isFollowing);
         }
+        console.log("2222222221111111111111")
       }
+    
 
-      fetchPosts();
+    await fetchPosts();
     };
 
     fetchData();
   }, []);
+  
+  console.log("3333333333333333333333333333333333")
+  const handleFollowers = async() => {
+    setFollowersListOpen(true);
+    console.log(userId," user id from the  localstorage $$$$$$$$$$$$$")
+    const result=await axiosInstance.get(userEndpoints.fetchFollowers,{params:{userId:id}})
+
+    if(result.data.success){
+     
+      console.log(result.data.followers_data," this is the followers data #################")
+       setFollowersListData(result.data.followers_data)
+    }
+   
+    
+  };
+  console.log("44444444444444444444444444")
+  const handleCloseFollowers = () => {
+    setFollowersListOpen(false);
+  };
 
   const fetchPosts = async () => {
     const resultPost = await axiosInstance.get(postEndpoints.getUserPosts(id));
     console.log(resultPost.data.data, "data on regullar fetch !!!!!!!!");
     if (resultPost.data.success) {
       setPost(resultPost.data.data);
+      console.log("555555555555555555555555555")
     }
   };
-
+ 
   const fetchSavedPosts = async () => {
     try {
       const result = await axiosInstance.get(userEndpoints.getSavedPosts, {
@@ -392,12 +420,9 @@ export default function UserCard({ id }) {
       });
       if (result.data.success) {
         console.log(result.data.posts, " result form axios fetch");
-      
-          setPost(result.data.posts); // Update post state with saved posts
-          
-      
+
+        setPost(result.data.posts); // Update post state with saved posts
       } else {
-       
         toast.error("error fetching saved posts");
         // setPost(result.data.posts);
       }
@@ -407,7 +432,7 @@ export default function UserCard({ id }) {
       toast.error("Failed to fetch saved postsghtrrt.");
     }
   };
-
+  console.log("66666666666666666666666666666")
   const handleFollow = async () => {
     const result = await axiosInstance.put(userEndpoints.follow, {
       followId: id,
@@ -421,6 +446,7 @@ export default function UserCard({ id }) {
     }
   };
 
+  console.log("77777777777777777777777777777777777")
   const handleUnfollow = async () => {
     const result = await axiosInstance.put(userEndpoints.unFollow, {
       followId: id,
@@ -435,6 +461,8 @@ export default function UserCard({ id }) {
   };
 
   const userCheck = () => id === userId;
+
+  console.log("8888888888888888888888888888888888")
 
   return (
     <>
@@ -493,6 +521,14 @@ export default function UserCard({ id }) {
                 "& > div": { flex: 1 },
               }}
             >
+              {followersListOpen && (
+                <UsersListModal
+                  open={followersListOpen}
+                  title="Followers List"
+                  listData={followersListData}
+                  onClose={handleCloseFollowers}
+                />
+              )}
               <div>
                 <Typography level="body-xs" sx={{ fontWeight: "lg" }}>
                   Posts
@@ -503,7 +539,10 @@ export default function UserCard({ id }) {
                 <Typography level="body-xs" sx={{ fontWeight: "lg" }}>
                   Follower
                 </Typography>
-                <Typography sx={{ fontWeight: "lg" }}>
+                <Typography
+                  sx={{ fontWeight: "lg" }}
+                  onClick={() => handleFollowers()}
+                >
                   {followersCount ?? 0}
                 </Typography>
               </div>
@@ -584,3 +623,5 @@ export default function UserCard({ id }) {
     </>
   );
 }
+// Wrap with React.memo and export as default
+export default React.memo(UserCard);

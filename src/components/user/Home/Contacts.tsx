@@ -16,6 +16,7 @@ import { clearMessages } from '../../../redux/Slice/MessageSlice';
 import { userEndpoints } from '../../../Constarints/endpoints/userEndpoints';
 import { messageEndpoints } from '../../../Constarints/endpoints/messageEndPoints';
 
+
 export default function Contacts() {
   const [contacts, setContacts] = React.useState<any[]>([]);
   const [searchTerm, setSearchTerm] = React.useState(''); // State for search term
@@ -24,6 +25,7 @@ export default function Contacts() {
 
   React.useEffect(() => {
     async function fetchUsers() {
+      
       const result = await axiosInstance.post(userEndpoints.contactsFetch, { id: userId });
 
       if (result.data.success) {

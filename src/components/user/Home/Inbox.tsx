@@ -16,6 +16,7 @@ import { incrementCount } from '../../../redux/Slice/MessageCount';
 import { RootState } from '../../../redux/Store/Store';
 
 
+
 export default function Inbox() {
   const userId=localStorage.getItem("id")
   const [inboxData,setInboxData]=React.useState([])
@@ -26,6 +27,7 @@ const countData=useSelector((state:RootState)=>state.messageCountSlice.count)
   React.useEffect(()=>{
    
     async function fetchInboxData(){
+      SocketService.connect();
       const response=await axiosInstance.get(messageEndpoints.getInboxMessages, {params: {userId: userId}})
     // console.log(response.data," response in inbox")
     if(response.data){

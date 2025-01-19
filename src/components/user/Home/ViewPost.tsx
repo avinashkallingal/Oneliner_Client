@@ -41,8 +41,11 @@ import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 
 
 
-export default function ViewPost() {
+
+export default function ViewPost({copyPostId}) {
+  console.log(copyPostId,"props value passed **********");
   const location = useLocation();
+  // console.log(location.state.post._id,"props value passed by redux **********");
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [pdf, setPdf] = useState<any>(null);
@@ -55,12 +58,15 @@ export default function ViewPost() {
   const [replyText, setReplyText] = useState("");
   const [replyCommentId, setReplyCommentId] = React.useState(null); // Track which comment is being replied to
   const [postRefresh, setPostRefresh] = useState<boolean>();
+  // const [copyPostId1,setCopyPostId]=useState<string>("")
   const userId = localStorage.getItem("id");
-
+let copyPostId1=location.state?.post._id||copyPostId
   {
     /* State for managing displayed comments */
   }
   const [visibleComments, setVisibleComments] = useState(5);
+
+  
 
   {
     /* Function to handle showing more comments */
@@ -77,11 +83,15 @@ console.log(replyTo,"replyto")
       if (result.data.success) {
         setLoggedUser(result.data.result.user_data._doc);
       }
+      // if(copyPostId){
+      //   copyPostId1=copyPostId
+      // }
     }
     fetchUser();
   }, []);
 
-
+  console.log(typeof(copyPostId1),"props passed+++++++++++");
+  console.log(copyPostId1,"props value passed **********");
   const handleShowMoreComments = () => {
     setVisibleComments((prev) => prev + 10);
   };
@@ -113,22 +123,29 @@ console.log(replyTo,"replyto")
       return messageTime.format("MMM Do YYYY, h:mm A");
     }
   };
+
+  
+
+
   // Fetch data using useEffect
   useEffect(() => {
-    console.log(
-      location,
-      " navigate state value in view post ++++++++++++++++"
-    );
-    console.log(
-      location.state.post._id,
-      " navigate state value in view post ------------------"
-    );
+    // console.log(
+    //   location,
+    //   " navigate state value in view post ++++++++++++++++"
+    // );
+    // console.log(
+    //   location.state.post._id,
+    //   " navigate state value in view post ------------------"
+    // );
 
     setLoading(true);
     const fetchPosts = async () => {
       try {
-        const result = await axiosInstance.get(
-          postEndpoints.getPost(location.state.post._id)
+       
+        // const queryArgument=location.state.post._id||copyPostId
+        // console.log(queryArgument," its the passed quey %%%%%%%%%%%%%%")
+        const result = await axiosInstance.get(         
+          postEndpoints.getPost(copyPostId1)
         );
         // if(result.status!==200){
         //   console.log(result.status,"hiiiiiiiiiiii")

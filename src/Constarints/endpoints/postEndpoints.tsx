@@ -20,6 +20,7 @@ export const postEndpoints = {
     addComment: `${API_GATEWAY_BASE_URL}/post/addComment`,
     reportPost: `${API_GATEWAY_BASE_URL}/post/reportPost`,
     adminPostData: `${API_GATEWAY_BASE_URL}/post/adminPostData`,
+    ViewPost: `${API_GATEWAY_BASE_URL}/post/viewPost`,
     // removePostAdmin: `${API_GATEWAY_BASE_URL}/admin/removePost`,
     removePost: (postId:any) => `${API_GATEWAY_BASE_URL}/post/admin/removePost?postId=${encodeURIComponent(postId)}`,
     

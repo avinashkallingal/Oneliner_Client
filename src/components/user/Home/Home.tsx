@@ -28,12 +28,14 @@ import { EmbedPDF } from "@simplepdf/react-embed-pdf";
 // import IconButtons from "@mui/joy/IconButton";
 import { styled } from "@mui/material/styles";
 import { IconButtonProps } from "@mui/joy/IconButton";
-import LikedUsersModal from "./LikeList";
+import UserListModal from "./UserListModal";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
+import {  postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 import { IUser } from "../../../Interfaces/Iuser";
+import ClipboardJS from "clipboard";
+import { constants } from "../../../Constarints/constants/constants";
 
 export default function InstagramPost({ fetchGenre }) {
   const [posts, setPosts] = useState([]);
@@ -49,7 +51,21 @@ export default function InstagramPost({ fetchGenre }) {
   const [replyCommentId, setReplyCommentId] = React.useState(null); // Track which comment is being replied to
   const [postRefresh, setPostRefresh] = useState<boolean>();
   const [likeListOpen, setLikeListOpen] = useState<boolean>(false);
-  const [postId1,setPostId1]=useState<string>('')
+  // const [postId1, setPostId1] = useState<string>("");
+    const [listData, setlistData] = useState([]);
+  const [copyLink,setCopyLink]=useState<string>("")
+
+ 
+
+  const handleCopy = (postId ) => {
+    
+    const link=`${constants.CLIENT_URL}?postId=${postId}`
+
+    // setCopyLink(`${postEndpoints.ViewPost}/${postId}`)
+    setCopyLink(link)
+    toast.info("link copied")
+  }
+       
 
   {
     /* State for managing displayed comments */
@@ -83,6 +99,18 @@ export default function InstagramPost({ fetchGenre }) {
   }));
 
   let genre = "All";
+
+  //for coping to clipboard
+  // Clipboard.js logic after the component is mounted
+    React.useEffect(() => {
+      const clipboard = new ClipboardJS(".copy-btn", {
+        text: () => copyLink, // Dynamically return the copy link
+      });
+  
+      // Cleanup to remove Clipboard.js instance on unmount
+      return () => clipboard.destroy();
+    }, [copyLink]);
+
 
   // Fetch data using useEffect
   useEffect(() => {
@@ -135,14 +163,13 @@ export default function InstagramPost({ fetchGenre }) {
     setExpanded(!expanded);
   };
 
-  const handleSavePost=async (postId:string)=>{
-
+  const handleSavePost = async (postId: string) => {
     try {
-      const response=await axiosInstance.get(userEndpoints.savePost,{params:{postId,userId}})
-      console.log(response.data,'data response of saved post')
-      if (!response.data.success) {   
-    
- 
+      const response = await axiosInstance.get(userEndpoints.savePost, {
+        params: { postId, userId },
+      });
+      console.log(response.data, "data response of saved post");
+      if (!response.data.success) {
         toast.error("Something went wrong!");
       } else {
         toast.info("post saved");
@@ -151,8 +178,9 @@ export default function InstagramPost({ fetchGenre }) {
       console.error("Error liking/unliking post:", error);
       toast.error("Error while liking/unliking post.");
     }
-   
-  }
+  };
+
+
 
   // useEffect(()=>{
   //   function chat(){
@@ -390,25 +418,41 @@ export default function InstagramPost({ fetchGenre }) {
   const handleCloseLikelist = async () => {
     setLikeListOpen(false);
   };
-  const handleLikeList = async (postId:string) => {
- 
+
+
+  //like list fetching from backend
+  const handleLikeList = async (postId: string) => {
     setLikeListOpen(true);
-    setPostId1(postId);
     
-    
+    try {
+              const response = await axiosInstance.get(postEndpoints.likeList, {
+                params: { postId },
+              });
+               if (response?.data?.like_data) {
+                setlistData(response.data.like_data);
+              }
+            } catch (error) {
+              console.error("Error fetching liked users:", error);
+            }
+      
+
+    // setPostId1(postId);
   };
-  if(likeListOpen){
-    return(
+
+  //opening modal if likelistopen variable is true
+  if (likeListOpen) {
+    return (
       <>
-         <LikedUsersModal
-           open={likeListOpen}
-           postId={postId1}
-           onClose={handleCloseLikelist}
-         />
-    </>
-     )
+        <UserListModal
+          open={likeListOpen}
+          title="Liked Users"
+          listData={listData}
+          onClose={handleCloseLikelist}
+        />
+      </>
+    );
   }
-  
+
 
   return (
     <Box sx={{ marginTop: "9vh", boxShadow: 30 }}>
@@ -623,8 +667,22 @@ export default function InstagramPost({ fetchGenre }) {
                   </ExpandMore>
                 </IconButton>
 
-                <IconButton variant="soft" color="neutral" size="sm">
+                {/* <IconButton  size="sm"
+                variant="soft"
+                color="neutral"
+                sx={{ ml: "auto" }}
+                onClick={() => handleSharePost(post._id)}>
                   <SendOutlined />
+                </IconButton> */}
+                <IconButton
+                  size="sm"
+                  variant="soft"
+                  color="neutral"
+                  sx={{ ml: "auto" }}
+                  className="copy-btn"  
+                  onClick={() => handleCopy(post._id)}               
+                >
+                  <SendOutlined/>
                 </IconButton>
               </Box>
               <IconButton
@@ -644,11 +702,11 @@ export default function InstagramPost({ fetchGenre }) {
                 underline="none"
                 textColor="text.primary"
                 sx={{ fontSize: "sm", fontWeight: "lg" }}
-                onClick={()=>handleLikeList(post._id)}
+                onClick={() => handleLikeList(post._id)}
               >
                 {post.likes.length} Likes
               </Link>
-             
+
               {/* <Typography sx={{ fontSize: "lg" }}>
                 Genre:{post.genre}
               </Typography> */}
@@ -671,7 +729,7 @@ export default function InstagramPost({ fetchGenre }) {
               >
                 more
               </Link>
-           
+
               {/* <Link
                 component="button"
                 underline="none"
