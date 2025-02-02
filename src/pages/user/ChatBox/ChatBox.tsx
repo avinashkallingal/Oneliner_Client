@@ -1,6 +1,6 @@
 
 import Draggable from 'react-draggable';
-import ChatBoxComponent from '../../../Components/user/Home/ChatBox';
+import ChatBoxComponent from '../../../Components/user/Home/chatBox';
 import { Box } from '@mui/material';
 
 

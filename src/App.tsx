@@ -6,6 +6,8 @@ import UserRoute from "./Router/user/UserRoute"
 
 import './App.css'
 
+
+
 function App() {
 
 
@@ -15,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/admin/*" element={<AdminRoute />}/>
           <Route path="/*" element={<UserRoute />} />
+       
         </Routes>
       </Router>
     </>

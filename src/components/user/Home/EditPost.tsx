@@ -35,6 +35,7 @@ export default function EditPost() {
   const [crop, setCrop] = React.useState({ x: 0, y: 0 });
   const [zoom, setZoom] = React.useState(1);
   const [imageSrc, setImageSrc] = React.useState<string | null>(null);
+  const [thumbnail, setThumbnail] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
   const [stepDisable, setStepDisable] = React.useState(false);
   const [pdf, setPdf] = React.useState<any>(null);
@@ -76,10 +77,9 @@ export default function EditPost() {
 
   const viewPdf = async (postId: any) => {
     try {
-      const result = await axiosInstance.post(
-        postEndpoints.pdfUrlFetch,
-        { postId }
-      );
+      const result = await axiosInstance.post(postEndpoints.pdfUrlFetch, {
+        postId,
+      });
 
       if (result.data.success) {
         setPdf(result.data.pdfUrl);
@@ -119,18 +119,28 @@ export default function EditPost() {
   };
 
   const handleCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
-    console.log(croppedArea,"croped area")
+    console.log(croppedArea, "croped area");
     setCroppedAreaPixels(croppedAreaPixels);
   };
-  if (location.state && location.state.post && Array.isArray(location.state.post.imageUrlS3)) {
-    console.log(location.state?.post?.imageUrlS3?.[0], " image url in edit post++++++++++");
-  } 
-
+  if (
+    location.state &&
+    location.state.post &&
+    Array.isArray(location.state.post.imageUrlS3)
+  ) {
+    console.log(
+      location.state?.post?.imageUrlS3?.[0],
+      " image url in edit post++++++++++"
+    );
+  }
 
   const handleCrop = async () => {
     if (imageSrc && croppedAreaPixels) {
-      const croppedImage:any = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const croppedImage: any = await getCroppedImg(
+        imageSrc,
+        croppedAreaPixels
+      );
       setPhotoFile(croppedImage);
+      setThumbnail(URL.createObjectURL(croppedImage));
       setImageSrc(""); // Reset the imageSrc after cropping
     }
   };
@@ -173,11 +183,11 @@ export default function EditPost() {
     setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
   };
   const userId = localStorage.getItem("id");
-  const postId=location.state.post._id
+  const postId = location.state.post._id;
   const submitPost = async () => {
     const response = await axios.post(
       postEndpoints.editPost,
-      { userId, title, summary, tags, genre, pdfFile, photoFile,postId },
+      { userId, title, summary, tags, genre, pdfFile, photoFile, postId },
       {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -194,7 +204,7 @@ export default function EditPost() {
   if (pdf) {
     return (
       <>
-      <Navbar/>
+        <Navbar />
         {pdf ? (
           <div
             style={{
@@ -246,21 +256,21 @@ export default function EditPost() {
         return (
           <div>
             <TextField
-              label={location.state.post.title}
+              label={"Title"}
               fullWidth
               margin="normal"
-              value={title}
+              value={title || location.state.post.title}
               onChange={(e) => setTitle(e.target.value)}
               error={!!errors.title}
               helperText={errors.title}
             />
             <TextField
-              label={location.state.post.summary}
+              label={"Summary"}
               fullWidth
               multiline
               rows={4}
               margin="normal"
-              value={summary}
+              value={summary || location.state.post.summary}
               onChange={(e) => setSummary(e.target.value)}
               error={!!errors.summary}
               helperText={errors.summary}
@@ -327,20 +337,20 @@ export default function EditPost() {
         //     />
         //     {pdfFile && <p>{pdfFile.name}</p>}
         //     {errors.pdf && <p style={{ color: "red" }}>{errors.pdf}</p>}
-            // <Button
-            //   variant="contained"
-            //   onClick={() => {
-            //     setStepDisable(true);
-            //     if (!(activeStep <= 0)) {
-            //       setActiveStep(activeStep - 1);
-            //     }
-            //   }}
-            // >
-            //   Back
-            // </Button>
-            // <Button variant="contained" onClick={handleNext}>
-            //   Next
-            // </Button>
+        // <Button
+        //   variant="contained"
+        //   onClick={() => {
+        //     setStepDisable(true);
+        //     if (!(activeStep <= 0)) {
+        //       setActiveStep(activeStep - 1);
+        //     }
+        //   }}
+        // >
+        //   Back
+        // </Button>
+        // <Button variant="contained" onClick={handleNext}>
+        //   Next
+        // </Button>
         //   </div>
         // );
         return (
@@ -349,7 +359,7 @@ export default function EditPost() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              minHeight: "100vh", // Center vertically in viewport
+              minHeight: "50vh", // Center vertically in viewport
               backgroundColor: "#f8f9fa", // Light background
               overflow: "hidden", // Prevent scrolling
             }}
@@ -376,9 +386,15 @@ export default function EditPost() {
                   fontSize: "16px",
                   cursor: "pointer",
                 }}
-                onClick={() => viewPdf(location.state?.post?._id)}
+                onClick={() => {
+                  if (pdfFile) {
+                    window.open(URL.createObjectURL(pdfFile), "_blank");
+                  } else if (location.state?.post?._id) {
+                    viewPdf(location.state?.post?._id);
+                  }
+                }}
               >
-                Preview PDF
+                {pdfFile ? "Preview Selected PDF" : "Preview PDF"}
               </button>
               <input
                 type="file"
@@ -452,72 +468,257 @@ export default function EditPost() {
             </div>
           </div>
         );
-        
+
       case 2:
+        // return (
+        //   <div>
+        //     <input
+        //       type="file"
+        //       name="image"
+        //       accept="image/*"
+        //       onChange={handlePhotoChange}
+        //     />
+        //     <div
+        //       style={{
+        //         width: "150px",
+        //         height: "150px",
+        //         overflow: "hidden",
+        //         borderRadius: "10px",
+        //         border: "1px solid #ccc",
+        //         display: "flex",
+        //         justifyContent: "center",
+        //         alignItems: "center",
+        //         backgroundColor: "#f9f9f9", // Optional background color
+        //       }}
+        //     >
+        //       <img
+        //         src={location.state?.post?.imageUrlS3?.[0]} // Replace with your image URL or path
+        //         alt="Thumbnail"
+        //         style={{
+        //           width: "100%",
+        //           height: "100%",
+        //           objectFit: "cover", // Ensures the image covers the box area
+        //         }}
+        //       />
+        //     </div>
+        //     {imageSrc && (
+        //       <div style={{ position: "relative", height: 400, width: "100%" }}>
+        //         <Cropper
+        //           image={imageSrc}
+        //           crop={crop}
+        //           zoom={zoom}
+        //           aspect={16 / 9}
+        //           onCropChange={setCrop}
+        //           onCropComplete={handleCropComplete}
+        //           onZoomChange={setZoom}
+        //         />
+        //         <Button variant="contained" onClick={handleCrop}>
+        //           Crop
+        //         </Button>
+        //       </div>
+        //     )}
+        //     {errors.photo && <p style={{ color: "red" }}>{errors.photo}</p>}
+        //     <Button
+        //       variant="contained"
+        //       onClick={() => {
+        //         setStepDisable(true);
+        //         if (!(activeStep <= 0)) {
+        //           setActiveStep(activeStep - 1);
+        //         }
+        //       }}
+        //     >
+        //       Back
+        //     </Button>
+        //     <Button variant="contained" onClick={handleNext}>
+        //       Next
+        //     </Button>
+        //   </div>
+        // );
+
         return (
-          <div>
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handlePhotoChange}
-            />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "50vh", // Center vertically in viewport
+              backgroundColor: "#f8f9fa", // Light background
+              overflow: "hidden", // Prevent scrolling
+            }}
+          >
             <div
               style={{
-                width: "150px",
-                height: "150px",
-                overflow: "hidden",
+                padding: "20px",
                 borderRadius: "10px",
-                border: "1px solid #ccc",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#f9f9f9", // Optional background color
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
+                backgroundColor: "#fff", // White card
+                width: "400px", // Limit box width
+                textAlign: "center", // Center text and content
               }}
             >
-              <img  
-                src={location.state?.post?.imageUrlS3?.[0]} // Replace with your image URL or path
-                alt="Thumbnail"
+              {/* File Upload Input */}
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handlePhotoChange}
                 style={{
+                  display: "block",
+                  margin: "10px auto",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
                   width: "100%",
-                  height: "100%",
-                  objectFit: "cover", // Ensures the image covers the box area
                 }}
               />
-            </div>
-            {imageSrc && (
-              <div style={{ position: "relative", height: 400, width: "100%" }}>
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={16 / 9}
-                  onCropChange={setCrop}
-                  onCropComplete={handleCropComplete}
-                  onZoomChange={setZoom}
-                />
-                <Button variant="contained" onClick={handleCrop}>
-                  Crop
+
+              {/* Thumbnail Preview */}
+              <div
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  overflow: "hidden",
+                  borderRadius: "10px",
+                  border: "1px solid #ccc",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#f9f9f9",
+                  margin: "10px auto", // Center horizontally
+                }}
+              >
+                {/* <img
+                  src={location.state?.post?.imageUrlS3?.[0]} // Replace with your image URL or path
+                  alt="Thumbnail"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover", // Ensures the image covers the box area
+                  }}
+                /> */}
+                {imageSrc ? ( // Show selected file preview
+                  <img
+                    src={imageSrc}
+                    alt="Thumbnail"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : thumbnail ? ( // Show cropped image if available
+                  <img
+                    src={thumbnail}
+                    alt="Thumbnail"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  // Show existing post image if no file is selected
+                  <img
+                    src={location.state?.post?.imageUrlS3?.[0] || ""}
+                    alt="Thumbnail"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Image Cropper */}
+              {imageSrc && (
+                <>
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: "250px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Cropper
+                      image={imageSrc}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={16 / 9}
+                      onCropChange={setCrop}
+                      onCropComplete={handleCropComplete}
+                      onZoomChange={setZoom}
+                    />
+                  </div>
+
+                  <button
+                    style={{
+                      width: "100%",
+                      padding: "10px 0",
+                      marginTop: "15px",
+                      backgroundColor: "#007bff",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                    onClick={handleCrop}
+                  >
+                    Crop Image
+                  </button>
+                </>
+              )}
+
+              {errors.photo && (
+                <p
+                  style={{
+                    color: "red",
+                    fontSize: "14px",
+                    marginTop: "5px",
+                  }}
+                >
+                  {errors.photo}
+                </p>
+              )}
+
+              {/* Buttons Section */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "20px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setStepDisable(true);
+                    if (!(activeStep <= 0)) {
+                      setActiveStep(activeStep - 1);
+                    }
+                  }}
+                  style={{
+                    width: "48%", // Equal width for both buttons
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  style={{
+                    width: "48%", // Equal width for both buttons
+                  }}
+                >
+                  Next
                 </Button>
               </div>
-            )}
-            {errors.photo && <p style={{ color: "red" }}>{errors.photo}</p>}
-            <Button
-              variant="contained"
-              onClick={() => {
-                setStepDisable(true);
-                if (!(activeStep <= 0)) {
-                  setActiveStep(activeStep - 1);
-                }
-              }}
-            >
-              Back
-            </Button>
-            <Button variant="contained" onClick={handleNext}>
-              Next
-            </Button>
+            </div>
           </div>
         );
+
       case 3:
         // return (
         //   <Box
@@ -594,7 +795,7 @@ export default function EditPost() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              minHeight: "100vh", // Ensure vertical centering
+              minHeight: "55vh", // Ensure vertical centering
               backgroundColor: "#f0f0f0", // Light background for better contrast
               overflow: "hidden", // Prevent scrolling within the container
             }}
@@ -613,11 +814,11 @@ export default function EditPost() {
                 <Typography variant="h5" gutterBottom>
                   Preview
                 </Typography>
-        
+
                 <Typography variant="body1" gutterBottom>
                   <strong>Title:</strong> {title}
                 </Typography>
-        
+
                 {photoFile && (
                   <Box
                     component="img"
@@ -631,25 +832,25 @@ export default function EditPost() {
                     }}
                   />
                 )}
-        
+
                 <Typography variant="body1" gutterBottom>
                   <strong>Genre:</strong> {genre}
                 </Typography>
-        
+
                 <Typography variant="body1" gutterBottom>
                   <strong>Tags:</strong> {tags.join(", ")}
                 </Typography>
-        
+
                 <Typography variant="body1" gutterBottom>
                   <strong>Summary:</strong> {summary}
                 </Typography>
-        
+
                 {pdfFile && (
                   <Typography variant="body1" gutterBottom>
                     <strong>PDF File:</strong> {pdfFile.name}
                   </Typography>
                 )}
-        
+
                 {/* Buttons Section */}
                 <Box
                   mt={3}
@@ -684,7 +885,7 @@ export default function EditPost() {
             </Card>
           </Box>
         );
-        
+
       default:
         return "Unknown step";
     }
@@ -692,8 +893,15 @@ export default function EditPost() {
 
   return (
     <div>
-    <Navbar/>
-      <Stepper sx={{alignItems:"center" ,width: "80%", marginTop: "10vh",marginLeft:29 }}>
+      <Navbar />
+      <Stepper
+        sx={{
+          alignItems: "center",
+          width: "80%",
+          marginTop: "10vh",
+          marginLeft: 29,
+        }}
+      >
         {steps.map((step, index) => (
           <Step
             key={step}
@@ -727,12 +935,12 @@ export default function EditPost() {
 
       <div
         style={{
-          marginLeft:"15vw",
+          marginLeft: "15vw",
           marginTop: 5,
           backgroundColor: "white",
           padding: "20px",
           borderRadius: "8px",
-          width: "70vw",          
+          width: "70vw",
           color: "black",
           height: "500px",
           minHeight: "300px",
@@ -741,7 +949,6 @@ export default function EditPost() {
           justifyContent: "center", // Center horizontally
           alignItems: "center", // Center vertically
           flexDirection: "column", // Align items inside the card properly
-         
         }}
       >
         {renderStepContent(activeStep)}

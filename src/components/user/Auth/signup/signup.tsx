@@ -15,8 +15,16 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import image from "../../../../Assets/bg_onliner3.jpeg";
 import { useNavigate } from "react-router-dom";
 // import { ToastContainer, toast } from "react-toastify";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { userEndpoints } from "../../../../Constarints/endpoints/userEndpoints";
+import {
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  FormHelperText,
+} from "@mui/material";
+import LoadingPage from "../../Home/Loading";
 
 const defaultTheme = createTheme();
 
@@ -42,14 +50,36 @@ export default function SignUp() {
     language: "",
   });
 
+
+  const [isLoading, setIsLoading] = React.useState(false); // Loading status
+ 
+
+  // Hashtable for dropdown options
+  const genderOptions = {
+    male: "Male",
+    female: "Female",
+    other: "Other",
+  };
+
+  const languageOptions = {
+    malayalam: "Malayalam",
+    english: "English",
+    hindi: "Hindi",
+    tamil: "Tamil",
+    kannada: "Kannada",
+  };
+  
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery(defaultTheme.breakpoints.down("sm"));
 
+  React.useEffect(()=>{
+    
+  })
+
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     let formErrors: formData = {};
-
     // Validate form fields
     if (!username) formErrors.username = "Username is required";
     if (!email) {
@@ -70,10 +100,8 @@ export default function SignUp() {
       setErrors(formErrors);
       return;
     }
-
     // Clear errors if validation passes
     setErrors({});
-
     // Prepare data to send in API request
     const data = {
       username,
@@ -82,14 +110,16 @@ export default function SignUp() {
       gender,
       language,
     };
-
     try {
       // Make POST request with Axios
+      setIsLoading(true)
       const result = await axios.post(userEndpoints.register, data);
       console.log(result.data);
+    
       if (result.data.data.success) {
         toast.info("Verify your email");
         // localStorage.setItem("otp", result.data.data.otp);
+        setIsLoading(false)
         navigate("/otp");
       } else {
         toast.error("email already found");
@@ -104,9 +134,11 @@ export default function SignUp() {
     }
   };
 
+
   const signin = () => {
     navigate("/");
   };
+
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -141,7 +173,7 @@ export default function SignUp() {
         }}
       >
         <CssBaseline />
-        <Box
+       {isLoading?(<LoadingPage message={"Loading,Please wait......"} />):(<Box
           sx={{
             marginTop: 15,
             width: isSmallScreen ? "90%" : "460px",
@@ -207,32 +239,41 @@ export default function SignUp() {
               error={!!errors.password}
               helperText={errors.password}
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="gender"
-              label="Gender"
-              name="gender"
-              autoComplete="gender"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              error={!!errors.gender}
-              helperText={errors.gender}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="language"
-              label="Preferred Language"
-              name="language"
-              autoComplete="language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              error={!!errors.language}
-              helperText={errors.language}
-            />
+
+            <FormControl fullWidth margin="normal" error={!!errors.gender}>
+              <InputLabel id="gender-label">Gender</InputLabel>
+              <Select
+                labelId="gender-label"
+                id="gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+              >
+                {Object.entries(genderOptions).map(([value, label]) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>{errors.gender}</FormHelperText>
+            </FormControl>
+
+            <FormControl fullWidth margin="normal" error={!!errors.language}>
+              <InputLabel id="language-label">Preferred Language</InputLabel>
+              <Select
+                labelId="language-label"
+                id="language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                {Object.entries(languageOptions).map(([value, label]) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>{errors.language}</FormHelperText>
+            </FormControl>
+
             <Button
               type="submit"
               fullWidth
@@ -253,7 +294,7 @@ export default function SignUp() {
               </Grid>
             </Grid>
           </Box>
-        </Box>
+        </Box>)}
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>

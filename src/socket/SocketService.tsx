@@ -50,6 +50,10 @@ class SocketService {
   // emitFetchOnlineUsers(id: string) {
   //   this.socket.emit('emitUserOnline', id)
   // }
+  checkOnlineUsers(recieverId: string, senderId: string){
+    this.socket.emit('emitUserOnline', {recieverId,senderId})
+  }
+
   onGotOnlineUsers(callback: (onlineId:any) => void) {
     this.socket.on('emitUserOnline', callback)
   }

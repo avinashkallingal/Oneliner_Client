@@ -47,6 +47,8 @@ export default function ChatBox() {
   const userData = useSelector((state: any) => state.ChatDisplay.userData);
   const chatData = useSelector((state: any) => state.ChatDisplay.chatRoomData);
   const [typingIndicator,setTypingIndicator]=useState<boolean>(false)
+  const [online,setOnline]=useState<boolean>(false)
+  const [mySocketId,setMySocketId]=useState<string>("")
   
   // const [online,setOnline]=useState<boolean>(false)
 
@@ -57,12 +59,47 @@ export default function ChatBox() {
 //   }
 //   readUpdate()
 // })
+
+useEffect(() => {
+
+  
+   SocketService.onGotOfflineUsers((onlineId:any)=>{
+    console.log(onlineId,"hiiiii user offline&&&&&&&&&&&&&&&&&&&&&")
+    if(onlineId==userData._id.toString()){
+      // setOnline(false)
+    }
+    
+   })
+
+  // Cleanup function to remove listener when the component unmounts
+  // return () => {
+  //   SocketService.onUserOnlineOff(()=>{}); // Detach the listener on unmount
+  // };
+}, []); 
+
+
+
   useEffect(() => {
     SocketService.connect();
     SocketService.joinConversation(chatData._id);
     SocketService.emitUserOnlineStatus(`${userId}`)
-    // SocketService.emitOnline(`${userId}`)
-    // console.log(chatData, " chatData");
+
+    SocketService.askSocketId(`${userId}`)
+    // Receive socket ID
+        SocketService.receiveSocketId((id) => {
+          setMySocketId(id);
+          console.log(id, "my socket id in socket receiver");
+        });
+        SocketService.checkOnlineUsers(`${userData._id}`,`${mySocketId}`)
+    SocketService.onGotOnlineUsers((online:any)=>{
+      console.log(online,"hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
+          setOnline(online)
+      
+     })
+
+    SocketService.checkOnlineUsers(`${userData._id}`,`${mySocketId}`)
+  
+   
     dispatch(clearCount())
    async function fetchMessages(){
     const response = await axiosInstance.get(messageEndpoints.getMessages, {params: {userId: userId, receiverId: userData._id}})
@@ -78,11 +115,15 @@ export default function ChatBox() {
   }
          fetchMessages()
          
+
+         SocketService.onGotOnlineUsers((online:any)=>{
+          console.log(online,"hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
+              setOnline(online)
+          
+         })
          
-    return(
-      // SocketService.emitUserOffline(`${userId}`),
-          SocketService.disconnect()
-          // setOnline(false)
+    return(     
+          SocketService.disconnect()       
           
          )
     
@@ -96,6 +137,8 @@ export default function ChatBox() {
   // })
 
 
+
+  //for scrolling
   useEffect(() => {
     // Scroll to the bottom whenever messages change
     if (messagesEndRef.current) {
@@ -106,32 +149,9 @@ export default function ChatBox() {
 
 
 
-   useEffect(() => {
-    // Setting up the listener once when the component mounts
-    // SocketService.emitFetchOnlineUsers(`${userData._id}`)
-    SocketService.onGotOnlineUsers((onlineId:any)=>{
-      console.log(onlineId,"hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
-      if(onlineId==userData._id.toString()){
-        // setOnline(true)
-      }
-      
-     })
-     SocketService.onGotOfflineUsers((onlineId:any)=>{
-      console.log(onlineId,"hiiiii user offline&&&&&&&&&&&&&&&&&&&&&")
-      if(onlineId==userData._id.toString()){
-        // setOnline(false)
-      }
-      
-     })
-  
-    // Cleanup function to remove listener when the component unmounts
-    return () => {
-      SocketService.onUserOnlineOff(()=>{}); // Detach the listener on unmount
-    };
-  }, []); 
 
-  useEffect(() => {
-    // Setting up the listener once when the component mounts
+//for tying status
+  useEffect(() => {   
     SocketService.onUserTyping(() => {
       setTypingIndicator(true);
       console.log("user is typing++++++++++++")
@@ -170,10 +190,10 @@ export default function ChatBox() {
             {userData.username}
             
           </span>
-          {/* <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
+          <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
           {online?<p>Online</p>:<p>Offline</p>}
             
-          </span> */}
+          </span>
           <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
           {typingIndicator&&<p>typing.......</p>}
             

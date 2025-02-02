@@ -13,6 +13,8 @@ import ChatBox from "../../Pages/user/ChatBox/ChatBox";
 import ViewPost from "../../Pages/user/ViewPost/ViewPost";
 import PrivateRoute from "./PrivateRoute";
 import PrivateRouteUser from "./PrivateUserRoute";
+import NotFound from "../../Components/user/Home/NotFound";
+// import UserBlock from "../../Components/user/Auth/UserBlock";
 
 
 
@@ -24,6 +26,7 @@ function UserRoute() {
     {/* <Login/> */}
       <Routes>
         <Route path="/" element={<PrivateRoute><Login /></PrivateRoute>} />
+        <Route path="/login" element={<PrivateRoute><Login /></PrivateRoute>} />
         <Route path="/home" element={<PrivateRouteUser ><Home /></PrivateRouteUser>} />
         <Route path="/signup" element={<PrivateRoute><Signup /></PrivateRoute>} />
         <Route path="/otp" element={<PrivateRoute><Otp /></PrivateRoute>} />
@@ -37,6 +40,8 @@ function UserRoute() {
         {/* <Route path='/login' element={ <PrivateRoute > <TutorLogin />  </PrivateRoute>} /> */}
         
         {/* <Route path="/videoChat" element={<VideoChat />} />        */}
+            {/* 404 Route - Catch all unmatched routes */}
+                <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

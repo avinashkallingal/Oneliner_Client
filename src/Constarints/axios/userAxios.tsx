@@ -1,8 +1,7 @@
 import axios from 'axios';
-// import { toast } from 'sonner';
-// import jwt from 'jsonwebtoken';
 import { HttpStatus } from '../../Interfaces/StatusCode';
 import { userEndpoints } from '../endpoints/userEndpoints';
+import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_GATEWAY_BASE_URL,
@@ -31,6 +30,9 @@ axiosInstance.interceptors.request.use((config) => {
 // }, (error) => {
 //   return Promise.reject(error);
 // });
+
+
+
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -38,9 +40,10 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     console.log(error.response.status,"error in axios respoonse")
+
     if (error.response.status === HttpStatus.UNAUTHORIZED && !originalRequest._retry) {
       originalRequest._retry = true;
-      console.log("hiii^^^^^^^^")
+
       try {
 
         const refreshToken = localStorage.getItem('userRefreshToken');
@@ -64,9 +67,22 @@ axiosInstance.interceptors.response.use(
         console.log(refreshError,"  token error found in user axios file")
         localStorage.removeItem('userToken');
         localStorage.removeItem('refreshToken');
-        // window.location.href = '/';  
+        window.location.href = '/login';  
       }
     }
+
+    if (error.response.status === HttpStatus.FORBIDDEN) {
+      console.log("hiii inside 403 status if ))))))))))))))))))")
+      // const navigate=useNavigate()
+      localStorage.removeItem("userToken");
+      localStorage.removeItem("email");
+      localStorage.removeItem("userRefreshToken");
+      // navigate("/");
+      location.href="/login"
+      // navigate('/login')
+    }
+
+
     
     return Promise.reject(error);
   }

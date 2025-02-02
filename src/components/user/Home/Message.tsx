@@ -320,9 +320,9 @@ interface rightMsg {
 
 //modal right message
 export const MessageRight = (props: rightMsg) => {
-  const { message = "no message", fileType, timestamp, read } = props;
+  const { message = "no message", fileType, timestamp } = props;
   const [openModal, setOpenModal] = useState(false);
-console.log(read,"read")
+// console.log(read,"read")
   const formatChatTimestamp = (timestamp1: any) => {
     const now = moment();
     const messageTime = moment(timestamp1);

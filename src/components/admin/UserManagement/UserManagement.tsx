@@ -56,13 +56,36 @@ const UserList: React.FC = () => {
        adminEndpoints.userBlock,
         { email, isBlocked: !block }
       );
-      if (result.data.blocked) {
-        toast.info("Blocked");
-        setBlock(true);
-      } else {
-        toast.info("Unblocked");
-        setBlock(false);
+
+      //udpating specific user only
+      console.log(result.data,"result in admin usr management daata************")
+      console.log(users,"user data111111111111111111111111111")
+      if (result.data.user_data._id) {
+        setUsers((prevUsers) => {
+          const index = prevUsers.findIndex((user:any) => user._id === result.data.user_data._id);
+          if (index === -1) return prevUsers; // If not found, return unchanged state
+  
+          // Create a new array with the updated user
+          const updatedUsers = [...prevUsers];
+          updatedUsers[index] = {
+            ...updatedUsers[index],
+            isBlocked: result.data.blocked,
+          };
+  
+          return updatedUsers;
+        });
+  
+        toast.info(result.data.blocked ? "Blocked" : "Unblocked");
       }
+
+
+      // if (result.data.blocked) {
+      //   toast.info("Blocked");
+      //   setBlock(true);
+      // } else {
+      //   toast.info("Unblocked");
+      //   setBlock(false);
+      // }
     } catch (error: any) {
       if (error.response?.status !== HttpStatus.OK) {
         toast.error("Unauthorized access");

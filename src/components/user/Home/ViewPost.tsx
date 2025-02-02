@@ -194,7 +194,8 @@ console.log(replyTo,"replyto")
         postEndpoints.addComment,
         payload
       );
-
+      console.log(result.data," data in axios result in view post %55555555555555555")
+      console.log(posts," data in post state %666666666666666")
       if (result.data.success) {
         setPosts((prevPosts: any) =>
           prevPosts.map((p: any) =>
@@ -528,7 +529,7 @@ console.log(replyTo,"replyto")
               marginBottom: 3,
               minWidth: 600,
               minHeight: 300,
-              width: "80vw",
+              width: "100vw",
               borderRadius: 5,
               "--Card-radius": (theme) => theme.vars.radius.xs,
             }}

@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "../../../redux/Slice/MessageSlice";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import axiosInstance from "../../../Constarints/axios/userAxios";
-import VideoCallIcon from "@mui/icons-material/VideoCall";
+// import VideoCallIcon from "@mui/icons-material/VideoCall";
 import VideoChat from "./VideoChat";
 import { messageEndpoints } from "../../../Constarints/endpoints/messageEndPoints";
 
@@ -150,11 +150,12 @@ export const TextInput = () => {
       setOpen(true); // Open modal to preview selected file
     }
   };
-  const handleOpenvidoChat = () => {
-    setOpenVideoChat(true);//old need to view when using classic webrtc
-    // navigate("/videoChat")
+
+  // const handleOpenvidoChat = () => {
+  //   setOpenVideoChat(true);//old need to view when using classic webrtc
+  //   // navigate("/videoChat")
   
-  };
+  // };
 
   // type MessageType = {
   //   chatId: string;
@@ -324,14 +325,14 @@ export const TextInput = () => {
           <VisuallyHiddenInput type="file" onChange={handleFileSelect} />
         </Button>
 
-        <Button
+        {/* <Button
           component="label"
           variant="outlined"
           color="primary"
           onClick={handleOpenvidoChat}
         >
           <VideoCallIcon />
-        </Button>
+        </Button> */}
 
         <Button onClick={handleSendMessage} variant="contained" color="primary">
           <SendIcon />

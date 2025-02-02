@@ -4,7 +4,7 @@ export const postEndpoints = {
     addPost: `${API_GATEWAY_BASE_URL}/post/addPost`,
     editPost: `${API_GATEWAY_BASE_URL}/post/editPost`,
     // getPosts: `${API_GATEWAY_BASE_URL}/getPosts`,
-    getPosts: (genre:string) => `${API_GATEWAY_BASE_URL}/post/getPosts?genre=${encodeURIComponent(genre)}`,
+    getPosts: (genre:string,page:number) => `${API_GATEWAY_BASE_URL}/post/getPosts?genre=${encodeURIComponent(genre)}&page=${encodeURIComponent(page)}`,
     // getUserPosts: `${API_GATEWAY_BASE_URL}/getUserPosts`,
     getUserPosts: (id:any) => `${API_GATEWAY_BASE_URL}/post/getUserPosts?id=${encodeURIComponent(id)}`,
     // getPost: `${API_GATEWAY_BASE_URL}/post/getPost`,

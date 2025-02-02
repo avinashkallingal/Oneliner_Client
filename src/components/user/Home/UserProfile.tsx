@@ -303,7 +303,7 @@
 // }
 
 // import * as React from "react";
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
@@ -351,17 +351,18 @@ function UserCard({ id }) {
   const [followFlag, setFollowFlag] = useState<boolean>(true);
   const [followersListOpen, setFollowersListOpen] = useState<boolean>(false);
   const [followersListData, setFollowersListData] = useState<boolean>(false);
-  
+  const [followingsListOpen, setFollowingsListOpen] = useState<boolean>(false);
+  const [followingsListData, setFollowingsListData] = useState<boolean>(false);
 
   const userId = localStorage.getItem("id");
-  console.log("1111111111111111111111111")
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await axiosInstance.post(userEndpoints.fetchUserData, {
         id,
         loginUserId: userId,
       });
-      console.log("22222222222222222222")
+
       if (result.data.success) {
         const userData = result.data.result.user_data._doc;
         setUser(userData);
@@ -375,33 +376,51 @@ function UserCard({ id }) {
             );
           setFollowFlag(!isFollowing);
         }
-        console.log("2222222221111111111111")
       }
-    
 
-    await fetchPosts();
+      await fetchPosts();
     };
 
     fetchData();
   }, []);
-  
-  console.log("3333333333333333333333333333333333")
-  const handleFollowers = async() => {
-    setFollowersListOpen(true);
-    console.log(userId," user id from the  localstorage $$$$$$$$$$$$$")
-    const result=await axiosInstance.get(userEndpoints.fetchFollowers,{params:{userId:id}})
 
-    if(result.data.success){
-     
-      console.log(result.data.followers_data," this is the followers data #################")
-       setFollowersListData(result.data.followers_data)
+  const handleFollowers = async () => {
+    setFollowersListOpen(true);
+    console.log(userId, " user id from the  localstorage $$$$$$$$$$$$$");
+    const result = await axiosInstance.get(userEndpoints.fetchFollowers, {
+      params: { userId: id },
+    });
+
+    if (result.data.success) {
+      console.log(
+        result.data.followers_data,
+        " this is the followers data #################"
+      );
+      setFollowersListData(result.data.followers_data);
     }
-   
-    
   };
-  console.log("44444444444444444444444444")
+
+  const handleFollowings = async () => {
+    setFollowingsListOpen(true);
+    console.log(userId, " user id from the  localstorage $$$$$$$$$$$$$");
+    const result = await axiosInstance.get(userEndpoints.fetchFollowings, {
+      params: { userId: id },
+    });
+
+    if (result.data.success) {
+      console.log(
+        result.data.followings_data,
+        " this is the followings data #################"
+      );
+      setFollowingsListData(result.data.followings_data);
+    }
+  };
+
   const handleCloseFollowers = () => {
     setFollowersListOpen(false);
+  };
+  const handleCloseFollowings = () => {
+    setFollowingsListOpen(false);
   };
 
   const fetchPosts = async () => {
@@ -409,10 +428,10 @@ function UserCard({ id }) {
     console.log(resultPost.data.data, "data on regullar fetch !!!!!!!!");
     if (resultPost.data.success) {
       setPost(resultPost.data.data);
-      console.log("555555555555555555555555555")
+      console.log("555555555555555555555555555");
     }
   };
- 
+
   const fetchSavedPosts = async () => {
     try {
       const result = await axiosInstance.get(userEndpoints.getSavedPosts, {
@@ -432,7 +451,7 @@ function UserCard({ id }) {
       toast.error("Failed to fetch saved postsghtrrt.");
     }
   };
-  console.log("66666666666666666666666666666")
+  console.log("66666666666666666666666666666");
   const handleFollow = async () => {
     const result = await axiosInstance.put(userEndpoints.follow, {
       followId: id,
@@ -446,7 +465,7 @@ function UserCard({ id }) {
     }
   };
 
-  console.log("77777777777777777777777777777777777")
+  console.log("77777777777777777777777777777777777");
   const handleUnfollow = async () => {
     const result = await axiosInstance.put(userEndpoints.unFollow, {
       followId: id,
@@ -462,7 +481,7 @@ function UserCard({ id }) {
 
   const userCheck = () => id === userId;
 
-  console.log("8888888888888888888888888888888888")
+  console.log("8888888888888888888888888888888888");
 
   return (
     <>
@@ -529,15 +548,25 @@ function UserCard({ id }) {
                   onClose={handleCloseFollowers}
                 />
               )}
+
+              {followingsListOpen && (
+                <UsersListModal
+                  open={followingsListOpen}
+                  title="Followings List"
+                  listData={followingsListData}
+                  onClose={handleCloseFollowings}
+                />
+              )}
+
               <div>
                 <Typography level="body-xs" sx={{ fontWeight: "lg" }}>
                   Posts
                 </Typography>
-                <Typography sx={{ fontWeight: "lg" }}>0</Typography>
+                <Typography sx={{ fontWeight: "lg" }}>{post.length}</Typography>
               </div>
               <div>
                 <Typography level="body-xs" sx={{ fontWeight: "lg" }}>
-                  Follower
+                  Followers
                 </Typography>
                 <Typography
                   sx={{ fontWeight: "lg" }}
@@ -548,12 +577,23 @@ function UserCard({ id }) {
               </div>
               <div>
                 <Typography level="body-xs" sx={{ fontWeight: "lg" }}>
+                  Followings
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: "lg" }}
+                  onClick={() => handleFollowings()}
+                >
+                  {followingCount ?? 0}
+                </Typography>
+              </div>
+              {/* <div>
+                <Typography level="body-xs" sx={{ fontWeight: "lg" }}>
                   Following
                 </Typography>
                 <Typography sx={{ fontWeight: "lg" }}>
                   {followingCount ?? 0}
                 </Typography>
-              </div>
+              </div> */}
             </Sheet>
             {!userCheck() ? (
               <Box
@@ -600,15 +640,17 @@ function UserCard({ id }) {
           >
             Posts
           </Button>
-          <Button
-            variant={view === "savedPosts" ? "solid" : "outlined"}
-            onClick={() => {
-              setView("savedPosts");
-              fetchSavedPosts();
-            }}
-          >
-            Saved Posts
-          </Button>
+          {userId==id?
+            (<Button
+              variant={view === "savedPosts" ? "solid" : "outlined"}
+              onClick={() => {
+                setView("savedPosts");
+                fetchSavedPosts();
+              }}
+            >
+              Saved Posts
+            </Button>):null
+          }
         </Box>
 
         {/* Post Grid */}

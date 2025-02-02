@@ -1,28 +1,28 @@
-import * as React from 'react';
-import Stepper from '@mui/joy/Stepper';
-import Step from '@mui/joy/Step';
-import StepButton from '@mui/joy/StepButton';
-import StepIndicator from '@mui/joy/StepIndicator';
-import Check from '@mui/icons-material/Check';
-import { TextField, Button, MenuItem, InputAdornment } from '@mui/material';
-import Cropper from 'react-easy-crop';
-import getCroppedImg from '../../../utilities/CropImage'; // A utility function to crop the image
-import { Card, CardContent, Typography, Box } from '@mui/material';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
-import { postEndpoints } from '../../../Constarints/endpoints/postEndpoints';
+import * as React from "react";
+import Stepper from "@mui/joy/Stepper";
+import Step from "@mui/joy/Step";
+import StepButton from "@mui/joy/StepButton";
+import StepIndicator from "@mui/joy/StepIndicator";
+import Check from "@mui/icons-material/Check";
+import { TextField, Button, MenuItem, InputAdornment } from "@mui/material";
+import Cropper from "react-easy-crop";
+import getCroppedImg from "../../../utilities/CropImage"; // A utility function to crop the image
+import { Card, CardContent, Typography, Box } from "@mui/material";
+import axios from "axios";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 
-const steps = ['Add synopsis', 'Add PDF', 'Upload Photo', 'Preview'];
+const steps = ["Add synopsis", "Add PDF", "Upload Photo", "Preview"];
 
 export default function ButtonStepper() {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = React.useState(0);
-  const [title, setTitle] = React.useState('');
-  const [summary, setSummary] = React.useState('');
+  const [title, setTitle] = React.useState("");
+  const [summary, setSummary] = React.useState("");
   const [tags, setTags] = React.useState<string[]>([]);
-  const [tagInput, setTagInput] = React.useState('');
-  const [genre, setGenre] = React.useState('');
+  const [tagInput, setTagInput] = React.useState("");
+  const [genre, setGenre] = React.useState("");
   const [pdfFile, setPdfFile] = React.useState<File | null>(null);
   const [photoFile, setPhotoFile] = React.useState<File | Blob | null>(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<any>(null);
@@ -30,13 +30,29 @@ export default function ButtonStepper() {
   const [zoom, setZoom] = React.useState(1);
   const [imageSrc, setImageSrc] = React.useState<string | null>(null);
   const [errors, setErrors] = React.useState<{ [key: string]: string }>({});
-  const [stepDisable,setStepDisable]=React.useState(false);
+  const [stepDisable, setStepDisable] = React.useState(false);
+  const [thumbnail, setThumbnail] = React.useState<string | null>(null);
 
-  const genres = ['Crime', 'Drama', 'Science', 'Action', 'Adventure', 'Non-Fiction', 'Comedy', 'Horror', 'Romance', 'Sci-Fi', 'Fantasy', 'Thriller', 'Mystery', 'Western', 'Documentary', 'Animation', 'Musical'];
+  const genres = [
+    "Crime",
+    "Drama",
+    "Science",
+    "Action",
+    "Adventure",
+    "Non-Fiction",
+    "Comedy",
+    "Horror",
+    "Romance",
+    "Sci-Fi",
+    "Fantasy",
+    "Thriller",
+    "Mystery",
+    "Western",
+    "Documentary",
+    "Animation",
+    "Musical",
+  ];
 
-
- 
- 
   // for denouncing
   //  const [userlist, setUserlist] = React.useState("");
   // React.useEffect(() => {
@@ -48,24 +64,21 @@ export default function ButtonStepper() {
   //         setUserlist(response.data.userData)
   //       });
   //   }, 2000);
-    
 
   //   return () => clearTimeout(getData);
   // }, [userlist]);
 
   const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTagInput(event.target.value);
-  //  setUserlist(event.target.value);
+    //  setUserlist(event.target.value);
   };
 
-  const stepperVlidation=()=>{
-
-  }
+  const stepperVlidation = () => {};
 
   const handleAddTag = () => {
     if (tagInput && !tags.includes(tagInput)) {
       setTags([...tags, tagInput]);
-      setTagInput('');
+      setTagInput("");
     }
   };
 
@@ -88,33 +101,37 @@ export default function ButtonStepper() {
 
   const handleCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
-    console.log(croppedArea,"croppedArea")    
+    console.log(croppedArea, "croppedArea");
   };
 
   const handleCrop = async () => {
     if (imageSrc && croppedAreaPixels) {
-      const croppedImage:any  = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const croppedImage: any = await getCroppedImg(
+        imageSrc,
+        croppedAreaPixels
+      );
       setPhotoFile(croppedImage);
-      setImageSrc(''); // Reset the imageSrc after cropping
+      setThumbnail(URL.createObjectURL(croppedImage));
+      setImageSrc(""); // Reset the imageSrc after cropping
     }
   };
 
   const validateStep = () => {
     let newErrors: { [key: string]: string } = {};
-    
+
     switch (activeStep) {
       case 0:
-        if (!title) newErrors.title = 'Title is required.';
-        if (!summary) newErrors.summary = 'Summary is required.';
+        if (!title) newErrors.title = "Title is required.";
+        if (!summary) newErrors.summary = "Summary is required.";
         // if (tags.length === 0) newErrors.tags = 'At least one tag is required.';
-        if (!genre) newErrors.genre = 'Genre is required.';
-        setStepDisable(true)
+        if (!genre) newErrors.genre = "Genre is required.";
+        setStepDisable(true);
         break;
       case 1:
-        if (!pdfFile) newErrors.pdf = 'Please upload a PDF file.';
+        if (!pdfFile) newErrors.pdf = "Please upload a PDF file.";
         break;
       case 2:
-        if (!photoFile) newErrors.photo = 'Please upload a photo.';
+        if (!photoFile) newErrors.photo = "Please upload a photo.";
         break;
       default:
         break;
@@ -129,21 +146,23 @@ export default function ButtonStepper() {
       setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
     }
   };
-  const userId=localStorage.getItem("id")
-  const submitPost=async()=>{
-   
-    const response=await axios.post(postEndpoints.addPost,{userId,title,summary,tags,genre,pdfFile,photoFile},{
-      headers: {
-        "Content-Type": "multipart/form-data",
+  const userId = localStorage.getItem("id");
+  const submitPost = async () => {
+    const response = await axios.post(
+      postEndpoints.addPost,
+      { userId, title, summary, tags, genre, pdfFile, photoFile },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
-    })
-    console.log(response.data)
-    if(response.data.success==true){
-      toast.info("Post created")
-      navigate("/home")
+    );
+    console.log(response.data);
+    if (response.data.success == true) {
+      toast.info("Post created");
+      navigate("/home");
     }
-
-  }
+  };
 
   const renderStepContent = (stepIndex: number) => {
     switch (stepIndex) {
@@ -211,7 +230,7 @@ export default function ButtonStepper() {
                 </MenuItem>
               ))}
             </TextField>
-           
+
             <Button variant="contained" onClick={handleNext}>
               Next
             </Button>
@@ -240,7 +259,7 @@ export default function ButtonStepper() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              minHeight: "100vh", // Center vertically in viewport
+              minHeight: "50vh", // Center vertically in viewport
               backgroundColor: "#f8f9fa", // Light background
               overflow: "hidden", // Prevent scrolling
             }}
@@ -278,6 +297,27 @@ export default function ButtonStepper() {
                     wordBreak: "break-word", // Ensure long filenames wrap
                   }}
                 >
+                  <button
+                    style={{
+                      width: "100%",
+                      padding: "10px 0",
+                      marginBottom: "15px",
+                      backgroundColor: "#007bff",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      if (pdfFile) {
+                        window.open(URL.createObjectURL(pdfFile), "_blank");
+                      }
+                    }}
+                  >
+                    {pdfFile ? "Preview Selected PDF" : "Preview PDF"}
+                  </button>
+
                   {pdfFile.name}
                 </p>
               )}
@@ -327,155 +367,319 @@ export default function ButtonStepper() {
             </div>
           </div>
         );
-        
+
       case 2:
+        // return (
+        //   <div>
+        //     <input type="file" name='image' accept="image/*" onChange={handlePhotoChange} />
+        //     {imageSrc && (
+        //       <div style={{ position: 'relative', height: 400, width: '100%' }}>
+        //         <Cropper
+        //           image={imageSrc}
+        //           crop={crop}
+        //           zoom={zoom}
+        //           aspect={16 / 9}
+        //           onCropChange={setCrop}
+        //           onCropComplete={handleCropComplete}
+        //           onZoomChange={setZoom}
+        //         />
+        //         <Button variant="contained" onClick={handleCrop}>
+        //           Crop
+        //         </Button>
+        //       </div>
+        //     )}
+        //     {errors.photo && <p style={{ color: 'red' }}>{errors.photo}</p>}
+        //     <Button variant="contained" onClick={()=>{setStepDisable(true);
+        //     if(!(activeStep<=0)){
+        //       setActiveStep(activeStep-1)
+        //     }}}>
+        //       Back
+        //     </Button>
+        //     <Button variant="contained" onClick={handleNext}>
+        //       Next
+        //     </Button>
+        //   </div>
+        // );
+
         return (
-          <div>
-            <input type="file" name='image' accept="image/*" onChange={handlePhotoChange} />
-            {imageSrc && (
-              <div style={{ position: 'relative', height: 400, width: '100%' }}>
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={16 / 9}
-                  onCropChange={setCrop}
-                  onCropComplete={handleCropComplete}
-                  onZoomChange={setZoom}
-                />
-                <Button variant="contained" onClick={handleCrop}>
-                  Crop
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "50vh", // Center vertically in viewport
+              backgroundColor: "#f8f9fa", // Light background
+              overflow: "hidden", // Prevent scrolling
+            }}
+          >
+            <div
+              style={{
+                padding: "20px",
+                borderRadius: "10px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Subtle shadow
+                backgroundColor: "#fff", // White card
+                width: "400px", // Limit box width
+                textAlign: "center", // Center text and content
+              }}
+            >
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                style={{
+                  display: "block",
+                  margin: "10px auto",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                  width: "100%",
+                }}
+              />
+
+              {/* Thumbnail Preview */}
+              {thumbnail && (
+                <div
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    overflow: "hidden",
+                    borderRadius: "10px",
+                    border: "1px solid #ccc",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "#f9f9f9",
+                    margin: "10px auto", // Center horizontally
+                  }}
+                >
+                  <img
+                    src={thumbnail}
+                    alt="Thumbnail"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              )}
+
+              {imageSrc && (
+                <>
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: "250px",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Cropper
+                      image={imageSrc}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={16 / 9}
+                      onCropChange={setCrop}
+                      onCropComplete={handleCropComplete}
+                      onZoomChange={setZoom}
+                    />
+                  </div>
+
+                  <button
+                    style={{
+                      width: "100%",
+                      padding: "10px 0",
+                      marginTop: "15px",
+                      backgroundColor: "#007bff",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "5px",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                    }}
+                    onClick={handleCrop}
+                  >
+                    Crop Image
+                  </button>
+                </>
+              )}
+
+              {errors.photo && (
+                <p
+                  style={{
+                    color: "red",
+                    fontSize: "14px",
+                    marginTop: "5px",
+                  }}
+                >
+                  {errors.photo}
+                </p>
+              )}
+
+              {/* Buttons Section */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "20px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setStepDisable(true);
+                    if (!(activeStep <= 0)) {
+                      setActiveStep(activeStep - 1);
+                    }
+                  }}
+                  style={{
+                    width: "48%", // Equal width for both buttons
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  style={{
+                    width: "48%", // Equal width for both buttons
+                  }}
+                >
+                  Next
                 </Button>
               </div>
-            )}
-            {errors.photo && <p style={{ color: 'red' }}>{errors.photo}</p>}
-            <Button variant="contained" onClick={()=>{setStepDisable(true);
-            if(!(activeStep<=0)){
-              setActiveStep(activeStep-1)
-            }}}>
-              Back
-            </Button>
-            <Button variant="contained" onClick={handleNext}>
-              Next
-            </Button>
+            </div>
           </div>
         );
+
       case 3:
         return (
-         
           <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            // minHeight: '100vh', // Full viewport height for vertical centering
-            backgroundColor: '#f0f0f0', // Optional: background for contrast
-          }}
-        >
-          <Card variant="outlined" sx={{ maxWidth: 550, padding: 2 }}>
-            <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Preview
-              </Typography>
-    
-              <Typography variant="body1">
-                <strong>Title:</strong> {title}
-              </Typography>
-              {photoFile && (
-                <Box
-                  component="img"
-                  src={URL.createObjectURL(photoFile)}
-                  alt="Cropped Preview"
-                  sx={{ maxWidth: '100%', marginTop: 2 }}
-                />
-              )}
-              <Typography variant="body1">
-                <strong>Genre:</strong> {genre}
-              </Typography>
-    
-              <Typography variant="body1">
-                <strong>Tags:</strong> {tags.join(', ')}
-              </Typography>
-    
-              <Typography variant="body1">
-                <strong>Summary:</strong> {summary}
-              </Typography>
-    
-              {pdfFile && (
-                <Typography variant="body1">
-                  <strong>PDF File:</strong> {pdfFile.name}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "55vh", // Full viewport height for vertical centering
+              backgroundColor: "#f0f0f0", // Optional: background for contrast
+            }}
+          >
+            <Card variant="outlined" sx={{ maxWidth: 550, padding: 2 }}>
+              <CardContent>
+                <Typography variant="h5" gutterBottom>
+                  Preview
                 </Typography>
-              )}
-    
-            
-    
-              <Box mt={2}>
-              <Button variant="contained" onClick={()=>{setStepDisable(true);
-            if(!(activeStep<=0)){
-              setActiveStep(activeStep-1)
-            }}}>
-              Back
-            </Button>
-                <Button onClick={submitPost} variant="contained" color="primary">
-                  Submit
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-    
+
+                <Typography variant="body1">
+                  <strong>Title:</strong> {title}
+                </Typography>
+                {photoFile && (
+                  <Box
+                    component="img"
+                    src={URL.createObjectURL(photoFile)}
+                    alt="Cropped Preview"
+                    sx={{ maxWidth: "100%", marginTop: 2 }}
+                  />
+                )}
+                <Typography variant="body1">
+                  <strong>Genre:</strong> {genre}
+                </Typography>
+
+                <Typography variant="body1">
+                  <strong>Tags:</strong> {tags.join(", ")}
+                </Typography>
+
+                <Typography variant="body1">
+                  <strong>Summary:</strong> {summary}
+                </Typography>
+
+                {pdfFile && (
+                  <Typography variant="body1">
+                    <strong>PDF File:</strong> {pdfFile.name}
+                  </Typography>
+                )}
+
+                <Box mt={2}>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      setStepDisable(true);
+                      if (!(activeStep <= 0)) {
+                        setActiveStep(activeStep - 1);
+                      }
+                    }}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    onClick={submitPost}
+                    variant="contained"
+                    color="primary"
+                  >
+                    Submit
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
         );
       default:
-        return 'Unknown step';
+        return "Unknown step";
     }
   };
 
   return (
     <div>
-      <Stepper  sx={{ width: '100%', marginTop: "10vh" }}>
+      <Stepper sx={{ width: "100%", marginTop: "10vh" }}>
         {steps.map((step, index) => (
           <Step
             key={step}
-            
             indicator={
               <StepIndicator
-                variant={activeStep <= index ? 'soft' : 'solid'}
-                color={activeStep < index ? 'neutral' : 'primary'}
+                variant={activeStep <= index ? "soft" : "solid"}
+                color={activeStep < index ? "neutral" : "primary"}
               >
                 {activeStep <= index ? index + 1 : <Check />}
               </StepIndicator>
             }
             sx={[
-              activeStep > index && index !== 3 && { '&::after': { bgcolor: 'primary.solidBg' } },
+              activeStep > index &&
+                index !== 3 && { "&::after": { bgcolor: "primary.solidBg" } },
             ]}
           >
-            <StepButton onClick={() =>{
-              if(stepDisable){
-              stepperVlidation(); 
-              setActiveStep(index)
-              }              
-            }
-              } disabled={stepDisable}>{step}</StepButton>
+            <StepButton
+              onClick={() => {
+                if (stepDisable) {
+                  stepperVlidation();
+                  setActiveStep(index);
+                }
+              }}
+              disabled={stepDisable}
+            >
+              {step}
+            </StepButton>
           </Step>
         ))}
       </Stepper>
 
-      <div style={{
-        marginTop: 55,
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        width: '70vw',
-        margin: 'auto',
-        color: 'black',
-        height: '500px',
-        minHeight: '300px',
-        maxHeight: '500px',
-        overflowY: 'auto',
-        justifyContent: 'center', // Center horizontally
-        alignItems: 'center', // Center vertically
-        flexDirection: 'column', // Align items inside the card properly
-      }}>
+      <div
+        style={{
+          marginTop: 55,
+          backgroundColor: "white",
+          padding: "20px",
+          borderRadius: "8px",
+          width: "70vw",
+          margin: "auto",
+          color: "black",
+          height: "500px",
+          minHeight: "300px",
+          maxHeight: "500px",
+          overflowY: "auto",
+          justifyContent: "center", // Center horizontally
+          alignItems: "center", // Center vertically
+          flexDirection: "column", // Align items inside the card properly
+        }}
+      >
         {renderStepContent(activeStep)}
       </div>
     </div>

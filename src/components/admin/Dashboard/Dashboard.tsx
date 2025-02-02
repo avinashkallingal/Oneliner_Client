@@ -50,8 +50,9 @@ const Dashboard: React.FC = () => {
 
       try {
         const genre = "All";
+        const page=1
         const resultPosts = await axiosInstance.get(
-          postEndpoints.getPosts(genre)
+          postEndpoints.getPosts(genre,page)
         );
         setPosts(resultPosts.data.data);
       } catch (error) {

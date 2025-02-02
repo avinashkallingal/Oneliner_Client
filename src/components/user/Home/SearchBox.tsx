@@ -170,12 +170,12 @@
 
 import * as React from "react";
 import Button from "@mui/material/Button";
-import Avatar from "@mui/material/Avatar";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
+// import Avatar from "@mui/material/Avatar";
+// import List from "@mui/material/List";
+// import ListItem from "@mui/material/ListItem";
+// import ListItemAvatar from "@mui/material/ListItemAvatar";
+// import ListItemButton from "@mui/material/ListItemButton";
+// import ListItemText from "@mui/material/ListItemText";
 import Dialog from "@mui/material/Dialog";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -183,7 +183,7 @@ import TextField from "@mui/material/TextField";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { blue } from "@mui/material/colors";
-import PersonIcon from "@mui/icons-material/Person";
+// import PersonIcon from "@mui/icons-material/Person";
 import axiosInstance from "../../../Constarints/axios/userAxios";
 import { toast } from "sonner";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
@@ -322,6 +322,9 @@ export const SimpleDialog = React.memo((props: SimpleDialogProps) => {
                   <CardContent>
                     <Typography gutterBottom variant="h6" component="div">
                       {user.username}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Email: {user.email}
                     </Typography>
                     <Typography
                       variant="body2"

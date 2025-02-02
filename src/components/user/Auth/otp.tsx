@@ -21,6 +21,7 @@ export default function OtpEntry() {
   const navigate = useNavigate();
   const [timer, setTimer] = React.useState(60); // State for countdown timer
   const [isResendDisabled, setIsResendDisabled] = React.useState(true); // State to enable/disable resend button
+  const [isLoading, setIsLoading] = React.useState(false); // Loading status
   
   React.useEffect(() => {
     // Timer countdown logic

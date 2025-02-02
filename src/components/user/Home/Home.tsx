@@ -36,6 +36,7 @@ import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 import { IUser } from "../../../Interfaces/Iuser";
 import ClipboardJS from "clipboard";
 import { constants } from "../../../Constarints/constants/constants";
+import Loading from "./Loading";
 
 export default function InstagramPost({ fetchGenre }) {
   const [posts, setPosts] = useState([]);
@@ -54,6 +55,8 @@ export default function InstagramPost({ fetchGenre }) {
   // const [postId1, setPostId1] = useState<string>("");
     const [listData, setlistData] = useState([]);
   const [copyLink,setCopyLink]=useState<string>("")
+  const [pageCount,setPageCount]=useState<number>(1)
+  
 
  
 
@@ -111,37 +114,68 @@ export default function InstagramPost({ fetchGenre }) {
       return () => clipboard.destroy();
     }, [copyLink]);
 
+// let page=3
+
+ // Trigger fetchPosts on scroll
+  useEffect(() => {
+    let timeout;
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 100
+      ) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          setPageCount((prev) => prev + 1);
+          console.log(pageCount, " page count ^^^^^^^^^^^^");
+        }, 300); // Delay updates by 300ms
+      }
+    };
+
+
+    window.addEventListener("scroll", handleScroll); 
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  //[page, isLoading, hasMore]
+
 
   // Fetch data using useEffect
   useEffect(() => {
     setLoading(true);
-    // console.log(fetchGenre, "  hirr+++++++++++");
+   
     if (fetchGenre) {
       genre = fetchGenre;
-    }
-    // setFetchGenres(fetchGenre);
-    const fetchPosts = async () => {
-      try {
-        const result = await axiosInstance.get(postEndpoints.getPosts(genre));
-        // if(result.status!==200){
-        //   console.log(result.status,"hiiiiiiiiiiii")
-        //   setError("No posts found for this Genre.........")
-        //   setLoading(false);
-        // }
-        setError(null);
-        console.log(result, " no genre post in fetchpost");
-        setPosts(result.data.data); // Assuming result.data.data is the posts array
-        setLoading(false);
-      } catch (error) {
-        if (error.status == 500) {
-          setError("No posts found for this Genre.........");
-          setLoading(false);
-        }
-        console.error("Error fetching posts:", error);
-      }
-    };
+    }   
     fetchPosts();
-  }, [fetchGenre, postRefresh]);
+  }, [fetchGenre, postRefresh,pageCount]);
+
+  //fetching post function
+  const fetchPosts = async () => {
+    try {
+      const result = await axiosInstance.get(postEndpoints.getPosts(genre,pageCount));
+      // if(result.status!==200){
+      //   console.log(result.status,"hiiiiiiiiiiii")
+      //   setError("No posts found for this Genre.........")
+      //   setLoading(false);
+      // }
+      setError(null);
+      console.log(result, " no genre post in fetchpost");
+      // const newPosts = result.data.data;
+
+      // setPosts((prevPosts) => [...prevPosts, ...newPosts]); // Append new data
+      setPosts(result.data.data); // Assuming result.data.data is the posts array
+      setLoading(false);
+    } catch (error) {
+      if (error.status == 500) {
+        setError("No posts found for this Genre.........");
+        setLoading(false);
+      }
+      console.error("Error fetching posts:", error);
+    }
+  };
+
+  console.log(posts," posts got in the state &&&&&&&&&&&&&&") 
 
   //fetching user data
   const [loggeduser, setLoggedUser] = useState<IUser>();
@@ -205,13 +239,15 @@ export default function InstagramPost({ fetchGenre }) {
 
   const viewPdf = async (postId: any) => {
     try {
+      setLoading(true)
       const result = await axiosInstance.post(postEndpoints.pdfUrlFetch, {
         postId,
       });
-
+  
       if (result.data.success) {
         setPdf(result.data.pdfUrl);
         console.log(result.data.pdfUrl, " pfd fetch result fhfhj");
+        setLoading(false)
         // Return the PDF URL if successful
       } else {
         toast.error("Error while viewing PDF");
@@ -275,6 +311,8 @@ export default function InstagramPost({ fetchGenre }) {
   //     <Chatbox/>
   //   )
   // }
+
+
 
   if (pdf) {
     return (
