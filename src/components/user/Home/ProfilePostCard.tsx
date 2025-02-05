@@ -70,6 +70,7 @@ const navigate=useNavigate()
         <CardContent>
           <Typography level="title-md">{posts?.title}</Typography>
           <Typography level="body-sm">{posts?.genre}</Typography>
+          {/* <Typography level="body-sm">{posts?.summary}</Typography> */}
         </CardContent>
         <CardOverflow variant="soft" sx={{ bgcolor: 'background.level1' }}>
           <Divider inset="context" />

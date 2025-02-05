@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { HttpStatus } from '../../Interfaces/StatusCode';
 import { userEndpoints } from '../endpoints/userEndpoints';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_GATEWAY_BASE_URL,

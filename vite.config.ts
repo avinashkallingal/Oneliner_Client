@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://localhost:4000',  // Backend API server
+        target: 'https://oneliner.website',  // Backend API server
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

@@ -47,7 +47,7 @@ export default function ChatBox() {
   const userData = useSelector((state: any) => state.ChatDisplay.userData);
   const chatData = useSelector((state: any) => state.ChatDisplay.chatRoomData);
   const [typingIndicator,setTypingIndicator]=useState<boolean>(false)
-  const [online,setOnline]=useState<boolean>(false)
+  // const [online,setOnline]=useState<boolean>(false)
   const [mySocketId,setMySocketId]=useState<string>("")
   
   // const [online,setOnline]=useState<boolean>(false)
@@ -93,7 +93,7 @@ useEffect(() => {
         SocketService.checkOnlineUsers(`${userData._id}`,`${mySocketId}`)
     SocketService.onGotOnlineUsers((online:any)=>{
       console.log(online,"hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
-          setOnline(online)
+          // setOnline(online)
       
      })
 
@@ -118,7 +118,7 @@ useEffect(() => {
 
          SocketService.onGotOnlineUsers((online:any)=>{
           console.log(online,"hiiiii user online&&&&&&&&&&&&&&&&&&&&&")
-              setOnline(online)
+              // setOnline(online)
           
          })
          
@@ -190,10 +190,10 @@ useEffect(() => {
             {userData.username}
             
           </span>
-          <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
+          {/* <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
           {online?<p>Online</p>:<p>Offline</p>}
             
-          </span>
+          </span> */}
           <span style={{ fontWeight: 'bold', marginRight: 'auto' }}>
           {typingIndicator&&<p>typing.......</p>}
             

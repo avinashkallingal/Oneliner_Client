@@ -31,12 +31,12 @@ import { IconButtonProps } from "@mui/joy/IconButton";
 import UserListModal from "./UserListModal";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import {  postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
+import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 import { userEndpoints } from "../../../Constarints/endpoints/userEndpoints";
 import { IUser } from "../../../Interfaces/Iuser";
 import ClipboardJS from "clipboard";
 import { constants } from "../../../Constarints/constants/constants";
-import Loading from "./Loading";
+// import Loading from "./Loading";
 
 export default function InstagramPost({ fetchGenre }) {
   const [posts, setPosts] = useState([]);
@@ -53,22 +53,19 @@ export default function InstagramPost({ fetchGenre }) {
   const [postRefresh, setPostRefresh] = useState<boolean>();
   const [likeListOpen, setLikeListOpen] = useState<boolean>(false);
   // const [postId1, setPostId1] = useState<string>("");
-    const [listData, setlistData] = useState([]);
-  const [copyLink,setCopyLink]=useState<string>("")
-  const [pageCount,setPageCount]=useState<number>(1)
-  
+  const [listData, setlistData] = useState([]);
+  const [copyLink, setCopyLink] = useState<string>("");
+  const [pageCount, setPageCount] = useState<number>(1);
 
- 
+  const inputRef = React.useRef(null);
 
-  const handleCopy = (postId ) => {
-    
-    const link=`${constants.CLIENT_URL}?postId=${postId}`
+  const handleCopy = (postId) => {
+    const link = `${constants.CLIENT_URL}?postId=${postId}`;
 
     // setCopyLink(`${postEndpoints.ViewPost}/${postId}`)
-    setCopyLink(link)
-    toast.info("link copied")
-  }
-       
+    setCopyLink(link);
+    toast.info("link copied");
+  };
 
   {
     /* State for managing displayed comments */
@@ -105,55 +102,55 @@ export default function InstagramPost({ fetchGenre }) {
 
   //for coping to clipboard
   // Clipboard.js logic after the component is mounted
-    React.useEffect(() => {
-      const clipboard = new ClipboardJS(".copy-btn", {
-        text: () => copyLink, // Dynamically return the copy link
-      });
-  
-      // Cleanup to remove Clipboard.js instance on unmount
-      return () => clipboard.destroy();
-    }, [copyLink]);
+  React.useEffect(() => {
+    const clipboard = new ClipboardJS(".copy-btn", {
+      text: () => copyLink, // Dynamically return the copy link
+    });
 
-// let page=3
+    // Cleanup to remove Clipboard.js instance on unmount
+    return () => clipboard.destroy();
+  }, [copyLink]);
 
- // Trigger fetchPosts on scroll
-  useEffect(() => {
-    let timeout;
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - 100
-      ) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          setPageCount((prev) => prev + 1);
-          console.log(pageCount, " page count ^^^^^^^^^^^^");
-        }, 300); // Delay updates by 300ms
-      }
-    };
+  // let page=3
 
+  // Trigger fetchPosts on scroll
+  // useEffect(() => {
+  //   let timeout;
+  //   const handleScroll = () => {
+  //     if (
+  //       window.innerHeight + document.documentElement.scrollTop >=
+  //       document.documentElement.offsetHeight - 100
+  //     ) {
+  //       clearTimeout(timeout);
+  //       timeout = setTimeout(() => {
+  //         setPageCount((prev) => prev + 1);
+  //         console.log(pageCount, " page count ^^^^^^^^^^^^");
+  //       }, 300); // Delay updates by 300ms
+  //     }
+  //   };
 
-    window.addEventListener("scroll", handleScroll); 
+  //   window.addEventListener("scroll", handleScroll);
 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-  //[page, isLoading, hasMore]
-
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
+  // //[page, isLoading, hasMore]
 
   // Fetch data using useEffect
   useEffect(() => {
     setLoading(true);
-   
+
     if (fetchGenre) {
       genre = fetchGenre;
-    }   
+    }
     fetchPosts();
-  }, [fetchGenre, postRefresh,pageCount]);
+  }, [fetchGenre, postRefresh, pageCount]);
 
   //fetching post function
   const fetchPosts = async () => {
     try {
-      const result = await axiosInstance.get(postEndpoints.getPosts(genre,pageCount));
+      const result = await axiosInstance.get(
+        postEndpoints.getPosts(genre, pageCount)
+      );
       // if(result.status!==200){
       //   console.log(result.status,"hiiiiiiiiiiii")
       //   setError("No posts found for this Genre.........")
@@ -161,10 +158,10 @@ export default function InstagramPost({ fetchGenre }) {
       // }
       setError(null);
       console.log(result, " no genre post in fetchpost");
-      // const newPosts = result.data.data;
+      const newPosts = result.data.data;
 
-      // setPosts((prevPosts) => [...prevPosts, ...newPosts]); // Append new data
-      setPosts(result.data.data); // Assuming result.data.data is the posts array
+      setPosts((prevPosts) => [...prevPosts, ...newPosts]); // Append new data
+      // setPosts(result.data.data); // Assuming result.data.data is the posts array
       setLoading(false);
     } catch (error) {
       if (error.status == 500) {
@@ -175,7 +172,7 @@ export default function InstagramPost({ fetchGenre }) {
     }
   };
 
-  console.log(posts," posts got in the state &&&&&&&&&&&&&&") 
+  console.log(posts, " posts got in the state &&&&&&&&&&&&&&");
 
   //fetching user data
   const [loggeduser, setLoggedUser] = useState<IUser>();
@@ -215,6 +212,16 @@ export default function InstagramPost({ fetchGenre }) {
   };
 
 
+  const handleTagClick = async (tag: string) => {
+    try {
+      navigate("/tags", { state: { tag: tag } });
+    } catch (error) {
+      console.error("Error liking/unliking post:", error);
+      toast.error("Error while liking/unliking post.");
+    }
+  };
+
+  
 
   // useEffect(()=>{
   //   function chat(){
@@ -239,15 +246,15 @@ export default function InstagramPost({ fetchGenre }) {
 
   const viewPdf = async (postId: any) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const result = await axiosInstance.post(postEndpoints.pdfUrlFetch, {
         postId,
       });
-  
+
       if (result.data.success) {
         setPdf(result.data.pdfUrl);
         console.log(result.data.pdfUrl, " pfd fetch result fhfhj");
-        setLoading(false)
+        setLoading(false);
         // Return the PDF URL if successful
       } else {
         toast.error("Error while viewing PDF");
@@ -312,8 +319,6 @@ export default function InstagramPost({ fetchGenre }) {
   //   )
   // }
 
-
-
   if (pdf) {
     return (
       <>
@@ -363,10 +368,86 @@ export default function InstagramPost({ fetchGenre }) {
   }
 
   //handling comments
+  // const handleComment = async (
+  //   postId: string,
+  //   parentCommentId?: any,
+  //   text?: any
+  // ) => {
+  //   if (!loggeduser) {
+  //     throw new Error("Logged user is undefined");
+  //   }
+  //   try {
+  //     const payload = {
+  //       postId,
+  //       content: comment,
+  //       userId: loggeduser?._id,
+  //       avatar: loggeduser?.profilePicture,
+  //       userName: loggeduser?.username,
+  //       parentCommentId: null,
+  //       replayText: "",
+  //     };
+
+  //     if (parentCommentId) {
+  //       // If replying to a comment, add parentCommentId
+  //       payload.parentCommentId = parentCommentId;
+  //       payload.replayText = text;
+  //     }
+
+  //     const result = await axiosInstance.post(
+  //       postEndpoints.addComment,
+  //       payload
+  //     );
+
+  //     if (result.data.success) {
+  //       setPosts((prevPosts: any) =>
+  //         prevPosts.map((p: any) =>
+  //           p._id === postId
+  //             ? {
+  //                 ...p,
+  //                 comments: p.comments.map((comment1: any) => {
+  //                   if (comment1._id === parentCommentId) {
+  //                     // If it is a reply, update the specific comment's replies array
+  //                     if (!loggeduser) {
+  //                       throw new Error("Logged user is undefined");
+  //                     }
+  //                     return {
+  //                       ...comment1,
+  //                       replies: [
+  //                         ...comment1.replies,
+  //                         {
+  //                           _id: result.data.commentId,
+  //                           UserId: loggeduser._id,
+  //                           content: comment,
+  //                           createdAt: new Date().toISOString(),
+  //                           avatar: loggeduser?.profilePicture,
+  //                           userName: loggeduser?.name,
+  //                         },
+  //                       ],
+  //                     };
+  //                   }
+  //                   return comment1;
+  //                 }),
+  //               }
+  //             : p
+  //         )
+  //       );
+  //       // setPostRefresh(!postRefresh);
+  //       setExpanded(true);
+
+  //       // setSelectedEmoji(''); // Clear the input after posting
+  //       toast.success("Reply added successfully");
+  //     } else {
+  //       toast.error("Failed to add comment/reply");
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
+  // };
+
   const handleComment = async (
     postId: string,
-    parentCommentId?: any,
-    text?: any
+    parentCommentId?: string,
+    text?: string
   ) => {
     if (!loggeduser) {
       throw new Error("Logged user is undefined");
@@ -378,63 +459,81 @@ export default function InstagramPost({ fetchGenre }) {
         userId: loggeduser?._id,
         avatar: loggeduser?.profilePicture,
         userName: loggeduser?.username,
-        parentCommentId: null,
-        replayText: "",
+        parentCommentId: parentCommentId || null,
+        replayText: text || "",
       };
-
-      if (parentCommentId) {
-        // If replying to a comment, add parentCommentId
-        payload.parentCommentId = parentCommentId;
-        payload.replayText = text;
-      }
-
+      console.log(payload, " payload data in handle comment 7777777777777777");
       const result = await axiosInstance.post(
         postEndpoints.addComment,
         payload
       );
-
+      console.log(
+        result.data,
+        " result data after add comment api call444444444444444"
+      );
       if (result.data.success) {
         setPosts((prevPosts: any) =>
-          prevPosts.map((p: any) =>
-            p._id === postId
-              ? {
-                  ...p,
-                  comments: p.comments.map((comment1: any) => {
-                    if (comment1._id === parentCommentId) {
-                      // If it is a reply, update the specific comment's replies array
-                      if (!loggeduser) {
-                        throw new Error("Logged user is undefined");
-                      }
+          prevPosts.map((postItem: any) => {
+            if (postItem._id === postId) {
+              // If the parentCommentId is provided, we are replying to an existing comment
+              if (parentCommentId) {
+                return {
+                  ...postItem,
+                  comments: postItem.comments.map((commentItem: any) => {
+                    if (commentItem._id === parentCommentId) {
                       return {
-                        ...comment1,
+                        ...commentItem,
                         replies: [
-                          ...comment1.replies,
+                          ...(commentItem.replies || []),
                           {
-                            _id: result.data.commentId,
-                            UserId: loggeduser._id,
-                            content: comment,
+                            _id: result.data.data,
+                            userId: loggeduser._id,
+                            content: text, // Use `text` instead of `comment`
                             createdAt: new Date().toISOString(),
-                            avatar: loggeduser?.profilePicture,
-                            userName: loggeduser?.name,
+                            avatar: loggeduser.profilePicture,
+                            userName: loggeduser.username,
                           },
                         ],
                       };
                     }
-                    return comment1;
+                    return commentItem;
                   }),
-                }
-              : p
-          )
+                };
+              } else {
+                return {
+                  ...postItem,
+                  comments: [
+                    ...postItem.comments,
+                    {
+                      _id: result.data.data,
+                      userId: loggeduser._id,
+                      content: comment, // Use `text` for replies, `comment` for new comments
+                      createdAt: new Date().toISOString(),
+                      avatar: loggeduser.profilePicture,
+                      userName: loggeduser.username,
+                      parentCommentId: null,
+                      replies: [], // Initialize empty replies for a new comment
+                    },
+                  ],
+                };
+              }
+            }
+            return postItem;
+          })
         );
-        setPostRefresh(!postRefresh);
-        setExpanded(true);
 
-        // setSelectedEmoji(''); // Clear the input after posting
-        toast.success("Reply added successfully");
+        setExpanded(true);
+        toast.success(
+          parentCommentId
+            ? "Reply added successfully"
+            : "Comment added successfully"
+        );
       } else {
         toast.error("Failed to add comment/reply");
       }
+      setComment("");
     } catch (error) {
+      console.error("Error adding comment/reply:", error);
       toast.error("Something went wrong");
     }
   };
@@ -457,22 +556,20 @@ export default function InstagramPost({ fetchGenre }) {
     setLikeListOpen(false);
   };
 
-
   //like list fetching from backend
   const handleLikeList = async (postId: string) => {
     setLikeListOpen(true);
-    
+
     try {
-              const response = await axiosInstance.get(postEndpoints.likeList, {
-                params: { postId },
-              });
-               if (response?.data?.like_data) {
-                setlistData(response.data.like_data);
-              }
-            } catch (error) {
-              console.error("Error fetching liked users:", error);
-            }
-      
+      const response = await axiosInstance.get(postEndpoints.likeList, {
+        params: { postId },
+      });
+      if (response?.data?.like_data) {
+        setlistData(response.data.like_data);
+      }
+    } catch (error) {
+      console.error("Error fetching liked users:", error);
+    }
 
     // setPostId1(postId);
   };
@@ -490,7 +587,6 @@ export default function InstagramPost({ fetchGenre }) {
       </>
     );
   }
-
 
   return (
     <Box sx={{ marginTop: "9vh", boxShadow: 30 }}>
@@ -717,10 +813,10 @@ export default function InstagramPost({ fetchGenre }) {
                   variant="soft"
                   color="neutral"
                   sx={{ ml: "auto" }}
-                  className="copy-btn"  
-                  onClick={() => handleCopy(post._id)}               
+                  className="copy-btn"
+                  onClick={() => handleCopy(post._id)}
                 >
-                  <SendOutlined/>
+                  <SendOutlined />
                 </IconButton>
               </Box>
               <IconButton
@@ -759,14 +855,59 @@ export default function InstagramPost({ fetchGenre }) {
                 </Link>{" "}
                 {post.summary}
               </Typography>
-              <Link
+
+              {/* <Link
                 component="button"
                 underline="none"
                 startDecorator="…"
                 sx={{ fontSize: "sm", color: "text.tertiary" }}
               >
                 more
-              </Link>
+              </Link> */}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: 1,
+                  mt: 1,
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{ fontWeight: "bold", color: "text.primary", mr: 1 }}
+                >
+                  Tags:
+                </Typography>
+                {post.tags.map((tag, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      fontSize: "14px",
+                      color: "#6c757d", // Equivalent to "text.secondary"
+                      backgroundColor: "#f8f9fa", // Light background for better visibility
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: "12px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <a
+                      href="#"
+                      onClick={() => handleTagClick(tag)} // Sample click handler
+                      style={{
+                        color: "#007BFF", // Link color (blue)
+                        textDecoration: "none", // No underline
+                        cursor: "pointer", // Pointer cursor on hover
+                      }}
+                    >
+                      {tag}
+                    </a>
+                  </Box>
+                ))}
+              </Box>
 
               {/* <Link
                 component="button"
@@ -783,9 +924,9 @@ export default function InstagramPost({ fetchGenre }) {
               <CardContent>
                 {post.comments
                   .slice(0, visibleComments)
-                  .map((comment1: any) => (
+                  .map((commentItem: any) => (
                     <Box
-                      key={comment1._id}
+                      key={commentItem._id}
                       sx={{
                         display: "flex",
                         flexDirection: "column",
@@ -801,27 +942,27 @@ export default function InstagramPost({ fetchGenre }) {
                             color="neutral"
                             sx={{ textDecoration: "none" }}
                           >
-                            {comment1.userName}
+                            {commentItem.userName}
                           </Link>
                         </Typography>
                         <Typography
                           sx={{ fontSize: "sm", color: "text.secondary" }}
                         >
-                          {comment1.content}
+                          {commentItem.content}
                         </Typography>
                       </Box>
                       <Link
                         component="button"
                         underline="none"
                         sx={{ fontSize: "xs", color: "text.tertiary" }}
-                        onClick={() => setReplyCommentId(comment1._id)}
+                        onClick={() => setReplyCommentId(commentItem._id)}
                       >
-                        Reply
+                        {commentItem.replies.length} Reply
                       </Link>
                       <span style={{ fontSize: "0.8rem", color: "#888" }}>
-                        {formatChatTimestamp(comment1.createdAt)}
+                        {formatChatTimestamp(commentItem.createdAt)}
                       </span>
-                      {replyCommentId === comment1._id && (
+                      {replyCommentId === commentItem._id && (
                         <Box
                           sx={{
                             display: "flex",
@@ -831,7 +972,7 @@ export default function InstagramPost({ fetchGenre }) {
                           }}
                         >
                           {/* Showing Replies */}
-                          {comment1.replies?.map((reply: any) => (
+                          {commentItem.replies?.map((reply: any) => (
                             <Box
                               key={reply._id}
                               sx={{
@@ -882,7 +1023,7 @@ export default function InstagramPost({ fetchGenre }) {
                             underline="none"
                             sx={{ fontSize: "sm", color: "primary.main" }}
                             onClick={() =>
-                              handleReplyPost(post._id, comment1._id)
+                              handleReplyPost(post._id, commentItem._id)
                             }
                           >
                             Post
@@ -916,6 +1057,7 @@ export default function InstagramPost({ fetchGenre }) {
               </IconButton>
               <Input
                 variant="plain"
+                value={comment}
                 size="sm"
                 placeholder="Add a comment…"
                 sx={{ flex: 1, px: 0, "--Input-focusedThickness": "0px" }}
@@ -924,7 +1066,10 @@ export default function InstagramPost({ fetchGenre }) {
               <Link
                 underline="none"
                 role="button"
-                onClick={() => handleComment(post._id)}
+                onClick={() => {
+                  handleComment(post._id);
+                  setComment("");
+                }}
               >
                 Post
               </Link>
@@ -933,6 +1078,48 @@ export default function InstagramPost({ fetchGenre }) {
           </Card>
         ))
       )}
+      {/* <button
+  onClick={() => setPageCount((prev) => prev + 1)}
+  disabled={loading}
+  style={{
+    width: "100%",
+    padding: "12px",
+    fontSize: "16px",
+    fontWeight: "bold",
+    backgroundColor: loading ? "#ccc" : "#007BFF",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: loading ? "not-allowed" : "pointer",
+    transition: "background-color 0.3s ease, transform 0.2s",
+  }}
+  onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.98)")}
+  onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+  onMouseEnter={(e) =>
+    !loading && (e.currentTarget.style.backgroundColor = "#0056b3")
+  }
+  onMouseLeave={(e) =>
+    !loading && (e.currentTarget.style.backgroundColor = "#007BFF")
+  }
+>
+  {loading ? "Loading..." : "More Posts"}
+</button> */}
+
+      <button
+        onMouseEnter={() => setPageCount((prev) => prev + 1)}
+        disabled={loading}
+        style={{
+          width: "100%",
+          padding: "12px",
+          fontSize: "16px",
+          backgroundColor: "transparent",
+          border: "none",
+          cursor: "pointer",
+          opacity: 0, // Keeps it invisible
+        }}
+      >
+        Hidden Trigger
+      </button>
     </Box>
   );
 }

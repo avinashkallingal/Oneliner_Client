@@ -206,6 +206,8 @@ export const SimpleDialog = React.memo((props: SimpleDialogProps) => {
   const navigate = useNavigate();
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setSearchQuery(query);
@@ -310,7 +312,7 @@ export const SimpleDialog = React.memo((props: SimpleDialogProps) => {
             filteredUsers.map((user, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
+                  {/* <CardMedia
                     component="img"
                     alt="User Image"
                     height="140"
@@ -318,6 +320,22 @@ export const SimpleDialog = React.memo((props: SimpleDialogProps) => {
                       user.profilePicture ||
                       "http://www.gravatar.com/avatar/?d=mp"
                     } // Fallback image if user doesn't have one
+                  /> */}
+                  <CardMedia
+                    component="img"
+                    alt={
+                             "abc"
+                    }
+                    height="140"
+                    image={
+                      user.profilePicture ||
+                      "http://www.gravatar.com/avatar/?d=mp"
+                    }
+                    onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                      const target = e.currentTarget; // TypeScript-safe way to access the image element
+                      target.onerror = null; // Prevent infinite loop in case fallback also fails
+                      target.src = "http://www.gravatar.com/avatar/?d=mp"; // Set fallback image
+                    }}
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h6" component="div">

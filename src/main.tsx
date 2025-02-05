@@ -1,4 +1,4 @@
-// import { StrictMode } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
@@ -11,7 +11,7 @@ import  store  from './redux/Store/Store.tsx'
 
 
 createRoot(document.getElementById("root")!).render(
-
+<StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_KEY}>
       <Toaster richColors position="top-right" />
       <Provider store={store}>
@@ -20,5 +20,6 @@ createRoot(document.getElementById("root")!).render(
       
       </Provider>,
     </GoogleOAuthProvider>
-
+    </StrictMode>
+    
 );

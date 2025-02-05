@@ -356,6 +356,12 @@ function UserCard({ id }) {
 
   const userId = localStorage.getItem("id");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 6; // Adjust the number of posts per page as needed
+  // Get posts for the current page
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await axiosInstance.post(userEndpoints.fetchUserData, {
@@ -383,6 +389,19 @@ function UserCard({ id }) {
 
     fetchData();
   }, []);
+
+  const fetchPosts = async () => {
+    const resultPost = await axiosInstance.get(postEndpoints.getUserPosts(id));
+    console.log(resultPost.data.data, "data on regullar fetch !!!!!!!!");
+    if (resultPost.data.success) {
+      setPost(resultPost.data.data);
+      console.log("555555555555555555555555555");
+    }
+  };
+
+  const currentPosts = post.slice(indexOfFirstPost, indexOfLastPost);
+  // Handle page changes
+  const totalPages = Math.ceil(post.length / postsPerPage);
 
   const handleFollowers = async () => {
     setFollowersListOpen(true);
@@ -421,15 +440,6 @@ function UserCard({ id }) {
   };
   const handleCloseFollowings = () => {
     setFollowingsListOpen(false);
-  };
-
-  const fetchPosts = async () => {
-    const resultPost = await axiosInstance.get(postEndpoints.getUserPosts(id));
-    console.log(resultPost.data.data, "data on regullar fetch !!!!!!!!");
-    if (resultPost.data.success) {
-      setPost(resultPost.data.data);
-      console.log("555555555555555555555555555");
-    }
   };
 
   const fetchSavedPosts = async () => {
@@ -640,8 +650,8 @@ function UserCard({ id }) {
           >
             Posts
           </Button>
-          {userId==id?
-            (<Button
+          {userId == id ? (
+            <Button
               variant={view === "savedPosts" ? "solid" : "outlined"}
               onClick={() => {
                 setView("savedPosts");
@@ -649,17 +659,84 @@ function UserCard({ id }) {
               }}
             >
               Saved Posts
-            </Button>):null
-          }
+            </Button>
+          ) : null}
+
+          {/* Pagination Controls */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "20px",
+              gap: "15px",
+              marginLeft: "18vw",
+            }}
+          >
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{
+                padding: "10px 15px",
+                fontSize: "16px",
+                backgroundColor: currentPage === 1 ? "#ccc" : "#007BFF",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                transition: "background 0.3s ease",
+              }}
+            >
+              Previous
+            </button>
+
+            <span
+              style={{
+                fontSize: "12px",
+                fontWeight: "bold",
+                color: "#333", // Darker text for better contrast
+                backgroundColor: "#d0d0d0", // Slightly darker for better visibility
+                padding: "10px 20px",
+                borderRadius: "8px",
+                boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)", // Adding shadow
+                textAlign: "center",
+                display: "inline-block", // Ensures it behaves well inside a div
+              }}
+            >
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              style={{
+                padding: "10px 15px",
+                fontSize: "16px",
+                backgroundColor:
+                  currentPage === totalPages ? "#ccc" : "#007BFF",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                transition: "background 0.3s ease",
+              }}
+            >
+              Next
+            </button>
+          </div>
         </Box>
 
         {/* Post Grid */}
         <Grid container spacing={2}>
-          {(Array.isArray(post) ? post : post).map((post1, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <ProfilePostCard posts={post1} />
-            </Grid>
-          ))}
+          {(Array.isArray(currentPosts) ? currentPosts : currentPosts).map(
+            (post1, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <ProfilePostCard posts={post1} />
+              </Grid>
+            )
+          )}
         </Grid>
       </Box>
     </>

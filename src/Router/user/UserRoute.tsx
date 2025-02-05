@@ -14,6 +14,7 @@ import ViewPost from "../../Pages/user/ViewPost/ViewPost";
 import PrivateRoute from "./PrivateRoute";
 import PrivateRouteUser from "./PrivateUserRoute";
 import NotFound from "../../Components/user/Home/NotFound";
+import TagPage from "../../Components/user/Home/TagPage";
 // import UserBlock from "../../Components/user/Auth/UserBlock";
 
 
@@ -36,6 +37,7 @@ function UserRoute() {
         <Route path="/editPost" element={<PrivateRouteUser ><EditPost /></PrivateRouteUser>} />
         <Route path="/viewPost" element={<PrivateRouteUser ><ViewPost /></PrivateRouteUser>} />
         <Route path="/chats" element={<PrivateRouteUser ><ChatBox /></PrivateRouteUser>} /> 
+        <Route path="/tags" element={<PrivateRouteUser ><TagPage /></PrivateRouteUser>} /> 
         {/* <Route path="/search" element={<SimpleDialog />} />  */}
         {/* <Route path='/login' element={ <PrivateRoute > <TutorLogin />  </PrivateRoute>} /> */}
         

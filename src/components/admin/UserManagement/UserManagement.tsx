@@ -30,7 +30,7 @@ interface User {
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [block, setBlock] = useState(false);
+  const [block] = useState(false);
   const [currentPage, setCurrentPage] = useState(1); // Current page state
   const usersPerPage = 5; // Limit of 5 users per page
   const navigate = useNavigate();
