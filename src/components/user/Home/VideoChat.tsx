@@ -254,74 +254,7 @@ const VideoChat: React.FC<VideoChatProps> = ({ open, onClose }) => {
  
   };
 
-  // return (
-  //   <>
-  //     <h1 style={{ textAlign: "center" }}>Video call</h1>
-  //     <div className="container">
-  //       <div className="video-container">
-
-  //         {/* user video */}
-  //         <div className="video">
-  //           {myStream && (
-  //             <video
-  //               playsInline
-  //               muted
-  //               ref={myVideo}
-  //               autoPlay
-  //               style={{ width: "300px" }}
-  //             />
-  //           )}
-
-  //         </div>
-
-  //           {/* client video */}
-  //         <div className="video">
-  //           {callAccepted && !callEnded ? (
-  //             <video
-  //               playsInline
-  //               ref={userVideo}
-  //               autoPlay
-  //               style={{ width: "300px" }}
-  //             />
-  //           ) : (
-  //             <h2>No connection set</h2>
-  //           )}
-  //         </div>
-
-  //       </div>
-  //       <div className="myId">
-  //                 <div className="call-button">
-  //           {callAccepted && !callEnded ? (
-  //             <Button variant="contained" color="secondary" onClick={leaveCall}>
-  //               End Call
-  //             </Button>
-  //           ) : (
-  //             <IconButton
-  //               color="primary"
-  //               aria-label="call"
-  //               onClick={() => callUser()}
-  //             >
-  //               <PhoneIcon fontSize="large" />
-  //             </IconButton>
-  //           )}
-
-  //         </div>
-  //       </div>
-
-  //       <div>
-  //         {receivingCall && !callAccepted ? (
-  //           <div className="caller">
-  //             <h1>{name} is calling...</h1>
-  //             <Button variant="contained" color="primary" onClick={answerCall}>
-  //               Answer
-  //             </Button>
-  //           </div>
-  //         ) : null}
-  //       </div>
-
-  //     </div>
-  //   </>
-  // );
+  
 
   return (
     <Dialog open={open} onClose={handleEndCall} maxWidth="lg" fullWidth>

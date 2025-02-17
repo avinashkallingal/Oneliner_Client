@@ -193,48 +193,6 @@ export default function Navbar() {
 
   //
 
-  // const list = (anchor:"top") => (
-  //   <Box
-  //     sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
-  //     role="presentation"
-  //     // onClick={toggleDrawer(anchor, false)}
-  //     // onKeyDown={toggleDrawer(anchor, false)}
-  //   >
-  //        <List>
-
-  //       {notificationData.map((notification: any) => (
-  //     <ListItem key={notification._id || notification.index} disablePadding>
-  //         <ListItemButton>
-  //             <ListItemText primary={notification.message} />
-  //             {readButtonFlag && (
-  //                 <div>
-
-  //                     <Button
-  //                         variant="outlined"
-  //                         size="small"
-  //                         color="secondary"
-  //                         onClick={() => handleUserProfileClickOnNorification(notification.userId)}
-  //                         style={{ marginLeft: "8px" }}
-  //                     >
-  //                         View Profile
-  //                     </Button>
-  //                 </div>
-  //             )}
-
-  //         </ListItemButton>
-  //     </ListItem>
-
-  // ))}
-  //     </List>
-  //     {readButtonFlag&&(<Button
-  //                         variant="contained"
-  //                         size="small"
-  //                         color="primary"
-  //                         onClick={() => readNotification(id)}
-  //                     >
-  //                         Mark as Read
-  //                     </Button>)}
-  //   </Box>
 
   const list = (anchor: string) => (
     <Box
@@ -449,8 +407,7 @@ export default function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={handleCloseUserMenu}>Profile</MenuItem>
-              <MenuItem onClick={handleCloseUserMenu}>Settings</MenuItem>
+          
               <MenuItem onClick={handleCloseUserMenu}>Logout</MenuItem>
             </Menu>
           </Box>

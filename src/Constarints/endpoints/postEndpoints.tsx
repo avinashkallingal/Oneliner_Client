@@ -5,7 +5,7 @@ export const postEndpoints = {
     editPost: `${API_GATEWAY_BASE_URL}/post/editPost`,    
     getPosts: (genre:string,page:number) => `${API_GATEWAY_BASE_URL}/post/getPosts?genre=${encodeURIComponent(genre)}&page=${encodeURIComponent(page)}`,
     getUserPosts: (id:any) => `${API_GATEWAY_BASE_URL}/post/getUserPosts?id=${encodeURIComponent(id)}`,
-    getTagPosts: (tag:any) => `${API_GATEWAY_BASE_URL}/post/getTagPosts?tag=${encodeURIComponent(tag)}`,
+    getTagPosts: (tag:string) => `${API_GATEWAY_BASE_URL}/post/getTagPosts?tag=${encodeURIComponent(tag)}`,
     getPost: (postId:any) => 
         `${API_GATEWAY_BASE_URL}/post/getPost?id=${encodeURIComponent(postId)}`,
     pdfUrlFetch: `${API_GATEWAY_BASE_URL}/post/pdfUrlFetch`,

@@ -11,14 +11,11 @@ import { postEndpoints } from "../../../Constarints/endpoints/postEndpoints";
 import { IUser } from "../../../Interfaces/Iuser";
 
 import Navbar from "./Navbar";
+import generateAIResponse from "../../../utilities/Gemini";
 
-function TagPage() {
+function TagSearch({searchTag}) {
  
-  const location=useLocation()  
-  const searchParams = new URLSearchParams(location.search);
-  const searchTag = location.state?.tag || searchParams.get("tag") || ""; // Handle null case
-console.log(searchTag," searchTag ")
-
+ 
   const defaultUser: IUser = {
     _id: undefined,
     username: "",
@@ -40,8 +37,9 @@ console.log(searchTag," searchTag ")
 
   
   const [post, setPost] = useState<any[]>([]);
+  const [similarWords,setSimilarWords]=useState<string>("initial val")
  
- 
+ console.log(searchTag,"search tag in search component 22222222222222222222222")
 
  
 
@@ -52,22 +50,36 @@ console.log(searchTag," searchTag ")
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
 
   useEffect(() => {
-    const fetchData = async () => {     
+    const fetchData = async () => { 
+      await similarWordFetch()    
 
       await fetchPosts();
     };
 
     fetchData();
+
   }, []);
 
+  const similarWordFetch=async()=>{
+    const result=await generateAIResponse(searchTag)
+    const words=result.split(",")
+    words.push(`${searchTag}`)
+    const ans=words.join(",")
+   console.log(ans," gemini api function333333333")
+    setSimilarWords(ans)
+
+  }
+ 
+
   const fetchPosts = async () => {
-    const resultPost = await axiosInstance.get(postEndpoints.getTagPosts(searchTag));
+    const resultPost = await axiosInstance.get(postEndpoints.getTagPosts(similarWords));
     console.log(resultPost.data.data, "data on regullar fetch !!!!!!!!");
     if (resultPost.data.success) {
       setPost(resultPost.data.data);
       console.log("555555555555555555555555555");
     }
   };
+console.log(similarWords,"  this is respose from gemini 111111111111111111111111")
 
   const currentPosts = post.slice(indexOfFirstPost, indexOfLastPost);
   // Handle page changes
@@ -184,4 +196,4 @@ console.log(searchTag," searchTag ")
   );
 }
 // Wrap with React.memo and export as default
-export default React.memo(TagPage);
+export default React.memo(TagSearch);

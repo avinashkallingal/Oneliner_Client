@@ -14,7 +14,7 @@ import ViewPost from "../../Pages/user/ViewPost/ViewPost";
 import PrivateRoute from "./PrivateRoute";
 import PrivateRouteUser from "./PrivateUserRoute";
 import NotFound from "../../Components/user/Home/NotFound";
-import TagPage from "../../Components/user/Home/TagPage";
+import TagPage from "../../Pages/user/TagPage/TagPage";
 // import UserBlock from "../../Components/user/Auth/UserBlock";
 
 

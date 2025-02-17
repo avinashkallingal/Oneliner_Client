@@ -139,46 +139,7 @@ interface leftMsg {
   fileType?:string,
 }
 
-// Message component for others' messages (left-aligned)
-// export const MessageLeft = (props: leftMsg) => {
-//   const { message = "no message", timestamp, photoURL = "dummy.js", displayName = "名無しさん",fileType } = props;
-// console.log(message," message in left dialog box**************")
-//   const formatChatTimestamp = (timestamp1: any) => {
-//     const now = moment();
-//     const messageTime = moment(timestamp1);
 
-//     if (messageTime.isSame(now, 'day')) {
-//       return messageTime.fromNow();
-//     } else if (messageTime.isSame(now, 'year')) {
-//       return messageTime.format('MMM Do, h:mm A');
-//     } else {
-//       return messageTime.format('MMM Do YYYY, h:mm A');
-//     }
-//   };
-
-//   return (
-//     <MessageRow>
-//       <Avatar
-//         alt={displayName}
-//         sx={{ bgcolor: deepOrange[500], width: 32, height: 32 }}
-//         src={photoURL}
-//       />
-//       <div>
-//         <DisplayName>{displayName}</DisplayName>
-//         <MessageBlue>
-//           <div>
-//             {(fileType=="image")?<img src={message} alt="" />:<p>{message}</p>}
-          
-//           </div>
-//           <MessageTimeStampRight>
-//             {formatChatTimestamp(timestamp)}
-         
-//           </MessageTimeStampRight>
-//         </MessageBlue>
-//       </div>
-//     </MessageRow>
-//   );
-// };
 //with modal left message
 export const MessageLeft = (props: leftMsg) => {
   const { message = "no message", timestamp, photoURL = "dummy.js", displayName = "名無しさん", fileType } = props;
@@ -287,36 +248,7 @@ interface rightMsg {
   fileType?:string,
 }
 
-// Message component for user's own messages (right-aligned)
-// export const MessageRight = (props: rightMsg) => {
-//   const { message = "no message",fileType, timestamp,read } = props;
 
-//   const formatChatTimestamp = (timestamp1: any) => {
-//     const now = moment();
-//     const messageTime = moment(timestamp1);
-
-//     if (messageTime.isSame(now, 'day')) {
-//       return messageTime.fromNow();
-//     } else if (messageTime.isSame(now, 'year')) {
-//       return messageTime.format('MMM Do, h:mm A');
-//     } else {
-//       return messageTime.format('MMM Do YYYY, h:mm A');
-//     }
-//   };
-
-//   return (
-//     <MessageRowRight>
-//       <MessageOrange>
-//       {(fileType=="image")?<img src={message} alt="" />:<p>{message}</p>}       
-//         <MessageTimeStampRight>
-//           {formatChatTimestamp(timestamp)}
-//           {!read?<CheckIcon sx={{ fontSize: '0.8rem', color: '#4fc3f7' }} />:
-//           <DoneAllIcon sx={{ fontSize: '0.8rem', color: '#4fc3f7', marginLeft: '2px' }} />}
-//         </MessageTimeStampRight>
-//       </MessageOrange>
-//     </MessageRowRight>
-//   );
-// };
 
 //modal right message
 export const MessageRight = (props: rightMsg) => {

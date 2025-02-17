@@ -103,6 +103,8 @@ export default function SignUp() {
     // Clear errors if validation passes
     setErrors({});
     // Prepare data to send in API request
+    setEmail(email.trim());
+    console.log(email," trimmed email in sign up front end2222222222222")
     const data = {
       username,
       email,

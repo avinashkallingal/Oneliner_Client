@@ -367,82 +367,7 @@ export default function InstagramPost({ fetchGenre }) {
     );
   }
 
-  //handling comments
-  // const handleComment = async (
-  //   postId: string,
-  //   parentCommentId?: any,
-  //   text?: any
-  // ) => {
-  //   if (!loggeduser) {
-  //     throw new Error("Logged user is undefined");
-  //   }
-  //   try {
-  //     const payload = {
-  //       postId,
-  //       content: comment,
-  //       userId: loggeduser?._id,
-  //       avatar: loggeduser?.profilePicture,
-  //       userName: loggeduser?.username,
-  //       parentCommentId: null,
-  //       replayText: "",
-  //     };
 
-  //     if (parentCommentId) {
-  //       // If replying to a comment, add parentCommentId
-  //       payload.parentCommentId = parentCommentId;
-  //       payload.replayText = text;
-  //     }
-
-  //     const result = await axiosInstance.post(
-  //       postEndpoints.addComment,
-  //       payload
-  //     );
-
-  //     if (result.data.success) {
-  //       setPosts((prevPosts: any) =>
-  //         prevPosts.map((p: any) =>
-  //           p._id === postId
-  //             ? {
-  //                 ...p,
-  //                 comments: p.comments.map((comment1: any) => {
-  //                   if (comment1._id === parentCommentId) {
-  //                     // If it is a reply, update the specific comment's replies array
-  //                     if (!loggeduser) {
-  //                       throw new Error("Logged user is undefined");
-  //                     }
-  //                     return {
-  //                       ...comment1,
-  //                       replies: [
-  //                         ...comment1.replies,
-  //                         {
-  //                           _id: result.data.commentId,
-  //                           UserId: loggeduser._id,
-  //                           content: comment,
-  //                           createdAt: new Date().toISOString(),
-  //                           avatar: loggeduser?.profilePicture,
-  //                           userName: loggeduser?.name,
-  //                         },
-  //                       ],
-  //                     };
-  //                   }
-  //                   return comment1;
-  //                 }),
-  //               }
-  //             : p
-  //         )
-  //       );
-  //       // setPostRefresh(!postRefresh);
-  //       setExpanded(true);
-
-  //       // setSelectedEmoji(''); // Clear the input after posting
-  //       toast.success("Reply added successfully");
-  //     } else {
-  //       toast.error("Failed to add comment/reply");
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   }
-  // };
 
   const handleComment = async (
     postId: string,
@@ -1115,10 +1040,10 @@ export default function InstagramPost({ fetchGenre }) {
           backgroundColor: "transparent",
           border: "none",
           cursor: "pointer",
-          opacity: 0, // Keeps it invisible
+          opacity: 5, // Keeps it invisible
         }}
       >
-        Hidden Trigger
+        More Posts
       </button>
     </Box>
   );

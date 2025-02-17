@@ -324,35 +324,7 @@ export default function EditPost() {
           </div>
         );
       case 1:
-        // return (
-        //   <div>
-        //      <button style={{flexFlow:"column"}} onClick={() => viewPdf(location.state?.post?._id)}>
-        //                 Preview PDF
-        //               </button>
-        //     <input
-        //       type="file"
-        //       name="pdf"
-        //       accept="application/pdf"
-        //       onChange={handleFileChange}
-        //     />
-        //     {pdfFile && <p>{pdfFile.name}</p>}
-        //     {errors.pdf && <p style={{ color: "red" }}>{errors.pdf}</p>}
-        // <Button
-        //   variant="contained"
-        //   onClick={() => {
-        //     setStepDisable(true);
-        //     if (!(activeStep <= 0)) {
-        //       setActiveStep(activeStep - 1);
-        //     }
-        //   }}
-        // >
-        //   Back
-        // </Button>
-        // <Button variant="contained" onClick={handleNext}>
-        //   Next
-        // </Button>
-        //   </div>
-        // );
+       
         return (
           <div
             style={{
@@ -470,70 +442,7 @@ export default function EditPost() {
         );
 
       case 2:
-        // return (
-        //   <div>
-        //     <input
-        //       type="file"
-        //       name="image"
-        //       accept="image/*"
-        //       onChange={handlePhotoChange}
-        //     />
-        //     <div
-        //       style={{
-        //         width: "150px",
-        //         height: "150px",
-        //         overflow: "hidden",
-        //         borderRadius: "10px",
-        //         border: "1px solid #ccc",
-        //         display: "flex",
-        //         justifyContent: "center",
-        //         alignItems: "center",
-        //         backgroundColor: "#f9f9f9", // Optional background color
-        //       }}
-        //     >
-        //       <img
-        //         src={location.state?.post?.imageUrlS3?.[0]} // Replace with your image URL or path
-        //         alt="Thumbnail"
-        //         style={{
-        //           width: "100%",
-        //           height: "100%",
-        //           objectFit: "cover", // Ensures the image covers the box area
-        //         }}
-        //       />
-        //     </div>
-        //     {imageSrc && (
-        //       <div style={{ position: "relative", height: 400, width: "100%" }}>
-        //         <Cropper
-        //           image={imageSrc}
-        //           crop={crop}
-        //           zoom={zoom}
-        //           aspect={16 / 9}
-        //           onCropChange={setCrop}
-        //           onCropComplete={handleCropComplete}
-        //           onZoomChange={setZoom}
-        //         />
-        //         <Button variant="contained" onClick={handleCrop}>
-        //           Crop
-        //         </Button>
-        //       </div>
-        //     )}
-        //     {errors.photo && <p style={{ color: "red" }}>{errors.photo}</p>}
-        //     <Button
-        //       variant="contained"
-        //       onClick={() => {
-        //         setStepDisable(true);
-        //         if (!(activeStep <= 0)) {
-        //           setActiveStep(activeStep - 1);
-        //         }
-        //       }}
-        //     >
-        //       Back
-        //     </Button>
-        //     <Button variant="contained" onClick={handleNext}>
-        //       Next
-        //     </Button>
-        //   </div>
-        // );
+       
 
         return (
           <div
@@ -720,75 +629,7 @@ export default function EditPost() {
         );
 
       case 3:
-        // return (
-        //   <Box
-        //     sx={{
-        //       display: "flex",
-        //       justifyContent: "center",
-        //       alignItems: "center",
-        //       // minHeight: '100vh', // Full viewport height for vertical centering
-        //       backgroundColor: "#f0f0f0", // Optional: background for contrast
-        //     }}
-        //   >
-        //     <Card variant="outlined" sx={{ maxWidth: 550, padding: 2 }}>
-        //       <CardContent>
-        //         <Typography variant="h5" gutterBottom>
-        //           Preview
-        //         </Typography>
-
-        //         <Typography variant="body1">
-        //           <strong>Title:</strong> {title}
-        //         </Typography>
-        //         {photoFile && (
-        //           <Box
-        //             component="img"
-        //             src={URL.createObjectURL(photoFile)}
-        //             alt="Cropped Preview"
-        //             sx={{ maxWidth: "100%", marginTop: 2 }}
-        //           />
-        //         )}
-        //         <Typography variant="body1">
-        //           <strong>Genre:</strong> {genre}
-        //         </Typography>
-
-        //         <Typography variant="body1">
-        //           <strong>Tags:</strong> {tags.join(", ")}
-        //         </Typography>
-
-        //         <Typography variant="body1">
-        //           <strong>Summary:</strong> {summary}
-        //         </Typography>
-
-        //         {pdfFile && (
-        //           <Typography variant="body1">
-        //             <strong>PDF File:</strong> {pdfFile.name}
-        //           </Typography>
-        //         )}
-
-        //         <Box mt={2}>
-        //           <Button
-        //             variant="contained"
-        //             onClick={() => {
-        //               setStepDisable(true);
-        //               if (!(activeStep <= 0)) {
-        //                 setActiveStep(activeStep - 1);
-        //               }
-        //             }}
-        //           >
-        //             Back
-        //           </Button>
-        //           <Button
-        //             onClick={submitPost}
-        //             variant="contained"
-        //             color="primary"
-        //           >
-        //             Submit
-        //           </Button>
-        //         </Box>
-        //       </CardContent>
-        //     </Card>
-        //   </Box>
-        // );
+     
         return (
           <Box
             sx={{
